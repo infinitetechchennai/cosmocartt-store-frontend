@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Orders from "./pages/Orders";
+import OrderSuccess from "./pages/OrderSuccess";
 
 export default function App() {
   return (
@@ -57,6 +58,8 @@ export default function App() {
       />
 
       <Route path="/orders" element={<Orders />} />
+
+      <Route path="/order-success" element={<OrderSuccess />} />
 
 
     </Routes>

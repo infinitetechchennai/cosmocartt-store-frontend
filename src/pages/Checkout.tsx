@@ -40,7 +40,7 @@ export default function Checkout() {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
 
         const newOrder = {
-            id: Date.now(),
+            id: "ORD" + Date.now(),
             user,
             items: cartItems,
             total,
@@ -63,7 +63,11 @@ export default function Checkout() {
 
         alert("Order placed successfully!");
 
-        navigate("/orders");
+        navigate("/order-success", {
+            state: {
+                orderId: newOrder.id
+            }
+        });
     };
 
     return (
