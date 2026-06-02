@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { categories } from "../data/categories";
+
+console.log(categories);
 
 
 export default function Products() {
@@ -13,8 +16,9 @@ export default function Products() {
 
     const [search, setSearch] = useState("");
 
-    const [selectedCategories, setSelectedCategories] =
-        useState<string[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedSubcategory, setSelectedSubcategory] = useState("");
+
 
     const [selectedBrands, setSelectedBrands] =
         useState<string[]>([]);
@@ -30,25 +34,17 @@ export default function Products() {
         }
     }, [searchParams]);
 
-    let filteredProducts = products.filter((product) => {
+    const filteredProducts = products.filter((product) => {
 
         const matchesSearch =
-            product.name
-                .toLowerCase()
-                .includes(search.toLowerCase()) ||
-
-            product.brand
-                .toLowerCase()
-                .includes(search.toLowerCase()) ||
-
-            product.category
-                .toLowerCase()
-                .includes(search.toLowerCase());
+            product.name.toLowerCase().includes(search.toLowerCase()) ||
+            product.brand.toLowerCase().includes(search.toLowerCase());
 
         const matchesCategory =
-            selectedCategories.length === 0 ||
-            selectedCategories.includes(product.category);
+            !selectedCategory || product.category === selectedCategory;
 
+        const matchesSubcategory =
+            !selectedSubcategory || product.subcategory === selectedSubcategory;
         const matchesBrand =
             selectedBrands.length === 0 ||
             selectedBrands.includes(product.brand);
@@ -56,6 +52,7 @@ export default function Products() {
         return (
             matchesSearch &&
             matchesCategory &&
+            matchesSubcategory &&
             matchesBrand
         );
     });
@@ -77,7 +74,6 @@ export default function Products() {
     }
 
     return (
-
         <div className="min-h-screen bg-slate-50">
 
             <Navbar />
@@ -86,265 +82,79 @@ export default function Products() {
 
                 <h1 className="text-4xl font-bold mb-8">
                     All Products
-        </h1>
+      </h1>
 
                 <div className="grid lg:grid-cols-4 gap-8">
 
-                    {/* Sidebar Filters */}
+                    {/* SIDEBAR */}
+                    <div className="space-y-5">
 
-                    {/* Sidebar Filters */}
+                        {/* Categories */}
+                        <div className="bg-white p-5 rounded-xl space-y-5">
+                            <h3 className="font-bold text-lg">Categories</h3>
 
-                    <div className="bg-white rounded-2xl p-6 shadow-sm h-fit">
-
-                        <h2 className="font-bold text-lg mb-4">
-                            Categories
-    </h2>
-
-                        <div className="space-y-3">
-
-                            <label className="block">
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-
-                                        if (e.target.checked) {
-
-                                            setSelectedCategories([
-                                                ...selectedCategories,
-                                                "Smartphones"
-                                            ]);
-
-                                        } else {
-
-                                            setSelectedCategories(
-                                                selectedCategories.filter(
-                                                    (c) => c !== "Smartphones"
-                                                )
-                                            );
-                                        }
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.name}
+                                    onClick={() => {
+                                        setSelectedCategory(cat.name);
+                                        setSelectedSubcategory("");
                                     }}
-                                />
-                                <span className="ml-2">
-                                    Smartphones
-            </span>
-                            </label>
+                                    className="block text-left hover:text-[#4B1E78]"
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
 
-                            <label className="block">
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) => {
+                        {/* Subcategories */}
+                        {selectedCategory && (
+                            <div className="bg-white p-5 rounded-xl space-y-3">
+                                <h3 className="font-bold text-lg">Subcategories</h3>
 
-                                        if (e.target.checked) {
-
-                                            setSelectedCategories([
-                                                ...selectedCategories,
-                                                "Laptops"
-                                            ]);
-
-                                        } else {
-
-                                            setSelectedCategories(
-                                                selectedCategories.filter(
-                                                    (c) => c !== "Laptops"
-                                                )
-                                            );
-                                        }
-                                    }}
-                                />
-                                <span className="ml-2">
-                                    Laptops
-            </span>
-                            </label>
-
-                            <label className="block">
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-
-                                        if (e.target.checked) {
-
-                                            setSelectedCategories([
-                                                ...selectedCategories,
-                                                "Headphones"
-                                            ]);
-
-                                        } else {
-
-                                            setSelectedCategories(
-                                                selectedCategories.filter(
-                                                    (c) => c !== "Headphones"
-                                                )
-                                            );
-                                        }
-                                    }}
-                                />
-                                <span className="ml-2">
-                                    Headphones
-            </span>
-                            </label>
-
-                            <label className="block">
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) => {
-
-                                        if (e.target.checked) {
-
-                                            setSelectedCategories([
-                                                ...selectedCategories,
-                                                "Smart Watches"
-                                            ]);
-
-                                        } else {
-
-                                            setSelectedCategories(
-                                                selectedCategories.filter(
-                                                    (c) => c !== "Smart Watches"
-                                                )
-                                            );
-                                        }
-                                    }}
-                                />
-                                <span className="ml-2">
-                                    Smart Watches
-            </span>
-                            </label>
-
-                            {/* BRANDS */}
-
-                            <div className="mt-8">
-
-                                <h3 className="font-semibold mb-3">
-                                    Brands
-    </h3>
-
-                                <div className="space-y-3">
-
-                                    <label className="block">
-                                        <input
-                                            type="checkbox"
-                                            onChange={(e) => {
-
-                                                if (e.target.checked) {
-
-                                                    setSelectedBrands([
-                                                        ...selectedBrands,
-                                                        "Apple"
-                                                    ]);
-
-                                                } else {
-
-                                                    setSelectedBrands(
-                                                        selectedBrands.filter(
-                                                            (b) => b !== "Apple"
-                                                        )
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                        <span className="ml-2">
-                                            Apple
-            </span>
-                                    </label>
-
-                                    <label className="block">
-                                        <input
-                                            type="checkbox"
-                                            onChange={(e) => {
-
-                                                if (e.target.checked) {
-
-                                                    setSelectedBrands([
-                                                        ...selectedBrands,
-                                                        "Samsung"
-                                                    ]);
-
-                                                } else {
-
-                                                    setSelectedBrands(
-                                                        selectedBrands.filter(
-                                                            (b) => b !== "Samsung"
-                                                        )
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                        <span className="ml-2">
-                                            Samsung
-            </span>
-                                    </label>
-
-                                    <label className="block">
-                                        <input
-                                            type="checkbox"
-                                            onChange={(e) => {
-
-                                                if (e.target.checked) {
-
-                                                    setSelectedBrands([
-                                                        ...selectedBrands,
-                                                        "Sony"
-                                                    ]);
-
-                                                } else {
-
-                                                    setSelectedBrands(
-                                                        selectedBrands.filter(
-                                                            (b) => b !== "Sony"
-                                                        )
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                        <span className="ml-2">
-                                            Sony
-            </span>
-                                    </label>
-
-                                    <label className="block">
-                                        <input
-                                            type="checkbox"
-                                            onChange={(e) => {
-
-                                                if (e.target.checked) {
-
-                                                    setSelectedBrands([
-                                                        ...selectedBrands,
-                                                        "Dell"
-                                                    ]);
-
-                                                } else {
-
-                                                    setSelectedBrands(
-                                                        selectedBrands.filter(
-                                                            (b) => b !== "Dell"
-                                                        )
-                                                    );
-                                                }
-                                            }}
-                                        />
-                                        <span className="ml-2">
-                                            Dell
-            </span>
-                                    </label>
-
-                                </div>
-
+                                {categories
+                                    .find((cat) => cat.name === selectedCategory)
+                                    ?.subcategories.map((sub) => (
+                                        <button
+                                            key={sub}
+                                            onClick={() => setSelectedSubcategory(sub)}
+                                            className="block text-left hover:text-[#4B1E78]"
+                                        >
+                                            {sub}
+                                        </button>
+                                    ))}
                             </div>
+                        )}
 
+                        {/* Brands */}
+                        <div className="bg-white p-5 rounded-xl">
+                            <h3 className="font-semibold mb-3">Brands</h3>
+
+                            {["Apple", "Samsung", "Sony", "Dell"].map((brand) => (
+                                <label key={brand} className="block">
+                                    <input
+                                        type="checkbox"
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedBrands([...selectedBrands, brand]);
+                                            } else {
+                                                setSelectedBrands(
+                                                    selectedBrands.filter((b) => b !== brand)
+                                                );
+                                            }
+                                        }}
+                                    />
+                                    <span className="ml-2">{brand}</span>
+                                </label>
+                            ))}
                         </div>
 
                     </div>
 
-
-                    {/* Products Area */}
-
-
-                    {/* Products Area */}
-
+                    {/* PRODUCTS */}
                     <div className="lg:col-span-3">
 
-                        <div className="flex flex-col md:flex-row gap-4 justify-between mb-6">
+                        <div className="flex gap-4 mb-6">
 
                             <input
                                 type="text"
@@ -356,24 +166,12 @@ export default function Products() {
 
                             <select
                                 value={sortBy}
-                                onChange={(e) =>
-                                    setSortBy(e.target.value)
-                                }
+                                onChange={(e) => setSortBy(e.target.value)}
                                 className="border bg-white px-4 py-3 rounded-xl"
                             >
-
-                                <option value="latest">
-                                    Latest
-</option>
-
-                                <option value="low">
-                                    Price Low to High
-</option>
-
-                                <option value="high">
-                                    Price High to Low
-</option>
-
+                                <option value="latest">Latest</option>
+                                <option value="low">Price Low to High</option>
+                                <option value="high">Price High to Low</option>
                             </select>
 
                         </div>
@@ -381,12 +179,7 @@ export default function Products() {
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
                             {filteredProducts.map((product) => (
-
-                                <ProductCard
-                                    key={product.id}
-                                    product={product}
-                                />
-
+                                <ProductCard key={product.id} product={product} />
                             ))}
 
                         </div>
@@ -397,9 +190,9 @@ export default function Products() {
 
             </div>
 
+            {/* ✅ Footer INSIDE main div */}
             <Footer />
 
         </div>
-
     );
 }
