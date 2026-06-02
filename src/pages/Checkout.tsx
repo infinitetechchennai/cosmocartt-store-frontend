@@ -41,6 +41,7 @@ export default function Checkout() {
 
         const newOrder = {
             id: "ORD" + Date.now(),
+
             user,
             items: cartItems,
             total,

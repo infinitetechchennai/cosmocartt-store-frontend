@@ -57,10 +57,15 @@ export default function App() {
         element={<Register />}
       />
 
-      <Route path="/orders" element={<Orders />} />
+      <Route
+        path="/orders"
+        element={<Orders />}
+      />
 
-      <Route path="/order-success" element={<OrderSuccess />} />
-
+      <Route
+        path="/order-success"
+        element={<OrderSuccess />}
+      />
 
     </Routes>
   );
