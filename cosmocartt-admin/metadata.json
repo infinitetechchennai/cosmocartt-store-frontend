@@ -1,0 +1,6 @@
+{
+  "name": "Seven Admin Dashboard",
+  "description": "Live operational overview, user management, and business metrics for Seven admin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
