@@ -1,9 +1,11 @@
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
     const { cartItems } = useCart();
+    const navigate = useNavigate();
 
     if (cartItems.length === 0) {
         return (
@@ -33,6 +35,37 @@ export default function Checkout() {
         0
     );
 
+    const handlePlaceOrder = () => {
+
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+        const newOrder = {
+            id: Date.now(),
+            user,
+            items: cartItems,
+            total,
+            status: "Placed",
+            paymentStatus: "Pending",
+            paymentMethod: "COD",
+            createdAt: new Date().toISOString(),
+        };
+
+        const existingOrders =
+            JSON.parse(localStorage.getItem("orders") || "[]");
+
+        localStorage.setItem(
+            "orders",
+            JSON.stringify([...existingOrders, newOrder])
+        );
+
+        // Clear cart
+        localStorage.removeItem("cart");
+
+        alert("Order placed successfully!");
+
+        navigate("/orders");
+    };
+
     return (
         <div className="min-h-screen bg-slate-50">
 
@@ -48,64 +81,90 @@ export default function Checkout() {
 
                     {/* CUSTOMER FORM */}
 
-                    <div className="lg:col-span-2 bg-white rounded-2xl p-6">
+                    <div className="lg:col-span-2 space-y-6">
 
-                        <h2 className="text-2xl font-semibold mb-6">
-                            Shipping Details
-                        </h2>
+                        {/* ADDRESS SECTION */}
+                        <div className="bg-white rounded-2xl p-6 border">
 
-                        <div className="grid md:grid-cols-2 gap-4">
+                            <h2 className="text-xl font-semibold mb-5">
+                                Shipping Address
+    </h2>
 
-                            <input
-                                type="text"
-                                placeholder="First Name"
-                                className="border p-3 rounded-xl"
-                            />
+                            <div className="grid md:grid-cols-2 gap-4">
 
-                            <input
-                                type="text"
-                                placeholder="Last Name"
-                                className="border p-3 rounded-xl"
-                            />
+                                <div>
+                                    <label className="text-sm text-gray-600">First Name</label>
+                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
 
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                className="border p-3 rounded-xl"
-                            />
+                                <div>
+                                    <label className="text-sm text-gray-600">Last Name</label>
+                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
 
-                            <input
-                                type="text"
-                                placeholder="Phone Number"
-                                className="border p-3 rounded-xl"
-                            />
+                                <div>
+                                    <label className="text-sm text-gray-600">Email</label>
+                                    <input type="email" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm text-gray-600">Phone</label>
+                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
+
+                            </div>
+
+                            <div className="mt-4">
+                                <label className="text-sm text-gray-600">Address</label>
+                                <textarea className="w-full border p-3 rounded-xl mt-1 h-24" />
+                            </div>
+
+                            <div className="grid md:grid-cols-3 gap-4 mt-4">
+
+                                <div>
+                                    <label className="text-sm text-gray-600">City</label>
+                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm text-gray-600">State</label>
+                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
+
+                                <div>
+                                    <label className="text-sm text-gray-600">Pincode</label>
+                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                </div>
+
+                            </div>
 
                         </div>
 
-                        <textarea
-                            placeholder="Address"
-                            className="border p-3 rounded-xl w-full mt-4 h-28"
-                        />
+                        {/* PAYMENT SECTION */}
+                        <div className="bg-white rounded-2xl p-6 border">
 
-                        <div className="grid md:grid-cols-3 gap-4 mt-4">
+                            <h2 className="text-xl font-semibold mb-5">
+                                Payment Method
+    </h2>
 
-                            <input
-                                type="text"
-                                placeholder="City"
-                                className="border p-3 rounded-xl"
-                            />
+                            <div className="space-y-3">
 
-                            <input
-                                type="text"
-                                placeholder="State"
-                                className="border p-3 rounded-xl"
-                            />
+                                <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
+                                    <input type="radio" name="payment" defaultChecked />
+                                    <span>Cash on Delivery</span>
+                                </label>
 
-                            <input
-                                type="text"
-                                placeholder="Pincode"
-                                className="border p-3 rounded-xl"
-                            />
+                                <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
+                                    <input type="radio" name="payment" />
+                                    <span>UPI Payment</span>
+                                </label>
+
+                                <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
+                                    <input type="radio" name="payment" />
+                                    <span>Credit / Debit Card</span>
+                                </label>
+
+                            </div>
 
                         </div>
 
@@ -113,53 +172,106 @@ export default function Checkout() {
 
                     {/* ORDER SUMMARY */}
 
-                    <div className="bg-white rounded-2xl p-6 h-fit">
+                    <div className="bg-white rounded-2xl p-6 h-fit border space-y-5 sticky top-24">
 
-                        <h2 className="text-2xl font-semibold mb-5">
+                        <h2 className="text-xl font-semibold">
                             Order Summary
-                        </h2>
+  </h2>
 
-                        <div className="space-y-4">
+                        {/* ITEMS */}
+                        <p className="text-xs uppercase text-gray-400 tracking-wider">
+                            Items
+</p>
 
+                        <div className="space-y-3">
                             {cartItems.map((item: any) => (
 
                                 <div
                                     key={item.id}
-                                    className="flex justify-between"
+                                    className="flex gap-4 items-center hover:bg-slate-50 p-2 rounded-lg transition"
                                 >
 
-                                    <span>
-                                        {item.name} x {item.quantity}
-                                    </span>
+                                    {/* IMAGE */}
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-14 h-14 object-cover rounded-lg border"
+                                    />
 
-                                    <span>
-                                        ₹{(
-                                            item.price *
-                                            item.quantity
-                                        ).toLocaleString()}
-                                    </span>
+                                    {/* DETAILS */}
+                                    <div className="flex-1">
+
+                                        <p className="text-sm font-medium text-gray-800">
+                                            {item.name}
+                                        </p>
+
+                                        <p className="text-xs text-gray-500">
+                                            Qty: {item.quantity}
+                                        </p>
+
+                                    </div>
+
+                                    {/* PRICE */}
+                                    <p className="text-sm font-semibold min-w-[90px] text-right">
+                                        ₹{(item.price * item.quantity).toLocaleString()}
+                                    </p>
 
                                 </div>
 
                             ))}
+                        </div>
+
+                        <hr />
+
+                        {/* PRICE BREAKDOWN */}
+                        <div className="space-y-2 text-sm">
+
+                            <div className="flex justify-between">
+                                <span>Subtotal</span>
+                                <span>₹{total.toLocaleString()}</span>
+                            </div>
+
+                            <div className="flex justify-between text-gray-500">
+                                <span>Delivery</span>
+                                <span>₹100</span>
+                            </div>
+
+                            <div className="flex justify-between text-gray-500">
+                                <span>Tax</span>
+                                <span>₹200</span>
+                            </div>
 
                         </div>
 
-                        <hr className="my-5" />
+                        <hr />
 
-                        <div className="flex justify-between font-bold text-lg">
-
+                        {/* TOTAL */}
+                        <div className="flex justify-between text-2xl font-bold text-[#4B1E78]">
                             <span>Total</span>
+                            <span>₹{(total + 300).toLocaleString()}</span>
+                        </div>
 
-                            <span>
-                                ₹{total.toLocaleString()}
-                            </span>
+                        {/* TRUST INFO */}
+
+
+                        <div className="text-sm text-gray-600 space-y-1">
+
+                            <p>🚚 Delivery in 3-5 business days</p>
+                            <p>🔁 Easy 7-day returns</p>
+                            <p>🔒 100% secure payment</p>
 
                         </div>
 
-                        <button className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold">
+                        <button
+                            onClick={handlePlaceOrder}
+                            className="w-full bg-[#4B1E78] hover:bg-[#3a155d] transition text-white py-3 rounded-xl font-semibold"
+                        >
                             Place Order
-                        </button>
+  </button>
+
+                        <p className="text-xs text-center text-gray-400 mt-2">
+                            By placing this order, you agree to our terms and conditions
+</p>
 
                     </div>
 
