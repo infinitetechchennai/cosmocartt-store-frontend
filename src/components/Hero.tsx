@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const slides = [
   {
@@ -28,10 +29,20 @@ export default function Hero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, []);
+
+  const nextSlide = () => {
+    setCurrent((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrent((prev) =>
+      prev === 0 ? slides.length - 1 : prev - 1
+    );
+  };
 
   return (
     <section className="bg-slate-50 py-6 overflow-hidden">
@@ -39,103 +50,135 @@ export default function Hero() {
 
         <div className="relative overflow-hidden rounded-3xl shadow-2xl">
 
-          <div
-            className="flex transition-transform duration-700 ease-in-out"
-            style={{
-              transform: `translateX(-${current * 100}%)`,
-            }}
-          >
-            {slides.map((slide, index) => (
-              <div
-                key={index}
-                className="min-w-full bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
-              >
-                <div className="grid lg:grid-cols-2 items-center">
+          {/* Progress Bar */}
 
-                  <div className="p-12 lg:p-20 text-white">
+          <div className="absolute top-0 left-0 w-full h-1 bg-white/10 z-30">
 
-                    <span className="bg-white/20 px-4 py-2 rounded-full text-sm">
-                      India's Trusted Electronics Marketplace
-                    </span>
+            <motion.div
+              key={current}
+              className="h-full bg-white"
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{
+                duration: 5,
+                ease: "linear",
+              }}
+            />
 
-                    <h1 className="text-5xl md:text-6xl font-black mt-6 leading-tight">
-                      {slide.title}
-                    </h1>
+          </div>
 
-                    <p className="mt-4 text-xl text-gray-200">
-                      {slide.subtitle}
-                    </p>
+          <AnimatePresence mode="wait">
 
-                    <div className="flex gap-4 mt-8">
+            <motion.div
+              key={current}
+              initial={{
+                opacity: 0,
+                x: 150,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
+              exit={{
+                opacity: 0,
+                x: -150,
+              }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
+            >
+              <div className="grid lg:grid-cols-2 items-center">
 
-                      <Link
-                        to="/products"
-                        className="bg-white text-[#4B1E78] px-8 py-4 rounded-xl font-semibold hover:scale-105 transition"
-                      >
-                        Shop Now
-                      </Link>
+                {/* LEFT */}
 
-                    </div>
+                <div className="p-12 lg:p-20 text-white">
 
-                  </div>
+                  <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-sm">
+                    India's Trusted Electronics Marketplace
+                  </span>
 
-                  <div className="h-full">
-                    <img
-                      src={slide.image}
-                      alt={slide.title}
-                      className="w-full h-[500px] object-cover"
-                    />
+                  <h1 className="text-5xl md:text-6xl font-black mt-6 leading-tight">
+                    {slides[current].title}
+                  </h1>
+
+                  <p className="mt-4 text-xl text-gray-200">
+                    {slides[current].subtitle}
+                  </p>
+
+                  <div className="flex gap-4 mt-8">
+
+                    <Link
+                      to="/products"
+                      className="bg-white text-[#4B1E78] px-8 py-4 rounded-xl font-bold hover:scale-105 transition"
+                    >
+                      Shop Now
+                    </Link>
+
+                    <button className="border border-white/30 bg-white/10 backdrop-blur-md px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition">
+                      Explore
+                    </button>
+
                   </div>
 
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Left Arrow */}
+                {/* RIGHT */}
+
+                <div className="relative">
+
+                  <img
+                    src={slides[current].image}
+                    alt={slides[current].title}
+                    className="w-full h-[500px] object-cover"
+                  />
+
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#2B1055]/30"></div>
+
+                </div>
+
+              </div>
+            </motion.div>
+
+          </AnimatePresence>
+
+          {/* LEFT ARROW */}
 
           <button
-            onClick={() =>
-              setCurrent(
-                current === 0
-                  ? slides.length - 1
-                  : current - 1
-              )
-            }
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white h-12 w-12 rounded-full shadow-lg"
+            onClick={prevSlide}
+            className="absolute left-5 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
           >
             ❮
           </button>
 
-          {/* Right Arrow */}
+          {/* RIGHT ARROW */}
 
           <button
-            onClick={() =>
-              setCurrent(
-                (current + 1) % slides.length
-              )
-            }
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white h-12 w-12 rounded-full shadow-lg"
+            onClick={nextSlide}
+            className="absolute right-5 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
           >
             ❯
           </button>
 
         </div>
 
-        {/* Dots */}
+        {/* DOTS */}
 
-        <div className="flex justify-center gap-3 mt-5">
+        <div className="flex justify-center gap-3 mt-6">
+
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`h-3 w-3 rounded-full transition ${
+              className={`transition-all duration-300 rounded-full ${
                 current === index
-                  ? "bg-[#4B1E78] w-8"
-                  : "bg-gray-300"
+                  ? "w-10 h-3 bg-[#4B1E78]"
+                  : "w-3 h-3 bg-gray-300"
               }`}
             />
           ))}
+
         </div>
 
       </div>

@@ -1,3 +1,4 @@
+import macbookAirM4 from "../assets/macbook-air-m4.jpg";
 export const products = [
     {
         id: 1,
@@ -12,16 +13,15 @@ export const products = [
     },
 
     {
-        id: 2,
-        name: "MacBook Air M4",
-        brand: "Apple",
-        category: "Laptops",
-        price: 119999,
-        oldPrice: 129999,
-        rating: 4.9,
-        image:
-            "https://images.unsplash.com/photo-1517336714739-489689fd1ca8"
-    },
+    id: 2,
+    name: "MacBook Air M4",
+    brand: "Apple",
+    category: "Laptops",
+    price: 119999,
+    oldPrice: 129999,
+    rating: 4.9,
+    image: macbookAirM4
+},
 
     {
         id: 3,

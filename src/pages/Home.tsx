@@ -6,11 +6,10 @@ import Brands from "../components/Brands";
 import Footer from "../components/Footer";
 import AnnouncementBar from "../components/AnnouncementBar";
 import Stats from "../components/Stats";
+import PremiumBanner from "../components/PremiumBanner";
 
 export default function Home() {
-
     return (
-
         <div className="min-h-screen bg-slate-50">
 
             <AnnouncementBar />
@@ -23,6 +22,8 @@ export default function Home() {
 
             <Stats />
 
+            <PremiumBanner />
+
             <FeaturedProducts />
 
             <Brands />
@@ -30,6 +31,5 @@ export default function Home() {
             <Footer />
 
         </div>
-
     );
 }
