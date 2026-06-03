@@ -11,15 +11,20 @@ export default function ProductCard({
 }: ProductCardProps) {
     const { addToCart } = useCart();
 
+    const price = product.retailPrice || 0;
+
     const oldPrice =
-        product.oldPrice || product.price + 5000;
+        product.oldPrice || price + 5000;
 
     const rating =
         product.rating || 4.8;
 
-    const discount = Math.round(
-        ((oldPrice - product.price) / oldPrice) * 100
-    );
+    const discount =
+        oldPrice > 0
+            ? Math.round(
+                ((oldPrice - price) / oldPrice) * 100
+            )
+            : 0;
 
     return (
         <motion.div
@@ -30,48 +35,39 @@ export default function ProductCard({
             transition={{ duration: 0.25 }}
             className="group bg-white/70 backdrop-blur-xl rounded-[32px] overflow-hidden border border-white/50 shadow-lg hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-all duration-500"
         >
-            <Link to={`/product/${product.id}`}>
+            <Link to={`/product/${product._id}`}>
 
                 {/* IMAGE */}
 
                 <div className="relative overflow-hidden">
 
-                    {/* Shine Effect */}
-
                     <div className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition duration-1000" />
 
                     <img
-                        src={product.image}
+                        src={
+                            product.image ||
+                            "https://via.placeholder.com/400x400?text=No+Image"
+                        }
                         alt={product.name}
                         className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
 
-                    {/* Discount */}
-
                     <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                         {discount}% OFF
-                    </div>
-
-                    {/* Bestseller */}
+          </div>
 
                     <div className="absolute top-4 left-24 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
                         ⭐ Bestseller
-                    </div>
+          </div>
 
-                    {/* Wishlist */}
-
-                    <button
-                        className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-sm w-10 h-10 rounded-full shadow-lg hover:scale-110 transition"
-                    >
+                    <button className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-sm w-10 h-10 rounded-full shadow-lg hover:scale-110 transition">
                         ♡
-                    </button>
-
-                    {/* Quick View */}
+          </button>
 
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300 z-20">
                         <div className="bg-white rounded-full px-4 py-2 shadow-xl text-sm font-semibold">
                             Quick View
-                        </div>
+            </div>
                     </div>
 
                 </div>
@@ -88,32 +84,26 @@ export default function ProductCard({
                         {product.name}
                     </h3>
 
-                    {/* Rating */}
-
                     <div className="flex items-center gap-2 mt-3">
 
                         <div className="flex text-yellow-400">
                             ★★★★★
-                        </div>
+            </div>
 
                         <span className="text-sm text-slate-500">
                             ({rating})
-                        </span>
+            </span>
 
                     </div>
-
-                    {/* Premium Badge */}
 
                     <div className="mt-4 inline-flex items-center gap-2 bg-purple-50 text-[#4B1E78] px-3 py-1 rounded-full text-xs font-bold">
                         ✓ Premium Choice
-                    </div>
-
-                    {/* Price */}
+          </div>
 
                     <div className="mt-4 flex items-end gap-3">
 
                         <span className="text-3xl font-black bg-gradient-to-r from-[#2B1055] to-[#6F2DBD] bg-clip-text text-transparent">
-                            ₹{product.price.toLocaleString()}
+                            ₹{price.toLocaleString()}
                         </span>
 
                         <span className="line-through text-slate-400">
@@ -122,23 +112,17 @@ export default function ProductCard({
 
                     </div>
 
-                    {/* Delivery */}
-
                     <div className="mt-3 text-green-600 text-sm font-medium">
                         🚚 Free Delivery
-                    </div>
-
-                    {/* Stock */}
+          </div>
 
                     <div className="mt-2 text-xs text-orange-500 font-semibold">
-                        🔥 Only 5 Left In Stock
+                        Stock: {product.stock || 0}
                     </div>
 
                 </div>
 
             </Link>
-
-            {/* BUTTON */}
 
             <div className="px-5 pb-5">
 
@@ -147,7 +131,7 @@ export default function ProductCard({
                     className="w-full bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD] text-white py-3 rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-purple-300 hover:scale-[1.03] active:scale-95 transition-all duration-300"
                 >
                     Add To Cart
-                </button>
+        </button>
 
             </div>
 

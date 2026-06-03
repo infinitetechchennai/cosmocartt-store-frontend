@@ -13,6 +13,7 @@ export const CartProvider = ({
 }: {
     children: ReactNode;
 }) => {
+
     const [cartItems, setCartItems] = useState<any[]>(() => {
         const savedCart = localStorage.getItem("cart");
 
@@ -29,23 +30,23 @@ export const CartProvider = ({
     }, [cartItems]);
 
     const addToCart = (product: any) => {
-        setCartItems((prev: any[]) => {
+
+        setCartItems((prev) => {
 
             const existing = prev.find(
-                (item) => item.id === product.id
+                (item) => item._id === product._id
             );
 
             if (existing) {
 
                 return prev.map((item) =>
-                    item.id === product.id
+                    item._id === product._id
                         ? {
                             ...item,
                             quantity: item.quantity + 1
                         }
                         : item
                 );
-
             }
 
             return [
@@ -58,12 +59,12 @@ export const CartProvider = ({
         });
     };
 
-    const removeFromCart = (id: number) => {
+    const removeFromCart = (_id: string) => {
 
-        setCartItems((prev: any[]) => {
+        setCartItems((prev) => {
 
             const item = prev.find(
-                (p) => p.id === id
+                (p) => p._id === _id
             );
 
             if (!item) return prev;
@@ -71,25 +72,27 @@ export const CartProvider = ({
             if (item.quantity > 1) {
 
                 return prev.map((p) =>
-                    p.id === id
+                    p._id === _id
                         ? {
                             ...p,
                             quantity: p.quantity - 1
                         }
                         : p
                 );
-
             }
 
             return prev.filter(
-                (p) => p.id !== id
+                (p) => p._id !== _id
             );
         });
     };
 
-    const deleteItem = (id: number) => {
-        setCartItems((prev: any[]) =>
-            prev.filter((item) => item.id !== id)
+    const deleteItem = (_id: string) => {
+
+        setCartItems((prev) =>
+            prev.filter(
+                (item) => item._id !== _id
+            )
         );
     };
 

@@ -37,7 +37,7 @@ export interface Product {
 
   category: string;
   subcategory: string;
-
+  description?: string;
   sku: string;
 
   costPrice: number;

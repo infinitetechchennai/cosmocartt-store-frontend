@@ -13,8 +13,8 @@ export default function Cart() {
     } = useCart();
 
     const total = cartItems.reduce(
-        (sum: number, item: any) =>
-            sum + item.price * item.quantity,
+        (sum, item) =>
+            sum + item.retailPrice * item.quantity,
         0
     );
 
@@ -49,7 +49,7 @@ export default function Cart() {
                             {cartItems.map((item: any) => (
 
                                 <div
-                                    key={item.id}
+                                    key={item._id}
                                     className="bg-white rounded-2xl p-5 flex gap-5 items-center"
                                 >
 
@@ -65,7 +65,7 @@ export default function Cart() {
                                         </h3>
 
                                         <p className="text-[#4B1E78] font-semibold mt-1">
-                                            ₹{item.price.toLocaleString()}
+                                            ₹{item.retailPrice.toLocaleString()}
                                         </p>
 
                                     </div>
@@ -73,7 +73,7 @@ export default function Cart() {
                                     <div className="flex items-center gap-3">
 
                                         <button
-                                            onClick={() => removeFromCart(item.id)}
+                                            onClick={() => removeFromCart(item._id)}
                                             className="w-8 h-8 border rounded"
                                         >
                                             -
@@ -91,7 +91,7 @@ export default function Cart() {
     </button>
 
                                         <button
-                                            onClick={() => deleteItem(item.id)}
+                                            onClick={() => deleteItem(item._id)}
                                             className="text-red-500 ml-3"
                                         >
                                             Remove
