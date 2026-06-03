@@ -121,13 +121,15 @@ export default function Login() {
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={() =>
-                                login({
-                                    name: "Demo User",
-                                    role: "customer",
-                                    customerType: "b2c"
-                                })
-                            }
+                            onClick={() => {
+    login({
+        name: "Demo User",
+        role: "customer",
+        customerType: "b2c"
+    });
+
+    navigate("/");
+}}
                             className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
                         >
                             Login

@@ -70,23 +70,20 @@ export default function Hero() {
           <AnimatePresence mode="wait">
 
             <motion.div
-              key={current}
-              initial={{
-                opacity: 0,
-                x: 150,
-              }}
-              animate={{
-                opacity: 1,
-                x: 0,
-              }}
-              exit={{
-                opacity: 0,
-                x: -150,
-              }}
-              transition={{
-                duration: 0.8,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+  key={current}
+  initial={{
+    x: 40,
+  }}
+  animate={{
+    x: 0,
+  }}
+  exit={{
+    x: -40,
+  }}
+  transition={{
+    duration: 0.45,
+    ease: "easeOut",
+  }}
               className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
             >
               <div className="grid lg:grid-cols-2 items-center">

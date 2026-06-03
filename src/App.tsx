@@ -13,60 +13,65 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Orders from "./pages/Orders";
 import OrderSuccess from "./pages/OrderSuccess";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
 
-      <Route
-        path="/"
-        element={<Home />}
-      />
+      <Routes>
 
-      <Route
-        path="/products"
-        element={<Products />}
-      />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-      <Route
-        path="/product/:id"
-        element={<ProductDetails />}
-      />
+        <Route
+          path="/products"
+          element={<Products />}
+        />
 
-      <Route
-        path="/cart"
-        element={<Cart />}
-      />
+        <Route
+          path="/product/:id"
+          element={<ProductDetails />}
+        />
 
-      <Route
-        path="/checkout"
-        element={
-          <ProtectedRoute>
-            <Checkout />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
 
-      <Route
-        path="/login"
-        element={<Login />}
-      />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/register"
-        element={<Register />}
-      />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-      <Route
-        path="/orders"
-        element={<Orders />}
-      />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-      <Route
-        path="/order-success"
-        element={<OrderSuccess />}
-      />
+        <Route
+          path="/orders"
+          element={<Orders />}
+        />
 
-    </Routes>
+        <Route
+          path="/order-success"
+          element={<OrderSuccess />}
+        />
+
+      </Routes>
+    </>
   );
 }
