@@ -29,6 +29,28 @@ export interface StockAlert {
   status: "Out of Stock" | "Low Stock";
 }
 
+export interface Product {
+  _id?: string;
+
+  name: string;
+  brand: string;
+
+  category: string;
+  subcategory: string;
+
+  sku: string;
+
+  costPrice: number;
+  wholesalePrice: number;
+  retailPrice: number;
+
+  stock: number;
+
+  image: string;
+
+  status: string;
+}
+
 export interface BestSeller {
   id: string;
   name: string;

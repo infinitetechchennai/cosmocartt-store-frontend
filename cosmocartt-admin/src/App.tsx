@@ -1,15 +1,24 @@
 import Login from "./components/Login";
 import SettingsView from "./components/SettingsView";
 import { useState, useEffect } from "react";
-import { TimeFilter, User, Order, B2BClient, PaymentTransaction, StockAlert, BestSeller } from "./types";
+import {
+  TimeFilter,
+  User,
+  Order,
+  B2BClient,
+  PaymentTransaction,
+  BestSeller,
+  Product
+} from "./types";
 import {
   initialUsers,
   initialOrders,
   initialB2BClients,
   initialTransactions,
-  initialStockAlerts,
   initialBestSellers
 } from "./data";
+
+
 
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -40,7 +49,17 @@ export default function App() {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [b2bClients, setB2bClients] = useState<B2BClient[]>(initialB2BClients);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>(initialTransactions);
-  const [products, setProducts] = useState<StockAlert[]>(initialStockAlerts);
+  const [products, setProducts] =
+    useState<Product[]>([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      });
+  }, []);
   const [bestSellers, setBestSellers] = useState<BestSeller[]>(initialBestSellers);
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
@@ -52,7 +71,8 @@ export default function App() {
   );
 
   // Derive active stock alert count
-  const stockAlertCount = products.filter(p => p.stock <= p.threshold).length;
+  const stockAlertCount =
+    products.filter(p => p.stock <= 10).length;
 
   const renderActiveView = () => {
     switch (activeTab) {
@@ -61,7 +81,6 @@ export default function App() {
           <DashboardView
             orders={orders}
             users={users}
-            stockAlerts={products}
             bestSellers={bestSellers}
             timeFilter={timeFilter}
             setTimeFilter={setTimeFilter}

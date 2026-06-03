@@ -27,15 +27,15 @@ export default function DashboardView({
   const isExact = dataMode === "exact";
 
   // KPI Calculations
-  const totalRevenueVal = isExact 
-    ? 0 
+  const totalRevenueVal = isExact
+    ? 0
     : orders
-        .filter(o => o.status !== "Cancelled")
-        .reduce((sum, o) => sum + o.amount, 0);
+      .filter(o => o.status !== "Cancelled")
+      .reduce((sum, o) => sum + o.amount, 0);
 
   const totalOrdersVal = isExact ? 0 : orders.length;
   const totalUsersVal = isExact ? 0 : users.length;
-  const totalRefundsVal = isExact ? 0 : orders.filter(o => o.status === "Cancelled").length; 
+  const totalRefundsVal = isExact ? 0 : orders.filter(o => o.status === "Cancelled").length;
 
   // Format currencies beautifully in Rupees
   const formatRupee = (num: number) => {
@@ -83,7 +83,7 @@ export default function DashboardView({
 
   return (
     <div id="dashboard-view-container" className="space-y-6">
-      
+
       {/* Top action row with Title, subtitle and simulation filter */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="text-left">
@@ -98,22 +98,20 @@ export default function DashboardView({
             <button
               id="mode-toggle-exact"
               onClick={() => setDataMode("exact")}
-              className={`px-3 py-1.5 rounded-lg transition-all ${
-                isExact 
-                  ? "bg-white text-zinc-800 shadow-sm" 
-                  : "text-zinc-500 hover:text-zinc-800"
-              }`}
+              className={`px-3 py-1.5 rounded-lg transition-all ${isExact
+                ? "bg-white text-zinc-800 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-800"
+                }`}
             >
               Exact Mock (Img)
             </button>
             <button
               id="mode-toggle-simulated"
               onClick={() => setDataMode("simulated")}
-              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${
-                !isExact 
-                  ? "bg-red-500 text-white shadow-sm" 
-                  : "text-zinc-500 hover:text-zinc-800"
-              }`}
+              className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${!isExact
+                ? "bg-red-500 text-white shadow-sm"
+                : "text-zinc-500 hover:text-zinc-800"
+                }`}
             >
               <Zap className="w-3 h-3" /> Live Simulator
             </button>
@@ -128,11 +126,10 @@ export default function DashboardView({
                   key={filter}
                   id={`time-filter-btn-${filter.toLowerCase()}`}
                   onClick={() => setTimeFilter(filter)}
-                  className={`px-4 py-1.5 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-black text-white shadow-sm"
-                      : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50"
-                  }`}
+                  className={`px-4 py-1.5 rounded-lg transition-all duration-200 ${isActive
+                    ? "bg-black text-white shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50"
+                    }`}
                 >
                   {filter}
                 </button>
@@ -144,7 +141,7 @@ export default function DashboardView({
 
       {/* KPI Cards section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
+
         {/* Total Revenue */}
         <div id="kpi-total-revenue" className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs">
           <div className="text-left space-y-1">
@@ -201,7 +198,7 @@ export default function DashboardView({
 
       {/* Row 1 Analytics & Delivery stats */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
+
         {/* B2B vs B2C Analytics Area Chart */}
         <div id="card-b2b-b2c-analytics" className="lg:col-span-8 bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between pb-4">
@@ -217,7 +214,7 @@ export default function DashboardView({
               </div>
             )}
           </div>
-          
+
           {/* Main Chart Window */}
           <div className="h-[260px] w-full flex items-center justify-center">
             {isExact ? (
@@ -229,24 +226,24 @@ export default function DashboardView({
                   <div className="border-b border-zinc-100 w-full h-0"></div>
                   <div className="border-b border-zinc-100 w-full h-0"></div>
                 </div>
-                
+
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={currentAnalyticsData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorB2B" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorB2C" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#a855f7" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
                   <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#94a3b8" fontSize={11} tickFormatter={(val) => `₹${val/1000}k`} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#94a3b8" fontSize={11} tickFormatter={(val) => `₹${val / 1000}k`} tickLine={false} axisLine={false} />
                   <Tooltip formatter={(value) => formatRupee(Number(value))} />
                   <Area type="monotone" dataKey="b2b" stroke="#3b82f6" strokeWidth={2.5} fillOpacity={1} fill="url(#colorB2B)" />
                   <Area type="monotone" dataKey="b2c" stroke="#a855f7" strokeWidth={2.5} fillOpacity={1} fill="url(#colorB2C)" />
@@ -282,7 +279,7 @@ export default function DashboardView({
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            
+
             {/* Center Count */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-2xl font-black text-zinc-900 tracking-tight">
@@ -316,7 +313,7 @@ export default function DashboardView({
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-zinc-900 text-base uppercase tracking-wider">Stock Alerts</h3>
               <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-100 text-red-600 text-xs font-bold leading-none">
-                {stockAlerts.length}
+                {stockAlerts?.length || 0}
               </span>
             </div>
             <span className="text-xs text-orange-500 font-semibold flex items-center gap-1">
@@ -325,24 +322,23 @@ export default function DashboardView({
           </div>
 
           <div className="divide-y divide-zinc-100 flex-1 overflow-y-auto max-h-[280px] mt-2 scrollbar-thin">
-            {stockAlerts.slice(0, 6).map((item) => (
+            {(stockAlerts || []).slice(0, 6).map((item) => (
               <div key={item.id} className="py-3 flex items-center justify-between text-left">
                 <div className="space-y-0.5 overflow-hidden pr-4">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono font-semibold text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded">
                       {item.sku}
                     </span>
-                    <span className={`text-[10px] uppercase font-bold px-1.5 py-0.25 rounded-md ${
-                      item.status === "Out of Stock" 
-                        ? "bg-red-50 text-red-600 border border-red-200" 
-                        : "bg-amber-50 text-amber-600 border border-amber-200"
-                    }`}>
+                    <span className={`text-[10px] uppercase font-bold px-1.5 py-0.25 rounded-md ${item.status === "Out of Stock"
+                      ? "bg-red-50 text-red-600 border border-red-200"
+                      : "bg-amber-50 text-amber-600 border border-amber-200"
+                      }`}>
                       {item.status}
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-zinc-800 truncate">{item.name}</p>
                 </div>
-                
+
                 <div className="text-right shrink-0">
                   <span className="text-sm font-bold text-red-600 block">
                     {item.stock} <span className="text-[10px] text-zinc-400 font-medium">left</span>
@@ -364,14 +360,13 @@ export default function DashboardView({
           </div>
 
           <div className="divide-y divide-zinc-100 flex-1 overflow-y-auto max-h-[280px] mt-2 scrollbar-thin">
-            {bestSellers.map((item, index) => (
+            {(bestSellers || []).map((item, index) => (
               <div key={item.id} className="py-3.5 flex items-center gap-4 text-left">
                 {/* Ranking number */}
-                <span className={`w-5 h-5 rounded-full font-bold text-xs flex items-center justify-center shrink-0 ${
-                  index === 0 ? "bg-amber-500 text-white" :
+                <span className={`w-5 h-5 rounded-full font-bold text-xs flex items-center justify-center shrink-0 ${index === 0 ? "bg-amber-500 text-white" :
                   index === 1 ? "bg-zinc-400 text-white" :
-                  index === 2 ? "bg-amber-700 text-white" : "bg-zinc-100 text-zinc-500"
-                }`}>
+                    index === 2 ? "bg-amber-700 text-white" : "bg-zinc-100 text-zinc-500"
+                  }`}>
                   {index + 1}
                 </span>
 
@@ -385,8 +380,8 @@ export default function DashboardView({
                 <div className="text-right">
                   <span className="text-sm font-bold text-zinc-900 block">{item.sales} sold</span>
                   <div className="w-24 bg-zinc-100 h-1.5 rounded-full mt-1 overflow-hidden">
-                    <div 
-                      className="bg-zinc-900 h-full rounded-full" 
+                    <div
+                      className="bg-zinc-900 h-full rounded-full"
                       style={{ width: `${Math.min(100, (item.sales / 150) * 100)}%` }}
                     ></div>
                   </div>
