@@ -18,7 +18,7 @@ export default function Products() {
 
     const productsSectionRef = useRef<HTMLDivElement>(null);
 
-const productsPerPage = 4;
+    const productsPerPage = 4;
 
     const [products, setProducts] = useState<any[]>([]);
     const [selectedSubcategory, setSelectedSubcategory] = useState("");
@@ -82,20 +82,20 @@ const productsPerPage = 4;
         );
     }
     const indexOfLastProduct =
-    currentPage * productsPerPage;
+        currentPage * productsPerPage;
 
-const indexOfFirstProduct =
-    indexOfLastProduct - productsPerPage;
+    const indexOfFirstProduct =
+        indexOfLastProduct - productsPerPage;
 
-const currentProducts =
-    filteredProducts.slice(
-        indexOfFirstProduct,
-        indexOfLastProduct
+    const currentProducts =
+        filteredProducts.slice(
+            indexOfFirstProduct,
+            indexOfLastProduct
+        );
+
+    const totalPages = Math.ceil(
+        filteredProducts.length / productsPerPage
     );
-
-const totalPages = Math.ceil(
-    filteredProducts.length / productsPerPage
-);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-50 to-purple-50">
@@ -157,31 +157,16 @@ const totalPages = Math.ceil(
                         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                             <h3 className="font-bold text-lg mb-4">
                                 Categories
-                            </h3>
+    </h3>
 
                             {categories.map((cat) => (
-
-    <button
-        key={cat.name}
-        onClick={() => {
-            setSelectedCategory(cat.name);
-setCurrentPage(1);
-        }}
-        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 ${
-            selectedCategory === cat.name
-                ? "bg-[#4B1E78] text-white shadow-xl ring-4 ring-purple-200"
-                : "hover:bg-slate-100"
-        }`}
-    >
-        {cat.name}
-    </button>
-))}
 
                                 <button
                                     key={cat.name}
                                     onClick={() => {
                                         setSelectedCategory(cat.name);
-                                        setSelectedSubcategory(""); // IMPORTANT
+                                        setSelectedSubcategory("");
+                                        setCurrentPage(1);
                                     }}
                                     className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === cat.name
                                         ? "bg-[#4B1E78] text-white shadow-xl ring-4 ring-purple-200"
@@ -191,14 +176,13 @@ setCurrentPage(1);
                                     {cat.name}
                                 </button>
 
-
                             ))}
 
                             {selectedCategory && (
                                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mt-4">
                                     <h3 className="font-bold text-lg mb-4">
                                         Subcategories
-    </h3>
+            </h3>
 
                                     {categories
                                         .find((cat) => cat.name === selectedCategory)
@@ -281,10 +265,10 @@ setCurrentPage(1);
 
                     {/* Products */}
 
-<div
-    ref={productsSectionRef}
-    className="lg:col-span-3"
->
+                    <div
+                        ref={productsSectionRef}
+                        className="lg:col-span-3"
+                    >
 
                         <div className="flex gap-4 mb-6 flex-wrap">
 
@@ -293,18 +277,18 @@ setCurrentPage(1);
                                 placeholder="Search products..."
                                 value={search}
                                 onChange={(e) => {
-    setSearch(e.target.value);
-    setCurrentPage(1);
-}}
+                                    setSearch(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 className="w-full md:w-96 px-5 py-4 rounded-2xl bg-white/80 backdrop-blur-lg border border-white shadow-lg focus:ring-4 focus:ring-purple-200 outline-none"
                             />
 
                             <select
                                 value={sortBy}
                                 onChange={(e) => {
-    setSortBy(e.target.value);
-    setCurrentPage(1);
-}}
+                                    setSortBy(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 className="border bg-white px-4 py-3 rounded-xl"
                             >
                                 <option value="latest">
@@ -323,11 +307,10 @@ setCurrentPage(1);
                         </div>
 
 
-                                                <div
-    key={currentPage}
-    className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fadeIn"
->
-                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <div
+                            key={currentPage}
+                            className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fadeIn"
+                        >
 
                             {filteredProducts.length === 0 ? (
 
@@ -346,14 +329,9 @@ setCurrentPage(1);
                             ) : (
 
 
-        currentProducts.map((product) => (
-            <ProductCard
-                key={product.id}
-                product={product}
-            />
-        ))
 
-                                filteredProducts.map((product) => (
+
+                                currentProducts.map((product) => (
                                     <ProductCard
                                         key={product._id}
                                         product={product}
@@ -363,28 +341,28 @@ setCurrentPage(1);
 
                             )}
 
-</div>
-{filteredProducts.length > 0 && (
 
-    <div className="flex justify-center items-center gap-3 mt-10">
+                            {filteredProducts.length > 0 && (
 
-        <button
-    onClick={() => {
+                                <div className="flex justify-center items-center gap-3 mt-10">
 
-    setCurrentPage((prev) =>
-        Math.max(prev - 1, 1)
-    );
+                                    <button
+                                        onClick={() => {
 
-    setTimeout(() => {
-        productsSectionRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
-    }, 50);
+                                            setCurrentPage((prev) =>
+                                                Math.max(prev - 1, 1)
+                                            );
 
-}}
-            disabled={currentPage === 1}
-            className="
+                                            setTimeout(() => {
+                                                productsSectionRef.current?.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "start",
+                                                });
+                                            }, 50);
+
+                                        }}
+                                        disabled={currentPage === 1}
+                                        className="
                 w-11 h-11
                 rounded-full
                 bg-white
@@ -396,62 +374,61 @@ setCurrentPage(1);
                 disabled:opacity-40
                 disabled:cursor-not-allowed
             "
-        >
-            ←
+                                    >
+                                        ←
         </button>
 
-        {[...Array(totalPages)].map((_, index) => (
+                                    {[...Array(totalPages)].map((_, index) => (
 
-            <button
-                key={index}
-                onClick={() => {
+                                        <button
+                                            key={index}
+                                            onClick={() => {
 
-    setCurrentPage(index + 1);
+                                                setCurrentPage(index + 1);
 
-    setTimeout(() => {
-        productsSectionRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
-    }, 50);
+                                                setTimeout(() => {
+                                                    productsSectionRef.current?.scrollIntoView({
+                                                        behavior: "smooth",
+                                                        block: "start",
+                                                    });
+                                                }, 50);
 
-}}
-                className={`
+                                            }}
+                                            className={`
                     w-11 h-11
                     rounded-full
                     font-semibold
                     transition-all
                     duration-200
-                    ${
-                        currentPage === index + 1
-                            ? "bg-[#6F2DBD] text-white scale-110 shadow-lg"
-                            : "bg-white text-gray-700 hover:bg-purple-100"
-                    }
+                    ${currentPage === index + 1
+                                                    ? "bg-[#6F2DBD] text-white scale-110 shadow-lg"
+                                                    : "bg-white text-gray-700 hover:bg-purple-100"
+                                                }
                 `}
-            >
-                {index + 1}
-            </button>
+                                        >
+                                            {index + 1}
+                                        </button>
 
-        ))}
+                                    ))}
 
-        <button
+                                    <button
 
-    onClick={() => {
+                                        onClick={() => {
 
-    setCurrentPage((prev) =>
-        Math.min(prev + 1, totalPages)
-    );
+                                            setCurrentPage((prev) =>
+                                                Math.min(prev + 1, totalPages)
+                                            );
 
-    setTimeout(() => {
-        productsSectionRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
-    }, 50);
+                                            setTimeout(() => {
+                                                productsSectionRef.current?.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "start",
+                                                });
+                                            }, 50);
 
-}}
-    disabled={currentPage === totalPages}
-    className="
+                                        }}
+                                        disabled={currentPage === totalPages}
+                                        className="
         w-11 h-11
         rounded-full
         bg-white
@@ -463,13 +440,13 @@ setCurrentPage(1);
         disabled:opacity-40
         disabled:cursor-not-allowed
     "
->
-    →
+                                    >
+                                        →
 </button>
 
-    </div>
+                                </div>
 
-)}
+                            )}
 
                         </div>
 
@@ -481,6 +458,6 @@ setCurrentPage(1);
 
             <Footer />
 
-        </div>
+        </div >
     );
 }
