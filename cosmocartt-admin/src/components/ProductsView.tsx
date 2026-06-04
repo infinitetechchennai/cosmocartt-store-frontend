@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Product } from "../types";
 import { Search, Plus, Trash2, Edit2, Check, RefreshCw } from "lucide-react";
+import { categories } from "../data/categories";
+
 
 
 interface ProductsViewProps {
@@ -12,11 +14,13 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
     brand: "",
     category: "",
+    description: "",
     subcategory: "",
     sku: "",
     costPrice: 0,
@@ -41,6 +45,41 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   };
 
   const handleAddProduct = async () => {
+
+    // 🔴 VALIDATION
+    if (!newProduct.name.trim()) {
+      return alert("Product name is required");
+    }
+
+    if (!newProduct.brand.trim()) {
+      return alert("Brand is required");
+    }
+
+    if (!newProduct.category) {
+      return alert("Select a category");
+    }
+
+    if (!newProduct.subcategory) {
+      return alert("Select a subcategory");
+    }
+
+    if (!newProduct.sku.trim()) {
+      return alert("SKU is required");
+    }
+
+    if (newProduct.retailPrice <= 0) {
+      return alert("Retail price must be greater than 0");
+    }
+
+    if (newProduct.stock < 0) {
+      return alert("Stock cannot be negative");
+    }
+
+    if (!newProduct.image) {
+      return alert("Please upload product image");
+    }
+
+    // 🔵 API CALL
     try {
       const res = await fetch(
         "http://localhost:5000/api/products",
@@ -64,6 +103,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
           name: "",
           brand: "",
           category: "",
+          description: "",
           subcategory: "",
           sku: "",
           costPrice: 0,
@@ -73,6 +113,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
           image: "",
           status: "Active",
         });
+
       } else {
         alert(data.message);
       }
@@ -84,6 +125,22 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
   const handleUpdateProduct = async () => {
     if (!editProduct?._id) return;
+
+    if (!editProduct.name.trim()) {
+      return alert("Product name is required");
+    }
+
+    if (!editProduct.category) {
+      return alert("Select category");
+    }
+
+    if (!editProduct.subcategory) {
+      return alert("Select subcategory");
+    }
+
+    if (editProduct.retailPrice <= 0) {
+      return alert("Retail price must be valid");
+    }
 
     try {
       const res = await fetch(
@@ -102,9 +159,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       if (data.success) {
         setProducts(
           products.map((p) =>
-            p._id === editProduct._id
-              ? data.product
-              : p
+            p._id === editProduct._id ? data.product : p
           )
         );
 
@@ -113,6 +168,40 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     } catch (err) {
       console.error(err);
       alert("Failed to update product");
+    }
+  };
+
+
+  const toggleStatus = async (product: Product) => {
+    const updatedStatus = product.status === "Active" ? "Inactive" : "Active";
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/products/${product._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...product,
+            status: updatedStatus,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setProducts(
+          products.map((p) =>
+            p._id === product._id ? data.product : p
+          )
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
     }
   };
 
@@ -145,6 +234,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     }
   };
 
+  const generateSKU = () => {
+    const random = Math.floor(1000 + Math.random() * 9000);
+    return "SKU-" + random;
+  };
 
   return (
     <div id="products-view-container" className="space-y-6 text-left">
@@ -207,7 +300,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 return (
                   <tr
                     key={item._id}
-                    className="hover:bg-zinc-50 transition-colors"
+                    onClick={() => setSelectedProduct(item)}
+                    className="hover:bg-zinc-50 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4">
                       <img
@@ -229,36 +323,62 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                       {item.brand}
                     </td>
 
+
+
                     <td className="px-6 py-4">
                       {item.category}
                     </td>
 
                     <td className="px-6 py-4 text-center">
-                      {item.stock}
+                      {item.stock === 0 ? (
+                        <span className="text-red-600 text-xs font-semibold bg-red-50 px-2 py-1 rounded">
+                          Out of Stock
+                        </span>
+                      ) : (
+                        <span
+                          className={
+                            item.stock < 10
+                              ? "text-orange-500 font-semibold"
+                              : ""
+                          }
+                        >
+                          {item.stock}
+                        </span>
+                      )}
                     </td>
 
                     <td className="px-6 py-4 text-center">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleStatus(item);
+                        }}
+                        className={`px-3 py-1 rounded text-xs font-semibold transition ${item.status === "Active"
+                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          : "bg-red-100 text-red-700 hover:bg-red-200"
                           }`}
                       >
                         {item.status}
-                      </span>
+                      </button>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center gap-3">
 
                         <button
-                          onClick={() => setEditProduct(item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditProduct(item);
+                          }}
                           className="text-blue-600 hover:text-blue-800"
                         >
                           <Edit2 size={16} />
                         </button>
 
                         <button
-                          onClick={() => handleDelete(item._id!)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item._id!);
+                          }}
                           className="text-red-600 hover:text-red-800"
                         >
                           <Trash2 size={16} />
@@ -308,18 +428,54 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   }
                 />
 
-                <input
+
+                <div className="col-span-2">
+                  <label className="text-xs text-zinc-500">
+                    Product Description
+  </label>
+
+                  <textarea
+                    placeholder="Enter product description..."
+                    className="border p-2 rounded w-full mt-1"
+                    rows={3}
+                    maxLength={300}
+                    value={editProduct.description || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\s+/g, " ");
+                      setEditProduct({
+                        ...editProduct,
+                        description: value,
+                      });
+                    }}
+                  />
+
+                  <p className="text-xs text-zinc-400 mt-1">
+                    {(editProduct.description || "").length}/300 characters
+  </p>
+                </div>
+
+
+
+                <select
                   className="border p-2 rounded"
                   value={editProduct.category}
                   onChange={(e) =>
                     setEditProduct({
                       ...editProduct,
                       category: e.target.value,
+                      subcategory: "",
                     })
                   }
-                />
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.name} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
 
-                <input
+                <select
                   className="border p-2 rounded"
                   value={editProduct.subcategory}
                   onChange={(e) =>
@@ -328,77 +484,119 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                       subcategory: e.target.value,
                     })
                   }
-                />
+                >
+                  <option value="">Select Subcategory</option>
 
-                <input
-                  className="border p-2 rounded"
-                  value={editProduct.sku}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      sku: e.target.value,
-                    })
-                  }
-                />
+                  {categories
+                    .find((cat) => cat.name === editProduct.category)
+                    ?.subcategories.map((sub) => (
+                      <option key={sub} value={sub}>
+                        {sub}
+                      </option>
+                    ))}
+                </select>
 
-                <input
-                  type="number"
-                  className="border p-2 rounded"
-                  value={editProduct.stock}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      stock: Number(e.target.value),
-                    })
-                  }
-                />
 
-                <input
-                  type="number"
-                  className="border p-2 rounded"
-                  value={editProduct.costPrice}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      costPrice: Number(e.target.value),
-                    })
-                  }
-                />
 
-                <input
-                  type="number"
-                  className="border p-2 rounded"
-                  value={editProduct.wholesalePrice}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      wholesalePrice: Number(e.target.value),
-                    })
-                  }
-                />
+                {/* STOCK */}
+                <div>
+                  <label className="text-xs text-zinc-500">Stock</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className="border p-2 rounded w-full mt-1"
+                    value={editProduct.stock}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        stock: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
 
-                <input
-                  type="number"
-                  className="border p-2 rounded"
-                  value={editProduct.retailPrice}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      retailPrice: Number(e.target.value),
-                    })
-                  }
-                />
+                {/* COST */}
+                <div>
+                  <label className="text-xs text-zinc-500">Cost Price (₹)</label>
+                  <input
+                    type="number"
+                    className="border p-2 rounded w-full mt-1"
+                    value={editProduct.costPrice}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        costPrice: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
 
-                <input
-                  className="border p-2 rounded col-span-2"
-                  value={editProduct.image}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      image: e.target.value,
-                    })
-                  }
-                />
+                {/* WHOLESALE */}
+                <div>
+                  <label className="text-xs text-zinc-500">Wholesale Price (₹)</label>
+                  <input
+                    type="number"
+                    className="border p-2 rounded w-full mt-1"
+                    value={editProduct.wholesalePrice}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        wholesalePrice: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+
+                {/* RETAIL */}
+                <div>
+                  <label className="text-xs text-zinc-500">Retail Price (₹)</label>
+                  <input
+                    type="number"
+                    className="border p-2 rounded w-full mt-1"
+                    value={editProduct.retailPrice}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        retailPrice: Number(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="text-xs text-zinc-500">
+                    Update Product Image
+  </label>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="border p-2 rounded w-full mt-1"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const reader = new FileReader();
+
+                      reader.onloadend = () => {
+                        setEditProduct({
+                          ...editProduct,
+                          image: reader.result as string,
+                        });
+                      };
+
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+
+                  {editProduct.image && (
+                    <img
+                      src={editProduct.image}
+                      alt="preview"
+                      className="mt-3 h-20 rounded border"
+                    />
+                  )}
+                </div>
 
               </div>
 
@@ -462,105 +660,218 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 }
               />
 
-              <input
-                placeholder="Category"
-                className="border p-2 rounded"
+              <div className="col-span-2">
+                <label className="text-xs text-zinc-500">
+                  Product Description
+  </label>
+
+                <textarea
+                  placeholder="Enter product description..."
+                  className="border p-2 rounded w-full mt-1"
+                  rows={3}
+                  maxLength={300}
+                  value={newProduct.description}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\s+/g, " ");
+                    setNewProduct({
+                      ...newProduct,
+                      description: value,
+                    });
+                  }}
+
+                />
+
+                <p className="text-xs text-zinc-400 mt-1">
+                  {(newProduct.description || "").length}/300 characters
+  </p>
+              </div>
+
+
+
+              <select
                 value={newProduct.category}
                 onChange={(e) =>
                   setNewProduct({
                     ...newProduct,
                     category: e.target.value,
+                    subcategory: ""
                   })
                 }
-              />
-
-              <input
-                placeholder="Subcategory"
                 className="border p-2 rounded"
+              >
+                <option value="">Select Category</option>
+
+                {categories.map((cat) => (
+                  <option key={cat.name} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+
+
+              <select
                 value={newProduct.subcategory}
                 onChange={(e) =>
                   setNewProduct({
                     ...newProduct,
-                    subcategory: e.target.value,
+                    subcategory: e.target.value
                   })
                 }
-              />
-
-              <input
-                placeholder="SKU"
                 className="border p-2 rounded"
-                value={newProduct.sku}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    sku: e.target.value,
-                  })
-                }
-              />
+              >
+                <option value="">Select Subcategory</option>
 
-              <input
-                type="number"
-                placeholder="Stock"
-                className="border p-2 rounded"
-                value={newProduct.stock}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    stock: Number(e.target.value),
-                  })
-                }
-              />
+                {categories
+                  .find((cat) => cat.name === newProduct.category)
+                  ?.subcategories.map((sub) => (
+                    <option key={sub} value={sub}>
+                      {sub}
+                    </option>
+                  ))}
+              </select>
 
-              <input
-                type="number"
-                placeholder="Cost Price"
-                className="border p-2 rounded"
-                value={newProduct.costPrice}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    costPrice: Number(e.target.value),
-                  })
-                }
-              />
 
-              <input
-                type="number"
-                placeholder="Wholesale Price"
-                className="border p-2 rounded"
-                value={newProduct.wholesalePrice}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    wholesalePrice: Number(e.target.value),
-                  })
-                }
-              />
+              <div className="col-span-2">
+                <label className="text-xs text-zinc-500">
+                  SKU (Auto Generated)
+  </label>
 
-              <input
-                type="number"
-                placeholder="Retail Price"
-                className="border p-2 rounded"
-                value={newProduct.retailPrice}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    retailPrice: Number(e.target.value),
-                  })
-                }
-              />
+                <div className="flex gap-2">
+                  <input
+                    value={newProduct.sku}
+                    readOnly
+                    className="border p-2 rounded w-full bg-gray-100"
+                  />
 
-              <input
-                placeholder="Image URL"
-                className="border p-2 rounded col-span-2"
-                value={newProduct.image}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    image: e.target.value,
-                  })
-                }
-              />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setNewProduct({
+                        ...newProduct,
+                        sku: generateSKU(),
+                      })
+                    }
+                    className="px-3 bg-black text-white rounded"
+                  >
+                    Generate
+    </button>
+                </div>
+              </div>
+
+              {/* STOCK */}
+              <div>
+                <label className="text-xs font-medium text-zinc-500">
+                  Stock Quantity
+  </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Enter stock (e.g. 50)"
+                  className="border p-2 rounded w-full mt-1"
+                  value={newProduct.stock}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      stock: Number(e.target.value),
+                    })
+                  }
+                />
+              </div>
+
+              {/* COST PRICE */}
+              <div>
+                <label className="text-xs font-medium text-zinc-500">
+                  Cost Price (₹)
+  </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 15000"
+                  className="border p-2 rounded w-full mt-1"
+                  value={newProduct.costPrice}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      costPrice: Number(e.target.value),
+                    })
+                  }
+                />
+              </div>
+
+              {/* WHOLESALE */}
+              <div>
+                <label className="text-xs font-medium text-zinc-500">
+                  Wholesale Price (₹)
+  </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 17000"
+                  className="border p-2 rounded w-full mt-1"
+                  value={newProduct.wholesalePrice}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      wholesalePrice: Number(e.target.value),
+                    })
+                  }
+                />
+              </div>
+
+              {/* RETAIL */}
+              <div>
+                <label className="text-xs font-medium text-zinc-500">
+                  Retail Price (₹)
+  </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="e.g. 20000"
+                  className="border p-2 rounded w-full mt-1"
+                  value={newProduct.retailPrice}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      retailPrice: Number(e.target.value),
+                    })
+                  }
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="text-xs font-medium text-zinc-500">
+                  Upload Product Image
+  </label>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="border p-2 rounded w-full mt-1"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+
+                    reader.onloadend = () => {
+                      setNewProduct({
+                        ...newProduct,
+                        image: reader.result as string,
+                      });
+                    };
+
+                    reader.readAsDataURL(file);
+                  }}
+                />
+
+                {newProduct.image && (
+                  <img
+                    src={newProduct.image}
+                    alt="preview"
+                    className="mt-3 h-20 rounded border"
+                  />
+                )}
+              </div>
 
             </div>
 
@@ -579,6 +890,46 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 Save Product
         </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg rounded-2xl p-6">
+
+            <h2 className="text-xl font-bold mb-2">
+              {selectedProduct.name}
+            </h2>
+
+            <p className="text-sm text-zinc-500 mb-3">
+              {selectedProduct.brand}
+            </p>
+
+            <img
+              src={selectedProduct.image}
+              className="w-full h-48 object-cover rounded-xl mb-4"
+            />
+
+            <p className="text-sm mb-3">
+              {selectedProduct.description || "No description"}
+            </p>
+
+            <p className="text-sm">
+              <b>Category:</b> {selectedProduct.category}
+            </p>
+
+            <p className="text-sm">
+              <b>Stock:</b> {selectedProduct.stock}
+            </p>
+
+            <button
+              onClick={() => setSelectedProduct(null)}
+              className="mt-5 px-4 py-2 bg-black text-white rounded"
+            >
+              Close
+      </button>
 
           </div>
         </div>

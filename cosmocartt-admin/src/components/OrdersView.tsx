@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Order } from "../types";
-import { Search, Plus, Trash2, SlidersHorizontal, Layers, CheckCircle, Clock, Ban } from "lucide-react";
+import {
+  Search,
+  Trash2,
+  SlidersHorizontal,
+  CheckCircle,
+  Ban
+} from "lucide-react";
 
 interface OrdersViewProps {
   orders: Order[];
@@ -9,50 +15,102 @@ interface OrdersViewProps {
 
 export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"All" | "B2B" | "B2C">("All");
+  const [selectedOrder, setSelectedOrder] =
+    useState<Order | null>(null);
+
   const [statusFilter, setStatusFilter] = useState<"All" | "Pending" | "Processing" | "Delivered" | "Cancelled">("All");
 
   const filteredOrders = orders.filter((o) => {
-    const matchesSearch = o.customer.toLowerCase().includes(searchTerm.toLowerCase()) || o.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = typeFilter === "All" || o.type === typeFilter;
-    const matchesStatus = statusFilter === "All" || o.status === statusFilter;
-    return matchesSearch && matchesType && matchesStatus;
+
+    const customer =
+      o.customerName || "";
+
+    const orderId =
+      o._id || "";
+
+    const matchesSearch =
+      customer
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      orderId
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "All" ||
+      o.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
   });
 
-  const updateStatus = (id: string, status: "Pending" | "Processing" | "Delivered" | "Cancelled") => {
-    setOrders(
-      orders.map((o) => (o.id === id ? { ...o, status } : o))
-    );
-  };
+  const updateStatus = async (
+    id: string,
+    status: string
+  ) => {
 
-  const deleteOrder = (id: string) => {
-    if (confirm("Are you sure you want to delete this order?")) {
-      setOrders(orders.filter((o) => o.id !== id));
+    try {
+
+      const response = await fetch(
+        `http://localhost:5000/api/orders/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+
+        setOrders(
+          orders.map((o) =>
+            o._id === id
+              ? data.order
+              : o
+          )
+        );
+      }
+
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const addRandomOrder = () => {
-    const clients = [
-      { name: "Priya Traders", type: "B2B" as const, min: 25000, max: 95000 },
-      { name: "Kushal Kumar", type: "B2C" as const, min: 1200, max: 8000 },
-      { name: "Apex Retailers Ltd.", type: "B2B" as const, min: 45000, max: 155000 },
-      { name: "Divya Singh", type: "B2C" as const, min: 900, max: 3500 }
-    ];
-
-    const pick = clients[Math.floor(Math.random() * clients.length)];
-    const amount = Math.floor(Math.random() * (pick.max - pick.min) + pick.min);
-    
-    const newOrder: Order = {
-      id: `ORD-2026-00${orders.length + 1}`,
-      customer: pick.name,
-      type: pick.type,
-      amount,
-      status: "Processing",
-      date: new Date().toISOString().split("T")[0]
-    };
-
-    setOrders([newOrder, ...orders]);
+  const deleteOrder = (id: string) => {
+    if (confirm("Delete this order?")) {
+      setOrders(
+        orders.filter((o) => o._id !== id)
+      );
+    }
   };
+
+  // const addRandomOrder = () => {
+  //   const clients = [
+  //     { name: "Priya Traders", type: "B2B" as const, min: 25000, max: 95000 },
+  //     { name: "Kushal Kumar", type: "B2C" as const, min: 1200, max: 8000 },
+  //     { name: "Apex Retailers Ltd.", type: "B2B" as const, min: 45000, max: 155000 },
+  //     { name: "Divya Singh", type: "B2C" as const, min: 900, max: 3500 }
+  //   ];
+
+  //   const pick = clients[Math.floor(Math.random() * clients.length)];
+  //   const amount = Math.floor(Math.random() * (pick.max - pick.min) + pick.min);
+
+  //   const newOrder: Order = {
+  //     id: `ORD-2026-00${orders.length + 1}`,
+  //     customer: pick.name,
+  //     type: pick.type,
+  //     amount,
+  //     status: "Processing",
+  //     date: new Date().toISOString().split("T")[0]
+  //   };
+
+  //   setOrders([newOrder, ...orders]);
+  // };
 
   return (
     <div id="orders-view-container" className="space-y-6 text-left">
@@ -63,12 +121,12 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
         </div>
 
         <div className="flex gap-2 shrink-0">
-          <button
+          {/* <button
             onClick={addRandomOrder}
             className="border border-zinc-200 hover:bg-zinc-50 bg-white text-zinc-800 font-semibold text-sm px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-xs"
           >
             <Plus className="w-4 h-4" /> Simulate Random Order
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -89,16 +147,8 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
         {/* Filters */}
         <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
           <SlidersHorizontal className="w-4 h-4 text-zinc-400 shrink-0" />
-          
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as any)}
-            className="bg-zinc-50 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none"
-          >
-            <option value="All">All Types</option>
-            <option value="B2B">Corporate B2B</option>
-            <option value="B2C">Retail B2C</option>
-          </select>
+
+
 
           <select
             value={statusFilter}
@@ -121,8 +171,8 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
             <thead>
               <tr className="bg-zinc-50/50 text-xs font-semibold text-zinc-400 uppercase border-b border-zinc-150 text-left">
                 <th className="px-6 py-4">Order ID</th>
-                <th className="px-6 py-4">Target Customer</th>
-                <th className="px-6 py-4">Split Class</th>
+                <th className="px-6 py-4">Products</th>
+                <th className="px-6 py-4">Qty</th>
                 <th className="px-6 py-4">Grand GTV</th>
                 <th className="px-6 py-4">Delivery Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
@@ -137,42 +187,46 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-zinc-50/30 transition-colors">
+                  <tr key={order._id} className="hover:bg-zinc-50/30 transition-colors">
                     <td className="px-6 py-4 font-mono text-xs font-bold text-zinc-900">
-                      {order.id}
+                      {order.orderNumber || order._id.slice(-8)}
                     </td>
 
                     <td className="px-6 py-4 font-medium text-zinc-800">
-                      {order.customer}
+                      {order.products
+                        ?.map((p) => p.name)
+                        .join(", ")}
                     </td>
 
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        order.type === "B2B" 
-                          ? "bg-blue-50 text-blue-600 border border-blue-200" 
-                          : "bg-purple-50 text-purple-600 border border-purple-200"
-                      }`}>
-                        {order.type}
-                      </span>
+                    <td className="px-6 py-4 font-semibold text-zinc-700">
+                      {order.products?.reduce(
+                        (total, item) => total + item.quantity,
+                        0
+                      )}
                     </td>
 
                     <td className="px-6 py-4 font-mono font-bold text-zinc-900">
-                      {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(order.amount)}
+                      {new Intl.NumberFormat(
+                        "en-IN",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                          maximumFractionDigits: 0
+                        }
+                      ).format(order.totalAmount)}
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                        order.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${order.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
                         order.status === "Pending" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                        order.status === "Processing" ? "bg-blue-50 text-blue-700 border-blue-200" :
-                        "bg-red-50 text-red-700 border-red-200"
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          order.status === "Delivered" ? "bg-emerald-500" :
+                          order.status === "Processing" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                            "bg-red-50 text-red-700 border-red-200"
+                        }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${order.status === "Delivered" ? "bg-emerald-500" :
                           order.status === "Pending" ? "bg-amber-500" :
-                          order.status === "Processing" ? "bg-blue-500" :
-                          "bg-red-500"
-                        }`}></span>
+                            order.status === "Processing" ? "bg-blue-500" :
+                              "bg-red-500"
+                          }`}></span>
                         {order.status}
                       </span>
                     </td>
@@ -183,14 +237,14 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                         {order.status !== "Delivered" && order.status !== "Cancelled" && (
                           <>
                             <button
-                              onClick={() => updateStatus(order.id, "Delivered")}
+                              onClick={() => updateStatus(order._id, "Delivered")}
                               title="Mark Delivered"
                               className="p-1 hover:bg-zinc-100 rounded text-emerald-600"
                             >
                               <CheckCircle className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => updateStatus(order.id, "Cancelled")}
+                              onClick={() => updateStatus(order._id, "Cancelled")}
                               title="Cancel Order"
                               className="p-1 hover:bg-zinc-100 rounded text-red-500"
                             >
@@ -199,7 +253,13 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                           </>
                         )}
                         <button
-                          onClick={() => deleteOrder(order.id)}
+                          onClick={() => setSelectedOrder(order)}
+                          className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded"
+                        >
+                          View
+</button>
+                        <button
+                          onClick={() => deleteOrder(order._id)}
                           title="Purge order trace"
                           className="p-1 hover:bg-zinc-100 rounded hover:text-red-500 text-zinc-400"
                         >
@@ -214,6 +274,108 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
           </table>
         </div>
       </div>
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+          <div className="bg-white w-full max-w-2xl rounded-xl p-6 shadow-xl">
+
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">
+                Order Details
+        </h2>
+
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="text-gray-500"
+              >
+                ✕
+        </button>
+            </div>
+
+            <div className="space-y-2 mb-6">
+
+              <p>
+                <strong>Order ID:</strong>{" "}
+                {selectedOrder.orderNumber ||
+                  selectedOrder._id}
+              </p>
+
+              <p>
+                <strong>Customer:</strong>{" "}
+                {selectedOrder.customerName}
+              </p>
+
+              <p>
+                <strong>Email:</strong>{" "}
+                {selectedOrder.email}
+              </p>
+
+              <p>
+                <strong>Status:</strong>{" "}
+                {selectedOrder.status}
+              </p>
+
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(
+                  selectedOrder.createdAt
+                ).toLocaleString()}
+              </p>
+
+            </div>
+
+            <h3 className="font-semibold mb-3">
+              Products
+      </h3>
+
+            <div className="space-y-3">
+
+              {selectedOrder.products?.map(
+                (product, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-lg p-3 flex gap-3"
+                  >
+
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+
+                    <div>
+                      <p className="font-medium">
+                        {product.name}
+                      </p>
+
+                      <p>
+                        Qty: {product.quantity}
+                      </p>
+
+                      <p>
+                        ₹{product.price}
+                      </p>
+                    </div>
+
+                  </div>
+                )
+              )}
+
+            </div>
+
+            <div className="mt-6 text-right">
+
+              <p className="text-lg font-bold">
+                Total: ₹
+          {selectedOrder.totalAmount}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 import Navbar from "../components/Navbar";
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { categories } from "../data/categories";
+
 
 export default function Products() {
     const [searchParams] = useSearchParams();
@@ -13,11 +13,15 @@ export default function Products() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [sortBy, setSortBy] = useState("latest");
+
     const [currentPage, setCurrentPage] = useState(1);
 
     const productsSectionRef = useRef<HTMLDivElement>(null);
 
 const productsPerPage = 4;
+
+    const [products, setProducts] = useState<any[]>([]);
+    const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
     useEffect(() => {
         const query = searchParams.get("search");
@@ -25,10 +29,23 @@ const productsPerPage = 4;
         if (query) {
             setSearch(query);
         }
+
+        fetch("http://localhost:5000/api/products")
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("API RESPONSE:", data);
+
+                if (data.success) {
+                    setProducts(data.products);
+                }
+            })
+            .catch((err) => console.error(err));
+
     }, [searchParams]);
 
 
     const filteredProducts = products.filter((product) => {
+        console.log("STORE PRODUCTS:", products);
         const matchesSearch =
             product.name.toLowerCase().includes(search.toLowerCase()) ||
             product.brand.toLowerCase().includes(search.toLowerCase());
@@ -37,6 +54,10 @@ const productsPerPage = 4;
             !selectedCategory ||
             product.category === selectedCategory;
 
+        const matchesSubcategory =
+            !selectedSubcategory ||
+            product.subcategory === selectedSubcategory;
+
         const matchesBrand =
             selectedBrands.length === 0 ||
             selectedBrands.includes(product.brand);
@@ -44,19 +65,20 @@ const productsPerPage = 4;
         return (
             matchesSearch &&
             matchesCategory &&
+            matchesSubcategory &&
             matchesBrand
         );
     });
 
     if (sortBy === "low") {
         filteredProducts.sort(
-            (a, b) => a.price - b.price
+            (a, b) => a.retailPrice - b.retailPrice
         );
     }
 
     if (sortBy === "high") {
         filteredProducts.sort(
-            (a, b) => b.price - a.price
+            (a, b) => b.retailPrice - a.retailPrice
         );
     }
     const indexOfLastProduct =
@@ -86,43 +108,43 @@ const totalPages = Math.ceil(
 
                 <div className="bg-gradient-to-r from-[#2B1055] to-[#6F2DBD] rounded-3xl p-8 mb-8 text-white shadow-xl">
 
-    <p className="text-purple-200">
-        Home / Products
+                    <p className="text-purple-200">
+                        Home / Products
     </p>
 
-    <h1 className="text-5xl font-black mt-2">
-        Discover Products
+                    <h1 className="text-5xl font-black mt-2">
+                        Discover Products
     </h1>
 
-    <p className="mt-3 text-purple-100">
-        Explore premium products at the best prices.
+                    <p className="mt-3 text-purple-100">
+                        Explore premium products at the best prices.
     </p>
 
-    <div className="mt-6 flex gap-4">
+                    <div className="mt-6 flex gap-4">
 
-    <div className="bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl">
-        <p className="text-sm text-purple-100">
-            Products
+                        <div className="bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl">
+                            <p className="text-sm text-purple-100">
+                                Products
         </p>
 
-        <h3 className="text-2xl font-bold">
-            {filteredProducts.length}
-        </h3>
-    </div>
+                            <h3 className="text-2xl font-bold">
+                                {filteredProducts.length}
+                            </h3>
+                        </div>
 
-    <div className="bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl">
-        <p className="text-sm text-purple-100">
-            Brands
+                        <div className="bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl">
+                            <p className="text-sm text-purple-100">
+                                Brands
         </p>
 
-        <h3 className="text-2xl font-bold">
-            4+
+                            <h3 className="text-2xl font-bold">
+                                4+
         </h3>
-    </div>
+                        </div>
 
-</div>
+                    </div>
 
-</div>
+                </div>
 
                 <div className="grid lg:grid-cols-4 gap-8">
 
@@ -138,6 +160,7 @@ const totalPages = Math.ceil(
                             </h3>
 
                             {categories.map((cat) => (
+
     <button
         key={cat.name}
         onClick={() => {
@@ -153,6 +176,46 @@ setCurrentPage(1);
         {cat.name}
     </button>
 ))}
+
+                                <button
+                                    key={cat.name}
+                                    onClick={() => {
+                                        setSelectedCategory(cat.name);
+                                        setSelectedSubcategory(""); // IMPORTANT
+                                    }}
+                                    className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === cat.name
+                                        ? "bg-[#4B1E78] text-white shadow-xl ring-4 ring-purple-200"
+                                        : "hover:bg-slate-100"
+                                        }`}
+                                >
+                                    {cat.name}
+                                </button>
+
+
+                            ))}
+
+                            {selectedCategory && (
+                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mt-4">
+                                    <h3 className="font-bold text-lg mb-4">
+                                        Subcategories
+    </h3>
+
+                                    {categories
+                                        .find((cat) => cat.name === selectedCategory)
+                                        ?.subcategories.map((sub) => (
+                                            <button
+                                                key={sub}
+                                                onClick={() => setSelectedSubcategory(sub)}
+                                                className={`w-full text-left px-4 py-2 rounded-lg ${selectedSubcategory === sub
+                                                    ? "bg-purple-600 text-white"
+                                                    : "hover:bg-slate-100"
+                                                    }`}
+                                            >
+                                                {sub}
+                                            </button>
+                                        ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Brands */}
@@ -259,26 +322,29 @@ setCurrentPage(1);
 
                         </div>
 
+
                                                 <div
     key={currentPage}
     className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fadeIn"
 >
+                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-    {filteredProducts.length === 0 ? (
+                            {filteredProducts.length === 0 ? (
 
-        <div className="col-span-full bg-white rounded-3xl p-12 text-center shadow-lg">
+                                <div className="col-span-full bg-white rounded-3xl p-12 text-center shadow-lg">
 
-            <h2 className="text-3xl font-bold">
-                No Products Found
+                                    <h2 className="text-3xl font-bold">
+                                        No Products Found
             </h2>
 
-            <p className="text-slate-500 mt-3">
-                Try changing filters or search.
+                                    <p className="text-slate-500 mt-3">
+                                        Try changing filters or search.
             </p>
 
-        </div>
+                                </div>
 
-    ) : (
+                            ) : (
+
 
         currentProducts.map((product) => (
             <ProductCard
@@ -287,7 +353,15 @@ setCurrentPage(1);
             />
         ))
 
-    )}
+                                filteredProducts.map((product) => (
+                                    <ProductCard
+                                        key={product._id}
+                                        product={product}
+                                    />
+                                ))
+
+
+                            )}
 
 </div>
 {filteredProducts.length > 0 && (
@@ -396,6 +470,8 @@ setCurrentPage(1);
     </div>
 
 )}
+
+                        </div>
 
                     </div>
 

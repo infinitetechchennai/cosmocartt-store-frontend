@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { products } from "../data/products";
 import Footer from "../components/Footer";
 
 export default function ProductDetails() {
@@ -13,14 +12,23 @@ export default function ProductDetails() {
 
     const [quantity, setQuantity] = useState(1);
 
-    const product = products.find(
-        (p) => p.id === Number(id)
-    );
+    const [product, setProduct] = useState<any>(null);
+
+    useEffect(() => {
+        fetch(`http://localhost:5000/api/products/${id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    setProduct(data.product);
+                }
+            })
+            .catch((err) => console.error(err));
+    }, [id]);
 
     if (!product) {
         return (
-            <div className="p-10">
-                Product Not Found
+            <div className="min-h-screen flex items-center justify-center">
+                Loading Product...
             </div>
         );
     }
@@ -75,8 +83,8 @@ export default function ProductDetails() {
                     <div>
 
                         <p className="text-[#4B1E78] font-semibold">
-                            Apple
-            </p>
+                            {product.brand}
+                        </p>
 
                         <h1 className="text-4xl font-bold mt-2">
                             {product.name}
@@ -97,11 +105,11 @@ export default function ProductDetails() {
                         <div className="mt-6 flex items-center gap-4">
 
                             <span className="text-4xl font-bold text-[#4B1E78]">
-                                ₹{product.price.toLocaleString()}
+                                ₹{product.retailPrice?.toLocaleString()}
                             </span>
 
                             <span className="text-xl text-zinc-400 line-through">
-                                ₹{product.oldPrice.toLocaleString()}
+                                ₹{(product.retailPrice + 5000).toLocaleString()}
                             </span>
 
                             <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
@@ -112,9 +120,16 @@ export default function ProductDetails() {
 
                         <div className="mt-6">
 
-                            <span className="text-green-600 font-semibold">
-                                In Stock
-              </span>
+                            <span
+                                className={`font-semibold ${product.stock > 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                    }`}
+                            >
+                                {product.stock > 0
+                                    ? `${product.stock} In Stock`
+                                    : "Out Of Stock"}
+                            </span>
 
                         </div>
 
@@ -125,9 +140,10 @@ export default function ProductDetails() {
                             </h3>
 
                             <p className="text-zinc-600 leading-7">
-                                Product ID: {id}. Premium flagship smartphone
-                with advanced camera system, titanium build,
-                powerful processor and all-day battery life.
+                                Product ID: {id}.</p>
+                            <p >Premium flagship smartphone
+                            with advanced camera system, titanium build,
+                            powerful processor and all-day battery life.
               </p>
 
                         </div>

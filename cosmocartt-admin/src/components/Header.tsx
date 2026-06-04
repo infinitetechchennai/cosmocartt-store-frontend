@@ -11,11 +11,11 @@ export default function Header({ userName, userEmail }: HeaderProps) {
   const handleLogout = () => {
 
     localStorage.removeItem("token");
-  
+
     localStorage.removeItem("user");
-  
+
     window.location.reload();
-  
+
   };
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -29,11 +29,11 @@ export default function Header({ userName, userEmail }: HeaderProps) {
   ];
 
   return (
-    <header id="seven-dashboard-header" className="h-[64px] border-b border-slate-200 bg-white/95 backdrop-blur-sm px-8 flex items-center justify-between z-20 shrink-0 relative">
+    <header id="seven-dashboard-header" className="h-[64px] border-b border-slate-200 bg-white/90 backdrop-blur-md backdrop-blur-sm px-8 flex items-center justify-between z-20 shrink-0 relative">
       {/* Invisible divider or simple notice area on left */}
       <div className="flex items-center gap-3">
         <span className="text-slate-400 font-mono text-[11px] select-none uppercase tracking-[0.12em]">
-          Seven Operational Hub
+          COSMOCARTT ADMIN PANEL
         </span>
         <span className="bg-emerald-50 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -93,9 +93,9 @@ export default function Header({ userName, userEmail }: HeaderProps) {
             className="flex items-center gap-2.5 py-1 px-2 rounded-lg hover:bg-slate-100 transition-colors text-left"
           >
             <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 shadow-sm">
-              <img 
-                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150&auto=format&fit=crop" 
-                alt="Account User Profile Logesh" 
+              <img
+                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150&auto=format&fit=crop"
+                alt="Account User Profile Logesh"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -113,7 +113,7 @@ export default function Header({ userName, userEmail }: HeaderProps) {
                 <p className="text-sm font-semibold text-slate-800 truncate">{userName}</p>
                 <p className="text-[11px] text-slate-500 truncate mt-0.5">{userEmail}</p>
               </div>
-            
+
               <div className="py-1">
                 <button className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 flex items-center gap-2.5">
                   <Award className="w-4 h-4 text-slate-400" /> Access Privileges
@@ -123,11 +123,11 @@ export default function Header({ userName, userEmail }: HeaderProps) {
                 </button>
               </div>
               <div className="border-t border-slate-100 mt-1 py-1">
-                <button 
+                <button
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 flex items-center gap-2.5"
                 >
-                  <LogOut className="w-4 h-4"  /> Sign Out
+                  <LogOut className="w-4 h-4" /> Sign Out
                 </button>
               </div>
             </div>

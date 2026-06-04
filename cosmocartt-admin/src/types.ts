@@ -37,7 +37,7 @@ export interface Product {
 
   category: string;
   subcategory: string;
-
+  description?: string;
   sku: string;
 
   costPrice: number;
@@ -69,12 +69,29 @@ export interface User {
 }
 
 export interface Order {
-  id: string;
-  customer: string;
-  type: "B2B" | "B2C";
-  amount: number;
-  status: "Delivered" | "Pending" | "Processing" | "Cancelled";
-  date: string;
+  _id: string;
+
+  customerName: string;
+
+  email: string;
+
+  totalAmount: number;
+
+  status:
+  | "Pending"
+  | "Processing"
+  | "Delivered"
+  | "Cancelled";
+
+  createdAt: string;
+
+  products: {
+    productId: string;
+    name: string;
+    image: string;
+    quantity: number;
+    price: number;
+  }[];
 }
 
 export interface B2BClient {

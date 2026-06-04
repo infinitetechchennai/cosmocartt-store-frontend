@@ -22,6 +22,11 @@ const productSchema = new mongoose.Schema(
             required: true,
         },
 
+        description: {
+            type: String,
+            default: ""
+        },
+
         sku: {
             type: String,
             required: true,
