@@ -1,5 +1,10 @@
+import instagramIcon from "../assets/instagram.png";
+import youtubeIcon from "../assets/youtube.png";
+import googleIcon from "../assets/google.png";
+import githubIcon from "../assets/github.png";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+
 
 const brands = [
     "Apple",
@@ -7,7 +12,13 @@ const brands = [
     "Sony",
     "Dell",
     "HP",
-    "Asus"
+    "Asus",
+    "Lenovo",
+    "Acer",
+    "MSI",
+    "Logitech",
+    "JBL",
+    "Boat"
 ];
 
 export default function Footer() {
@@ -69,9 +80,9 @@ export default function Footer() {
 
             {/* Main Footer */}
 
-            <div className="max-w-7xl mx-auto px-6 py-16">
+            <div className="max-w-7xl mx-auto px-6 py-10">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 
                     {/* Brand */}
 
@@ -100,23 +111,39 @@ export default function Footer() {
 
                         <div className="flex gap-3 mt-6">
 
-                            <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition">
-                                📘
-                            </button>
+    <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
+        <img
+            src={instagramIcon}
+            alt="Instagram"
+            className="w-6 h-6 object-contain"
+        />
+    </button>
 
-                            <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition">
-                                📸
-                            </button>
+    <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
+        <img
+            src={youtubeIcon}
+            alt="YouTube"
+            className="w-6 h-6 object-contain"
+        />
+    </button>
 
-                            <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition">
-                                ✖️
-                            </button>
+    <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
+        <img
+            src={googleIcon}
+            alt="Google"
+            className="w-6 h-6 object-contain"
+        />
+    </button>
 
-                            <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition">
-                                ▶️
-                            </button>
+    <button className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
+        <img
+            src={githubIcon}
+            alt="GitHub"
+            className="w-6 h-6 object-contain"
+        />
+    </button>
 
-                        </div>
+</div>
 
                     </div>
 
@@ -134,12 +161,10 @@ export default function Footer() {
 
     <Link
         to="/"
-        className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-3 hover:text-white"
+        className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2"
     >
         <span>Home</span>
-        <span className="opacity-0 group-hover:opacity-100 transition-all duration-300">
-            →
-        </span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
     </Link>
 
     <Link
@@ -147,9 +172,7 @@ export default function Footer() {
         className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2"
     >
         <span>Products</span>
-        <span className="opacity-0 group-hover:opacity-100 transition-all duration-300">
-            →
-        </span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
     </Link>
 
     <Link
@@ -157,9 +180,7 @@ export default function Footer() {
         className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2"
     >
         <span>Cart</span>
-        <span className="opacity-0 group-hover:opacity-100 transition-all duration-300">
-            →
-        </span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
     </Link>
 
     <Link
@@ -167,20 +188,28 @@ export default function Footer() {
         className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2"
     >
         <span>Login</span>
-        <span className="opacity-0 group-hover:opacity-100 transition-all duration-300">
-            →
-        </span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
     </Link>
 
+    <Link
+        to="/register"
+        className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2"
+    >
+        <span>Register</span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
+    </Link>
+
+    <a className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2">
+        <span>Wishlist</span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
+    </a>
+
+    <a className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2">
+        <span>Order Tracking</span>
+        <span className="opacity-0 group-hover:opacity-100">→</span>
+    </a>
+
 </div>
-
-                            
-
-                            <Link
-                                to="/login"
-                                className="block text-purple-100 hover:text-white transition"
-                            >
-                            </Link>
 
                         </div>
                         
@@ -189,33 +218,86 @@ export default function Footer() {
 
                     {/* Company */}
 
-                    <div>
+<div>
 
-                        <h3 className="font-bold text-xl mb-5">
-                            Company
-                        </h3>
+    <h3 className="font-bold text-lg mb-4">
+        Company
+    </h3>
 
-                        <div className="space-y-3">
+    <div className="space-y-3">
 
-                            <a className="block text-purple-100 hover:text-white transition">
-                                About Us
-                            </a>
+        <a className="block text-purple-100 hover:text-white transition">
+            About Us
+        </a>
 
-                            <a className="block text-purple-100 hover:text-white transition">
-                                Careers
-                            </a>
+        <a className="block text-purple-100 hover:text-white transition">
+            Careers
+        </a>
 
-                            <a className="block text-purple-100 hover:text-white transition">
-                                Blog
-                            </a>
+        <a className="block text-purple-100 hover:text-white transition">
+            Blog
+        </a>
 
-                            <a className="block text-purple-100 hover:text-white transition">
-                                Contact
-                            </a>
+        <a className="block text-purple-100 hover:text-white transition">
+            Press
+        </a>
 
-                        </div>
+        <a className="block text-purple-100 hover:text-white transition">
+            Investors
+        </a>
 
-                    </div>
+        <a className="block text-purple-100 hover:text-white transition">
+            Terms & Conditions
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Privacy Policy
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Contact
+        </a>
+
+    </div>
+
+</div>
+{/* Customer Service */}
+
+<div>
+
+    <h3 className="font-bold text-lg mb-4">
+        Customer Service
+    </h3>
+
+    <div className="space-y-3">
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Help Center
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Shipping Information
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Returns & Refunds
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Track Your Order
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            Warranty Claims
+        </a>
+
+        <a className="block text-purple-100 hover:text-white transition">
+            FAQs
+        </a>
+
+    </div>
+
+</div>
                     {/* Popular Brands */}
 
 <div>
@@ -251,96 +333,52 @@ export default function Footer() {
     </div>
 
 </div>
+</div>
+{/* Contact */}
 
+<div className="border-t border-white/10 mt-8 pt-8">
+    <div
+    className="
+        flex
+        justify-center
+        items-center
+        gap-4
+        text-lg
+        font-medium
+        text-purple-100
+        whitespace-nowrap
+        overflow-x-auto
+    "
 
-                    {/* Contact */}
+    ><span
+         className="hover:text-white transition-all duration-300">
+            📍 Chennai, India
+        </span>
 
-<div>
+        <span className="text-white/30 text-xl">•</span>
 
-    <h3 className="font-bold text-xl mb-5">
-        Contact
-    </h3>
+        <span className="hover:text-white transition-all duration-300">
+            📞 +91 98765 43210
+        </span>
 
-    <div className="space-y-5">
+        <span className="text-white/30 text-xl">•</span>
 
-        <div className="flex items-center gap-4 group">
+        <span className="hover:text-white transition-all duration-300">
+            ✉️ support@cosmocartt.com
+        </span>
 
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                📍
-            </div>
+        <span className="text-white/30 text-xl">•</span>
 
-            <div>
-                <p className="text-xs text-purple-200 uppercase tracking-wider">
-                    Location
-                </p>
-                <p className="text-white font-medium">
-                    Chennai, India
-                </p>
-            </div>
-
-        </div>
-
-        <div className="flex items-center gap-4 group">
-
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                📞
-            </div>
-
-            <div>
-                <p className="text-xs text-purple-200 uppercase tracking-wider">
-                    Phone
-                </p>
-                <p className="text-white font-medium">
-                    +91 98765 43210
-                </p>
-            </div>
-
-        </div>
-
-        <div className="flex items-center gap-4 group">
-
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                ✉️
-            </div>
-
-            <div>
-                <p className="text-xs text-purple-200 uppercase tracking-wider">
-                    Email
-                </p>
-                <p className="text-white font-medium">
-                    support@cosmocartt.com
-                </p>
-            </div>
-
-        </div>
-
-        <div className="flex items-center gap-4 group">
-
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                🕒
-            </div>
-
-            <div>
-                <p className="text-xs text-purple-200 uppercase tracking-wider">
-                    Availability
-                </p>
-                <p className="text-white font-medium">
-                    Mon - Sun, 24/7
-                </p>
-            </div>
-
-        </div>
+        <span className="hover:text-white transition-all duration-300">
+            🕒 24/7 Customer Support
+        </span>
 
     </div>
 
 </div>
-
-</div>
-
-
                 {/* Bottom Bar */}
 
-                <div className="border-t border-white/10 mt-14 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="border-t border-white/10 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
 
                     <p className="text-purple-100 text-sm">
                         © 2026 CosmoCartt. All Rights Reserved.

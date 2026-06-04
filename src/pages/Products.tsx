@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { categories } from "../data/categories";
 
@@ -13,6 +13,11 @@ export default function Products() {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [sortBy, setSortBy] = useState("latest");
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const productsSectionRef = useRef<HTMLDivElement>(null);
+
+const productsPerPage = 4;
 
     useEffect(() => {
         const query = searchParams.get("search");
@@ -21,6 +26,7 @@ export default function Products() {
             setSearch(query);
         }
     }, [searchParams]);
+
 
     const filteredProducts = products.filter((product) => {
         const matchesSearch =
@@ -53,6 +59,21 @@ export default function Products() {
             (a, b) => b.price - a.price
         );
     }
+    const indexOfLastProduct =
+    currentPage * productsPerPage;
+
+const indexOfFirstProduct =
+    indexOfLastProduct - productsPerPage;
+
+const currentProducts =
+    filteredProducts.slice(
+        indexOfFirstProduct,
+        indexOfLastProduct
+    );
+
+const totalPages = Math.ceil(
+    filteredProducts.length / productsPerPage
+);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-50 to-purple-50">
@@ -121,6 +142,7 @@ export default function Products() {
         key={cat.name}
         onClick={() => {
             setSelectedCategory(cat.name);
+setCurrentPage(1);
         }}
         className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 ${
             selectedCategory === cat.name
@@ -185,7 +207,7 @@ export default function Products() {
                             onClick={() => {
                                 setSelectedCategory("");
                                 setSelectedBrands([]);
-                                setSearch("");
+                                setCurrentPage(1);
                             }}
                             className="w-full bg-red-500 text-white py-2 rounded-xl hover:bg-red-600"
                         >
@@ -196,7 +218,10 @@ export default function Products() {
 
                     {/* Products */}
 
-                    <div className="lg:col-span-3">
+<div
+    ref={productsSectionRef}
+    className="lg:col-span-3"
+>
 
                         <div className="flex gap-4 mb-6 flex-wrap">
 
@@ -204,17 +229,19 @@ export default function Products() {
                                 type="text"
                                 placeholder="Search products..."
                                 value={search}
-                                onChange={(e) =>
-                                    setSearch(e.target.value)
-                                }
+                                onChange={(e) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+}}
                                 className="w-full md:w-96 px-5 py-4 rounded-2xl bg-white/80 backdrop-blur-lg border border-white shadow-lg focus:ring-4 focus:ring-purple-200 outline-none"
                             />
 
                             <select
                                 value={sortBy}
-                                onChange={(e) =>
-                                    setSortBy(e.target.value)
-                                }
+                                onChange={(e) => {
+    setSortBy(e.target.value);
+    setCurrentPage(1);
+}}
                                 className="border bg-white px-4 py-3 rounded-xl"
                             >
                                 <option value="latest">
@@ -232,7 +259,10 @@ export default function Products() {
 
                         </div>
 
-                                                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                                <div
+    key={currentPage}
+    className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fadeIn"
+>
 
     {filteredProducts.length === 0 ? (
 
@@ -250,7 +280,7 @@ export default function Products() {
 
     ) : (
 
-        filteredProducts.map((product) => (
+        currentProducts.map((product) => (
             <ProductCard
                 key={product.id}
                 product={product}
@@ -260,6 +290,112 @@ export default function Products() {
     )}
 
 </div>
+{filteredProducts.length > 0 && (
+
+    <div className="flex justify-center items-center gap-3 mt-10">
+
+        <button
+    onClick={() => {
+
+    setCurrentPage((prev) =>
+        Math.max(prev - 1, 1)
+    );
+
+    setTimeout(() => {
+        productsSectionRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }, 50);
+
+}}
+            disabled={currentPage === 1}
+            className="
+                w-11 h-11
+                rounded-full
+                bg-white
+                shadow-md
+                hover:shadow-xl
+                hover:scale-105
+                transition-all
+                duration-200
+                disabled:opacity-40
+                disabled:cursor-not-allowed
+            "
+        >
+            ←
+        </button>
+
+        {[...Array(totalPages)].map((_, index) => (
+
+            <button
+                key={index}
+                onClick={() => {
+
+    setCurrentPage(index + 1);
+
+    setTimeout(() => {
+        productsSectionRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }, 50);
+
+}}
+                className={`
+                    w-11 h-11
+                    rounded-full
+                    font-semibold
+                    transition-all
+                    duration-200
+                    ${
+                        currentPage === index + 1
+                            ? "bg-[#6F2DBD] text-white scale-110 shadow-lg"
+                            : "bg-white text-gray-700 hover:bg-purple-100"
+                    }
+                `}
+            >
+                {index + 1}
+            </button>
+
+        ))}
+
+        <button
+
+    onClick={() => {
+
+    setCurrentPage((prev) =>
+        Math.min(prev + 1, totalPages)
+    );
+
+    setTimeout(() => {
+        productsSectionRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }, 50);
+
+}}
+    disabled={currentPage === totalPages}
+    className="
+        w-11 h-11
+        rounded-full
+        bg-white
+        shadow-md
+        hover:shadow-xl
+        hover:scale-105
+        transition-all
+        duration-200
+        disabled:opacity-40
+        disabled:cursor-not-allowed
+    "
+>
+    →
+</button>
+
+    </div>
+
+)}
 
                     </div>
 
