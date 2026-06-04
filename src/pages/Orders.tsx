@@ -7,10 +7,14 @@ export default function Orders() {
     const [orders, setOrders] = useState<any[]>([]);
 
     useEffect(() => {
-        const storedOrders =
-            JSON.parse(localStorage.getItem("orders") || "[]");
-
-        setOrders(storedOrders);
+        fetch("http://localhost:5000/api/orders")
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.success) {
+                    setOrders(data.orders);
+                }
+            })
+            .catch((err) => console.error(err));
     }, []);
 
     return (
@@ -41,14 +45,14 @@ export default function Orders() {
 
                     {orders.map((order) => (
 
-                        <div key={order.id} className="bg-white border rounded-lg">
+                        <div key={order._id} className="bg-white border rounded-lg">
 
                             {/* HEADER */}
                             <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
 
                                 <div className="text-sm text-gray-600">
                                     <p>
-                                        <span className="font-semibold text-black">Order ID:</span> #{order.id}
+                                        <span className="font-semibold text-black">Order ID:</span> #{order.orderNumber.slice(-8)}
                                     </p>
                                     <p>
                                         {order.createdAt
@@ -80,11 +84,11 @@ export default function Orders() {
                             {/* ITEMS */}
                             <div className="px-6 py-4 space-y-4">
 
-                                {order.items?.map((item: any) => (
+                                {order.products?.map((item: any) => (
 
 
                                     <div
-                                        key={item.id}
+                                        key={item.productId}
                                         className="flex justify-between items-center"
                                     >
 
@@ -113,7 +117,7 @@ export default function Orders() {
                                 <div className="text-right">
                                     <p className="text-sm text-gray-500">Total</p>
                                     <p className="text-xl font-bold text-[#4B1E78]">
-                                        ₹{order.total?.toLocaleString()}
+                                        ₹{order.totalAmount?.toLocaleString()}
                                     </p>
                                 </div>
 

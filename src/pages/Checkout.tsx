@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
-    const { cartItems } = useCart();
+    const { cartItems, clearCart } = useCart();
     const navigate = useNavigate();
 
     if (cartItems.length === 0) {
@@ -30,45 +30,91 @@ export default function Checkout() {
     }
 
     const total = cartItems.reduce(
-        (sum: number, item: any) =>
-            sum + item.price * item.quantity,
+        (sum, item) =>
+            sum +
+            item.retailPrice * item.quantity,
         0
     );
 
-    const handlePlaceOrder = () => {
+    const handlePlaceOrder = async () => {
 
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-        const newOrder = {
-            id: "ORD" + Date.now(),
-
-            user,
-            items: cartItems,
-            total,
-            status: "Placed",
-            paymentStatus: "Pending",
-            paymentMethod: "COD",
-            createdAt: new Date().toISOString(),
-        };
-
-        const existingOrders =
-            JSON.parse(localStorage.getItem("orders") || "[]");
-
-        localStorage.setItem(
-            "orders",
-            JSON.stringify([...existingOrders, newOrder])
+        const user = JSON.parse(
+            localStorage.getItem("user") || "{}"
         );
 
-        // Clear cart
-        localStorage.removeItem("cart");
+        console.log("USER:", user);
 
-        alert("Order placed successfully!");
+        const orderData = {
+            userId: user._id || "guest-user",
 
-        navigate("/order-success", {
-            state: {
-                orderId: newOrder.id
+            customerName:
+                user?.name || "Guest Customer",
+
+            email: user.email,
+
+            products: cartItems.map((item: any) => ({
+                productId: item._id,
+                name: item.name,
+                image: item.image,
+                quantity: item.quantity,
+                price: item.retailPrice,
+            })),
+
+            subtotal: total,
+
+            totalAmount: total + 300,
+
+            paymentMethod: "COD",
+
+            trackingTimeline: [
+                {
+                    status: "Order Placed",
+                    date: new Date().toISOString(),
+                },
+            ],
+        };
+
+        try {
+
+            console.log("ORDER DATA:", orderData);
+
+            const response = await fetch(
+                "http://localhost:5000/api/orders",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                localStorage.removeItem("cart");
+
+                navigate("/order-success", {
+                    state: {
+                        orderId: data.order._id,
+                    },
+                });
+                clearCart();
+
+            } else {
+
+                alert("Failed to place order");
+
             }
-        });
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Server Error");
+
+        }
     };
 
     return (
@@ -218,7 +264,7 @@ export default function Checkout() {
 
                                     {/* PRICE */}
                                     <p className="text-sm font-semibold min-w-[90px] text-right">
-                                        ₹{(item.price * item.quantity).toLocaleString()}
+                                        ₹{(item.retailPrice * item.quantity).toLocaleString()}
                                     </p>
 
                                 </div>

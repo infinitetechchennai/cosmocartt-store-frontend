@@ -26,6 +26,8 @@ export default function Products() {
         fetch("http://localhost:5000/api/products")
             .then((res) => res.json())
             .then((data) => {
+                console.log("API RESPONSE:", data);
+
                 if (data.success) {
                     setProducts(data.products);
                 }

@@ -87,6 +87,11 @@ export const CartProvider = ({
         });
     };
 
+    const clearCart = () => {
+        setCartItems([]);
+        localStorage.removeItem("cart");
+    };
+
     const deleteItem = (_id: string) => {
 
         setCartItems((prev) =>
@@ -102,8 +107,10 @@ export const CartProvider = ({
                 cartItems,
                 addToCart,
                 removeFromCart,
-                deleteItem
+                deleteItem,
+                clearCart
             }}
+
         >
             {children}
         </CartContext.Provider>

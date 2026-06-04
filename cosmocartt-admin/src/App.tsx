@@ -46,7 +46,10 @@ export default function App() {
 
   // Real core reactive data layers
   const [users, setUsers] = useState<User[]>(initialUsers);
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<any[]>([]);
+  useEffect(() => {
+    console.log("ADMIN ORDERS:", orders);
+  }, [orders]);
   const [b2bClients, setB2bClients] = useState<B2BClient[]>(initialB2BClients);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>(initialTransactions);
   const [products, setProducts] =
@@ -59,6 +62,19 @@ export default function App() {
           setProducts(data.products);
         }
       });
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/orders")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("ORDERS FROM API:", data.orders);
+
+        if (data.success) {
+          setOrders(data.orders);
+        }
+      })
+      .catch((err) => console.error(err));
   }, []);
   const [bestSellers, setBestSellers] = useState<BestSeller[]>(initialBestSellers);
 
@@ -182,7 +198,7 @@ export default function App() {
         />
 
         {/* Dynamic Inner views with high-contrast smooth scroll */}
-        <main className="flex-1 overflow-y-auto p-8 bg-[#f4f5f7]">
+        <main className="flex-1 overflow-y-auto p-8 bg-gradient-to-br from-slate-50 via-white to-red-50">
           <div className="max-w-7xl mx-auto space-y-6">
             {renderActiveView()}
           </div>

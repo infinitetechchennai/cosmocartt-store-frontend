@@ -14,6 +14,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -171,6 +172,40 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   };
 
 
+  const toggleStatus = async (product: Product) => {
+    const updatedStatus = product.status === "Active" ? "Inactive" : "Active";
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/products/${product._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...product,
+            status: updatedStatus,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setProducts(
+          products.map((p) =>
+            p._id === product._id ? data.product : p
+          )
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
+    }
+  };
+
+
 
   const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm(
@@ -265,7 +300,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 return (
                   <tr
                     key={item._id}
-                    className="hover:bg-zinc-50 transition-colors"
+                    onClick={() => setSelectedProduct(item)}
+                    className="hover:bg-zinc-50 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4">
                       <img
@@ -312,32 +348,37 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     </td>
 
                     <td className="px-6 py-4 text-center">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${item.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleStatus(item);
+                        }}
+                        className={`px-3 py-1 rounded text-xs font-semibold transition ${item.status === "Active"
+                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          : "bg-red-100 text-red-700 hover:bg-red-200"
                           }`}
                       >
                         {item.status}
-                      </span>
+                      </button>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center gap-3">
 
                         <button
-                          onClick={() =>
-                            setEditProduct({
-                              ...item,
-                              description: item.description || ""
-                            })
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditProduct(item);
+                          }}
                           className="text-blue-600 hover:text-blue-800"
                         >
                           <Edit2 size={16} />
                         </button>
 
                         <button
-                          onClick={() => handleDelete(item._id!)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item._id!);
+                          }}
                           className="text-red-600 hover:text-red-800"
                         >
                           <Trash2 size={16} />
@@ -849,6 +890,46 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 Save Product
         </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg rounded-2xl p-6">
+
+            <h2 className="text-xl font-bold mb-2">
+              {selectedProduct.name}
+            </h2>
+
+            <p className="text-sm text-zinc-500 mb-3">
+              {selectedProduct.brand}
+            </p>
+
+            <img
+              src={selectedProduct.image}
+              className="w-full h-48 object-cover rounded-xl mb-4"
+            />
+
+            <p className="text-sm mb-3">
+              {selectedProduct.description || "No description"}
+            </p>
+
+            <p className="text-sm">
+              <b>Category:</b> {selectedProduct.category}
+            </p>
+
+            <p className="text-sm">
+              <b>Stock:</b> {selectedProduct.stock}
+            </p>
+
+            <button
+              onClick={() => setSelectedProduct(null)}
+              className="mt-5 px-4 py-2 bg-black text-white rounded"
+            >
+              Close
+      </button>
 
           </div>
         </div>
