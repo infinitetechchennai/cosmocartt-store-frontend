@@ -9,7 +9,8 @@ import {
     ShoppingCart,
     User,
     UserRoundPlus,
-    Package
+    Package,
+    ClipboardList
 } from "lucide-react";
 
 export default function Navbar() {
@@ -32,14 +33,14 @@ export default function Navbar() {
             <div className="max-w-[1600px] mx-auto px-8 h-24 flex items-center justify-between">
 
                 {/* Logo */}
-<Link
-    to="/"
-    className="flex items-center"
->
-    <img
-    src={logo}
-    alt="CosmoCartt"
-    className="
+                <Link
+                    to="/"
+                    className="flex items-center"
+                >
+                    <img
+                        src={logo}
+                        alt="CosmoCartt"
+                        className="
         h-24
         md:h-32
         w-auto
@@ -50,8 +51,8 @@ export default function Navbar() {
         transition-all
         duration-300
     "
-/>
-</Link>
+                    />
+                </Link>
 
                 {/* Search */}
                 <div
@@ -90,14 +91,27 @@ export default function Navbar() {
                     </button>
                 </div>
 
-                {/* Right Side */}
-<div className="flex items-center gap-8 text-white">
+                <Link
+                    to="/orders"
+                    className="
+        flex items-center gap-2
+        text-lg font-medium
+        hover:text-purple-300
+        transition-all duration-300
+    "
+                >
+                    <ClipboardList size={20} />
+    Orders
+</Link>
 
-    {!user ? (
-        <>
-            <Link
-                to="/login"
-                className="
+                {/* Right Side */}
+                <div className="flex items-center gap-8 text-white">
+
+                    {!user ? (
+                        <>
+                            <Link
+                                to="/login"
+                                className="
                     flex
                     items-center
                     gap-2
@@ -108,14 +122,14 @@ export default function Navbar() {
                     transition-all
                     duration-300
                 "
-            >
-                <User size={20} />
+                            >
+                                <User size={20} />
                 Login
             </Link>
 
-            <Link
-                to="/register"
-                className="
+                            <Link
+                                to="/register"
+                                className="
                     flex
                     items-center
                     gap-2
@@ -126,36 +140,36 @@ export default function Navbar() {
                     transition-all
                     duration-300
                 "
-            >
-                <UserRoundPlus size={20} />
+                            >
+                                <UserRoundPlus size={20} />
                 Register
             </Link>
-        </>
-    ) : (
-        <>
-            <span className="text-lg">
-                Hello, {user.name}
-            </span>
+                        </>
+                    ) : (
+                        <>
+                            <span className="text-lg">
+                                Hello, {user.name}
+                            </span>
 
-            <button
-                onClick={() => {
-                    logout();
-                    navigate("/");
-                }}
-                className="
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    navigate("/");
+                                }}
+                                className="
                     hover:text-purple-300
                     transition-all
                     duration-300
                 "
-            >
-                Logout
+                            >
+                                Logout
             </button>
-        </>
-    )}
+                        </>
+                    )}
 
-    <Link
-        to="/products"
-        className="
+                    <Link
+                        to="/products"
+                        className="
             flex
             items-center
             gap-2
@@ -166,22 +180,22 @@ export default function Navbar() {
             transition-all
             duration-300
         "
-    >
-        <Package size={20} />
+                    >
+                        <Package size={20} />
         Products
     </Link>
 
-    {/* Divider */}
-    <div className="w-px h-14 bg-gradient-to-b from-transparent via-white/70 to-transparent"></div>
+                    {/* Divider */}
+                    <div className="w-px h-14 bg-gradient-to-b from-transparent via-white/70 to-transparent"></div>
 
-    <Link
-        to="/cart"
-        className="relative hover:scale-110 transition-all duration-300"
-    >
-        <ShoppingCart size={30} />
+                    <Link
+                        to="/cart"
+                        className="relative hover:scale-110 transition-all duration-300"
+                    >
+                        <ShoppingCart size={30} />
 
-        <span
-            className="
+                        <span
+                            className="
                 absolute
                 -top-2
                 -right-2
@@ -196,12 +210,12 @@ export default function Navbar() {
                 justify-center
                 font-bold
             "
-        >
-            {cartItems.length}
-        </span>
-    </Link>
+                        >
+                            {cartItems.length}
+                        </span>
+                    </Link>
 
-</div>
+                </div>
 
             </div>
 

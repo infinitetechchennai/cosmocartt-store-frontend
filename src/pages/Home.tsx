@@ -7,6 +7,9 @@ import Footer from "../components/Footer";
 import AnnouncementBar from "../components/AnnouncementBar";
 import Stats from "../components/Stats";
 import PremiumBanner from "../components/PremiumBanner";
+import WhyChooseUs from "../components/WhyChooseUs";
+import Testimonials from "../components/Testimonials";
+import Newsletter from "../components/Newsletter";
 
 export default function Home() {
     return (
@@ -22,11 +25,17 @@ export default function Home() {
 
             <Stats />
 
+            <WhyChooseUs />
+
             <PremiumBanner />
 
             <FeaturedProducts />
 
             <Brands />
+
+            <Testimonials />
+
+            <Newsletter />
 
             <Footer />
 
