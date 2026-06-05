@@ -7,7 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-
+import customerRoutes from "./routes/customerRoutes.js";
 
 
 
@@ -27,6 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/customers", customerRoutes);
 
 console.log("MONGO_URI =", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI)

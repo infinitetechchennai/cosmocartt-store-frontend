@@ -8,15 +8,87 @@ export default function Register() {
     const [accountType, setAccountType] = useState("personal");
     const [showSuccess, setShowSuccess] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
+    // B2C
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+
+    // B2B
+
+    const [businessName, setBusinessName] = useState("");
+    const [contactPerson, setContactPerson] = useState("");
+    const [gstNumber, setGstNumber] = useState("");
+
 
     const navigate = useNavigate();
 
-    const handleRegister = () => {
-        setShowSuccess(true);
+    const handleRegister = async () => {
 
-setTimeout(() => {
-    navigate("/login");
-}, 2000);
+        try {
+
+            setLoading(true);
+
+            const payload =
+                accountType === "personal"
+                    ? {
+                        name,
+                        email,
+                        phone,
+                        password,
+                        customerType: "b2c"
+                    }
+                    : {
+                        name: contactPerson,
+                        email,
+                        phone,
+                        password,
+
+                        customerType: "b2b",
+
+                        businessName,
+                        contactPerson,
+                        gstNumber
+                    };
+
+            const response = await fetch(
+                "http://localhost:5000/api/customers/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+                alert(data.message);
+                return;
+            }
+
+            setShowSuccess(true);
+
+            setTimeout(() => {
+                navigate("/login");
+            }, 2000);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Registration failed");
+
+        } finally {
+
+            setLoading(false);
+
+        }
 
     };
 
@@ -24,35 +96,35 @@ setTimeout(() => {
         <div className="min-h-screen bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]">
 
 
-        <Navbar />
+            <Navbar />
 
-        <AnimatePresence>
-            {showSuccess && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-                >
-                    <div className="bg-white rounded-3xl p-10 text-center shadow-2xl max-w-sm w-full mx-4">
-                        <div className="text-6xl mb-4">✅</div>
+            <AnimatePresence>
+                {showSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+                    >
+                        <div className="bg-white rounded-3xl p-10 text-center shadow-2xl max-w-sm w-full mx-4">
+                            <div className="text-6xl mb-4">✅</div>
 
-                        <h2 className="text-3xl font-bold text-green-600">
-                            Account Created
+                            <h2 className="text-3xl font-bold text-green-600">
+                                Account Created
                         </h2>
 
-                        <p className="text-slate-600 mt-3">
-                            Your CosmoCartt account has been created successfully.
+                            <p className="text-slate-600 mt-3">
+                                Your CosmoCartt account has been created successfully.
                         </p>
 
-                        <p className="text-sm text-slate-400 mt-3">
-                            Redirecting to Login...
+                            <p className="text-sm text-slate-400 mt-3">
+                                Redirecting to Login...
                         </p>
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-        <div className="max-w-6xl mx-auto py-8 px-6">
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <div className="max-w-6xl mx-auto py-8 px-6">
 
 
                 <div className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-white shadow-2xl">
@@ -138,31 +210,28 @@ setTimeout(() => {
                                     stiffness: 500,
                                     damping: 35,
                                 }}
-                                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl bg-[#4B1E78] ${
-                                    accountType === "personal"
-                                        ? "left-1"
-                                        : "left-[calc(50%+2px)]"
-                                }`}
+                                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl bg-[#4B1E78] ${accountType === "personal"
+                                    ? "left-1"
+                                    : "left-[calc(50%+2px)]"
+                                    }`}
                             />
 
                             <button
                                 onClick={() => setAccountType("personal")}
-                                className={`relative z-10 py-3 rounded-xl font-semibold transition ${
-                                    accountType === "personal"
-                                        ? "text-white"
-                                        : "text-slate-700"
-                                }`}
+                                className={`relative z-10 py-3 rounded-xl font-semibold transition ${accountType === "personal"
+                                    ? "text-white"
+                                    : "text-slate-700"
+                                    }`}
                             >
                                 Personal Account
                             </button>
 
                             <button
                                 onClick={() => setAccountType("business")}
-                                className={`relative z-10 py-3 rounded-xl font-semibold transition ${
-                                    accountType === "business"
-                                        ? "text-white"
-                                        : "text-slate-700"
-                                }`}
+                                className={`relative z-10 py-3 rounded-xl font-semibold transition ${accountType === "business"
+                                    ? "text-white"
+                                    : "text-slate-700"
+                                    }`}
                             >
                                 Business Account
                             </button>
@@ -188,12 +257,16 @@ setTimeout(() => {
 
                                             <input
                                                 type="text"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
                                                 placeholder="Full Name"
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
 
                                             <input
                                                 type="text"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
                                                 placeholder="Phone Number"
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
@@ -202,12 +275,16 @@ setTimeout(() => {
 
                                         <input
                                             type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Email"
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
 
                                         <input
                                             type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             placeholder="Password"
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
@@ -232,12 +309,16 @@ setTimeout(() => {
                                             <input
                                                 type="text"
                                                 placeholder="Company Name"
+                                                value={businessName}
+                                                onChange={(e) => setBusinessName(e.target.value)}
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
 
                                             <input
                                                 type="text"
                                                 placeholder="Contact Person"
+                                                value={contactPerson}
+                                                onChange={(e) => setContactPerson(e.target.value)}
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
 
@@ -248,12 +329,16 @@ setTimeout(() => {
                                             <input
                                                 type="email"
                                                 placeholder="Business Email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
 
                                             <input
                                                 type="text"
                                                 placeholder="Phone Number"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
 
@@ -262,12 +347,16 @@ setTimeout(() => {
                                         <input
                                             type="text"
                                             placeholder="GST Number"
+                                            value={gstNumber}
+                                            onChange={(e) => setGstNumber(e.target.value)}
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
 
                                         <input
                                             type="password"
                                             placeholder="Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
 
@@ -278,13 +367,13 @@ setTimeout(() => {
                             </AnimatePresence>
 
                             <motion.button
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={handleRegister}
-    className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
->
-    Create Account
-</motion.button>
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={handleRegister}
+                                className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
+                            >
+                                {loading ? "Creating..." : "Create Account"}
+                            </motion.button>
 
                         </div>
 

@@ -9,6 +9,9 @@ export default function Login() {
 
     const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]">
@@ -70,7 +73,9 @@ export default function Login() {
 
                             <input
                                 type="text"
-                                placeholder="Email or Phone Number"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Email"
                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                             />
 
@@ -82,6 +87,8 @@ export default function Login() {
                                             ? "text"
                                             : "password"
                                     }
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Password"
                                     className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                 />
@@ -121,20 +128,53 @@ export default function Login() {
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={() => {
-                                login({
-                                    _id: "demo-customer-001",
-                                    name: "Demo User",
-                                    email: "demo@cosmocartt.com",
-                                    role: "customer",
-                                    customerType: "b2c"
-                                });
+                            onClick={async () => {
 
-                                navigate("/");
+                                try {
+
+                                    setLoading(true);
+
+                                    const response = await fetch(
+                                        "http://localhost:5000/api/customers/login",
+                                        {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                email,
+                                                password
+                                            })
+                                        }
+                                    );
+
+                                    const data = await response.json();
+
+                                    if (!data.success) {
+                                        alert(data.message);
+                                        return;
+                                    }
+
+                                    login(data.customer);
+
+                                    navigate("/");
+
+                                } catch (error) {
+
+                                    console.error(error);
+
+                                    alert("Login failed");
+
+                                } finally {
+
+                                    setLoading(false);
+
+                                }
+
                             }}
                             className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
                         >
-                            Login
+                            {loading ? "Logging In..." : "Login"}
                         </motion.button>
 
                         <div className="relative my-6">

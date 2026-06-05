@@ -33,6 +33,7 @@ export default function UsersView({
 
   const [userTypeFilter, setUserTypeFilter] =
     useState("all");
+  const [customers, setCustomers] = useState<any[]>([]);
 
   const [editName, setEditName] = useState("");
 
@@ -46,23 +47,31 @@ export default function UsersView({
   // FETCH USERS FROM BACKEND
   useEffect(() => {
 
-    const fetchUsers = () => {
+    const fetchUsers = async () => {
 
-      fetch("http://localhost:5000/api/users")
+      try {
 
-        .then((res) => res.json())
+        const usersRes = await fetch(
+          "http://localhost:5000/api/users"
+        );
 
-        .then((data) => {
+        const usersData = await usersRes.json();
 
-          setUsers(data);
+        setUsers(usersData);
 
-        })
+        const customersRes = await fetch(
+          "http://localhost:5000/api/customers"
+        );
 
-        .catch((err) => {
+        const customersData = await customersRes.json();
 
-          console.log(err);
+        setCustomers(customersData);
 
-        });
+      } catch (err) {
+
+        console.log(err);
+
+      }
 
     };
 
@@ -85,21 +94,37 @@ export default function UsersView({
   }, []);
 
   // SEARCH FILTER
-  const filteredUsers = users.filter((u: any) => {
+  const combinedUsers = [
+
+    ...users,
+
+    ...customers.map((customer: any) => ({
+
+      ...customer,
+
+      role: customer.customerType,
+
+      permissions: [],
+
+      activityLogs: []
+
+    }))
+
+  ];
+
+  const filteredUsers = combinedUsers.filter((u: any) => {
 
     const matchesSearch =
 
       u.name
         ?.toLowerCase()
-        .includes(
-          searchTerm.toLowerCase()
-        ) ||
+        .includes(searchTerm.toLowerCase())
+
+      ||
 
       u.email
         ?.toLowerCase()
-        .includes(
-          searchTerm.toLowerCase()
-        );
+        .includes(searchTerm.toLowerCase());
 
     const matchesType =
 
@@ -119,15 +144,20 @@ export default function UsersView({
 
     try {
 
-      const newStatus =
+      const isCustomer =
+        user.role === "b2b" ||
+        user.role === "b2c";
 
+      const newStatus =
         user.status === "Active"
           ? "Inactive"
           : "Active";
 
       const res = await fetch(
 
-        `http://localhost:5000/api/users/${user._id}`,
+        isCustomer
+          ? `http://localhost:5000/api/customers/${user._id}`
+          : `http://localhost:5000/api/users/${user._id}`,
 
         {
 
@@ -188,6 +218,10 @@ export default function UsersView({
 
   const saveEditedUser = async () => {
 
+    const isCustomer =
+      editingUser.role === "b2b" ||
+      editingUser.role === "b2c";
+
     if (loggedUser?.role !== "admin") {
       return;
     }
@@ -196,7 +230,9 @@ export default function UsersView({
 
       const res = await fetch(
 
-        `http://localhost:5000/api/users/${editingUser._id}`,
+        isCustomer
+          ? `http://localhost:5000/api/customers/${editingUser._id}`
+          : `http://localhost:5000/api/users/${editingUser._id}`,
 
         {
 
@@ -242,6 +278,8 @@ export default function UsersView({
 
       setEditingUser(null);
 
+      window.location.reload();
+
     } catch (error) {
 
       console.log(error);
@@ -252,6 +290,15 @@ export default function UsersView({
 
   // DELETE USER
   const deleteUser = async (id: string) => {
+
+    const targetUser =
+      users.find((u: any) => u._id === id)
+      ||
+      customers.find((u: any) => u._id === id);
+
+    const isCustomer =
+      targetUser?.customerType === "b2b" ||
+      targetUser?.customerType === "b2c";
 
     if (loggedUser?.role !== "admin") {
       return;
@@ -267,7 +314,9 @@ export default function UsersView({
 
       const res = await fetch(
 
-        `http://localhost:5000/api/users/${id}`,
+        isCustomer
+          ? `http://localhost:5000/api/customers/${id}`
+          : `http://localhost:5000/api/users/${id}`,
 
         {
           method: "DELETE"
@@ -283,13 +332,7 @@ export default function UsersView({
 
       }
 
-      setUsers(
-
-        users.filter(
-          (u: any) => u._id !== id
-        )
-
-      );
+      window.location.reload();
 
     } catch (error) {
 
@@ -681,6 +724,10 @@ export default function UsersView({
                   Email
                 </th>
 
+
+
+
+
                 <th className="px-6 py-4 text-left">
                   Role
                 </th>
@@ -727,6 +774,10 @@ export default function UsersView({
                   <td className="px-6 py-4 text-zinc-600">
                     {user.email}
                   </td>
+
+
+
+
 
                   {/* ROLE */}
                   <td className="px-6 py-4">

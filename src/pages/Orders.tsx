@@ -1,14 +1,19 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function Orders() {
+
+    const { user } = useAuth();
 
     const [orders, setOrders] = useState<any[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/orders")
+        fetch(
+            `http://localhost:5000/api/orders/user/${user?._id}`
+        )
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
@@ -16,7 +21,7 @@ export default function Orders() {
                 }
             })
             .catch((err) => console.error(err));
-    }, []);
+    }, [user]);
 
     return (
         <div className="min-h-screen bg-slate-50">

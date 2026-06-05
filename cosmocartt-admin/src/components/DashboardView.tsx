@@ -43,6 +43,13 @@ export default function DashboardView({
       o => o.status === "Cancelled"
     ).length;
 
+  const pendingOrdersVal =
+    orders.filter(
+      o =>
+        o.status === "Order Placed" ||
+        o.status === "Processing"
+    ).length;
+
   // Format currencies beautifully in Rupees
   const formatRupee = (num: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -214,15 +221,24 @@ export default function DashboardView({
         </div>
 
         {/* Refunds Card */}
-        <div id="kpi-refunds" className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs">
+        {/* Pending Orders Card */}
+
+        <div
+          id="kpi-pending-orders"
+          className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs"
+        >
           <div className="text-left space-y-1">
-            <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">Refunds</span>
+            <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">
+              Pending Orders
+    </span>
+
             <span className="text-2xl font-bold text-zinc-900 tracking-tight">
-              {totalRefundsVal}
+              {pendingOrdersVal}
             </span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-red-500 flex items-center justify-center shadow-sm">
-            <RefreshCw className="w-[22px] h-[22px] text-white" />
+
+          <div className="w-12 h-12 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm">
+            <ShoppingCart className="w-[22px] h-[22px] text-white" />
           </div>
         </div>
 

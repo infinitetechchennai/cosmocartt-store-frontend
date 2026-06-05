@@ -52,7 +52,35 @@ router.get("/", async (req, res) => {
     }
 });
 
-// UPDATE STATUS
+// GET ORDERS BY CUSTOMER
+
+router.get("/user/:userId", async (req, res) => {
+
+    try {
+
+        const orders = await Order.find({
+            userId: req.params.userId
+        }).sort({
+            createdAt: -1
+        });
+
+        res.json({
+            success: true,
+            orders
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false
+        });
+
+    }
+
+});
+
 // UPDATE STATUS
 router.put("/:id", async (req, res) => {
     try {
