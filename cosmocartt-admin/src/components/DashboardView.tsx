@@ -31,11 +31,17 @@ export default function DashboardView({
     ? 0
     : orders
       .filter(o => o.status !== "Cancelled")
-      .reduce((sum, o) => sum + o.amount, 0);
+      .reduce(
+        (sum, o) => sum + (o.totalAmount || 0),
+        0
+      );
 
-  const totalOrdersVal = isExact ? 0 : orders.length;
-  const totalUsersVal = isExact ? 0 : users.length;
-  const totalRefundsVal = isExact ? 0 : orders.filter(o => o.status === "Cancelled").length;
+  const totalOrdersVal = orders.length;
+  const totalUsersVal = users.length;
+  const totalRefundsVal =
+    orders.filter(
+      o => o.status === "Cancelled"
+    ).length;
 
   // Format currencies beautifully in Rupees
   const formatRupee = (num: number) => {
