@@ -72,17 +72,43 @@ export default function DashboardView({
   // Delivery Stats donut
   // In the exact mock from user screenshot, there are only "Pending (2)" which represents a full red circle.
   // In simulated we can have Pending (2), Shipped (5), Delivered (12)
-  const deliveryDataExact = [
-    { name: "Pending", value: 2, color: "#ef4444" },
-  ];
-
-  const deliveryDataSimulated = [
-    { name: "Pending", value: 2, color: "#ef4444" },
-    { name: "In Transit", value: 4, color: "#3b82f6" },
-    { name: "Delivered", value: 14, color: "#10b981" },
-  ];
-
-  const currentDeliveryData = isExact ? deliveryDataExact : deliveryDataSimulated;
+  const currentDeliveryData = [
+    {
+      name: "Order Placed",
+      value: orders.filter(
+        o => o.status === "Order Placed"
+      ).length,
+      color: "#f59e0b"
+    },
+    {
+      name: "Processing",
+      value: orders.filter(
+        o => o.status === "Processing"
+      ).length,
+      color: "#3b82f6"
+    },
+    {
+      name: "Shipped",
+      value: orders.filter(
+        o => o.status === "Shipped"
+      ).length,
+      color: "#8b5cf6"
+    },
+    {
+      name: "Delivered",
+      value: orders.filter(
+        o => o.status === "Delivered"
+      ).length,
+      color: "#10b981"
+    },
+    {
+      name: "Cancelled",
+      value: orders.filter(
+        o => o.status === "Cancelled"
+      ).length,
+      color: "#ef4444"
+    }
+  ].filter(item => item.value > 0);
   const totalDeliveriesCount = currentDeliveryData.reduce((sum, d) => sum + d.value, 0);
 
   const filterOptions: TimeFilter[] = ["Today", "Weekly", "Monthly", "All"];
