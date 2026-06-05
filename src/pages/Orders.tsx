@@ -82,6 +82,45 @@ export default function Orders() {
 
 
                             {/* ITEMS */}
+                            {/* TRACKING TIMELINE */}
+
+                            <div className="px-6 py-4 border-b bg-slate-50">
+
+                                <div className="flex flex-wrap gap-3">
+
+                                    {[
+                                        "Order Placed",
+                                        "Processing",
+                                        "Shipped",
+                                        "Delivered"
+                                    ].map((step) => {
+
+                                        const completed =
+                                            order.trackingTimeline?.some(
+                                                (t: any) => t.status === step
+                                            );
+
+                                        return (
+
+                                            <div
+                                                key={step}
+                                                className={`px-3 py-2 rounded-full text-xs font-medium ${completed
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-gray-100 text-gray-500"
+                                                    }`}
+                                            >
+                                                {completed ? "✓" : "○"} {step}
+                                            </div>
+
+                                        );
+
+                                    })}
+
+                                </div>
+
+                            </div>
+
+                            {/* ITEMS */}
                             <div className="px-6 py-4 space-y-4">
 
                                 {order.products?.map((item: any) => (

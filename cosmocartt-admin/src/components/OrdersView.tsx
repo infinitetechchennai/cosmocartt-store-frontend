@@ -18,7 +18,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
   const [selectedOrder, setSelectedOrder] =
     useState<Order | null>(null);
 
-  const [statusFilter, setStatusFilter] = useState<"All" | "Pending" | "Processing" | "Delivered" | "Cancelled">("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | "Order Placed" | "Processing" | "Shipped" | "Delivered" | "Cancelled">("All");
 
   const filteredOrders = orders.filter((o) => {
 
@@ -156,8 +156,9 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
             className="bg-zinc-50 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none"
           >
             <option value="All">All Statuses</option>
-            <option value="Pending">Pending</option>
+            <option value="Order Placed">Order Placed</option>
             <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
             <option value="Delivered">Delivered</option>
             <option value="Cancelled">Cancelled</option>
           </select>
@@ -236,13 +237,34 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                       <div className="flex items-center justify-end gap-1.5">
                         {order.status !== "Delivered" && order.status !== "Cancelled" && (
                           <>
-                            <button
-                              onClick={() => updateStatus(order._id, "Delivered")}
-                              title="Mark Delivered"
-                              className="p-1 hover:bg-zinc-100 rounded text-emerald-600"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
+                            {order.status === "Order Placed" && (
+                              <button
+                                onClick={() => updateStatus(order._id, "Processing")}
+                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded"
+                              >
+                                Process
+                              </button>
+                            )}
+
+                            {order.status === "Processing" && (
+                              <button
+                                onClick={() => updateStatus(order._id, "Shipped")}
+                                className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded"
+                              >
+                                Ship
+                              </button>
+                            )}
+
+                            {order.status === "Shipped" && (
+                              <button
+                                onClick={() => updateStatus(order._id, "Delivered")}
+                                title="Mark Delivered"
+                                className="p-1 hover:bg-zinc-100 rounded text-emerald-600"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </button>
+                            )}
+
                             <button
                               onClick={() => updateStatus(order._id, "Cancelled")}
                               title="Cancel Order"
@@ -324,9 +346,9 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
             </div>
 
-            <h3 className="font-semibold mb-3">
-              Products
-      </h3>
+            <h3 className="font-semibold text-lg mb-3">
+              Ordered Products
+</h3>
 
             <div className="space-y-3">
 
@@ -334,27 +356,45 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                 (product, index) => (
                   <div
                     key={index}
-                    className="border rounded-lg p-3 flex gap-3"
+                    className="border rounded-xl p-4 flex gap-4 items-center"
                   >
 
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-16 h-16 object-cover rounded"
+                      className="w-20 h-20 object-cover rounded-lg border"
                     />
 
-                    <div>
-                      <p className="font-medium">
+                    <div className="flex-1">
+
+                      <p className="font-semibold text-zinc-900">
                         {product.name}
                       </p>
 
-                      <p>
+                      <p className="text-sm text-zinc-500">
+                        Product ID:
+            {" "}
+                        {product.productId}
+                      </p>
+
+                      <p className="text-sm text-zinc-500">
                         Qty: {product.quantity}
                       </p>
 
-                      <p>
+                    </div>
+
+                    <div className="text-right">
+
+                      <p className="font-semibold">
                         ₹{product.price}
                       </p>
+
+                      <p className="text-sm text-zinc-500">
+                        Total:
+            {" "}
+            ₹{product.price * product.quantity}
+                      </p>
+
                     </div>
 
                   </div>
@@ -363,12 +403,29 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
             </div>
 
-            <div className="mt-6 text-right">
+            <div className="mt-6 border-t pt-4">
 
-              <p className="text-lg font-bold">
-                Total: ₹
-          {selectedOrder.totalAmount}
-              </p>
+              <div className="flex justify-between mb-2">
+                <span className="text-zinc-500">
+                  Items
+    </span>
+
+                <span>
+                  {selectedOrder.products?.reduce(
+                    (total, item) =>
+                      total + item.quantity,
+                    0
+                  )}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-lg font-bold">
+                <span>Total Amount</span>
+
+                <span>
+                  ₹{selectedOrder.totalAmount}
+                </span>
+              </div>
 
             </div>
 

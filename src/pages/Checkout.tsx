@@ -55,7 +55,6 @@ export default function Checkout() {
             products: cartItems.map((item: any) => ({
                 productId: item._id,
                 name: item.name,
-                image: item.image,
                 quantity: item.quantity,
                 price: item.retailPrice,
             })),
@@ -91,28 +90,28 @@ export default function Checkout() {
 
             const data = await response.json();
 
-            if (data.success) {
+            console.log("ORDER RESPONSE:", data);
 
-                localStorage.removeItem("cart");
-
-                navigate("/order-success", {
-                    state: {
-                        orderId: data.order._id,
-                    },
-                });
-                clearCart();
-
-            } else {
-
-                alert("Failed to place order");
-
+            if (!response.ok || !data.success) {
+                alert(data.message || "Failed to place order");
+                return;
             }
 
-        } catch (error) {
+            localStorage.removeItem("cart");
 
-            console.error(error);
+            navigate("/order-success", {
+                state: {
+                    orderId: data.order._id,
+                },
+            });
 
-            alert("Server Error");
+            clearCart();
+
+        } catch (error: any) {
+
+            console.error("PLACE ORDER FETCH ERROR:", error);
+
+            alert(error.message || "Server Error");
 
         }
     };

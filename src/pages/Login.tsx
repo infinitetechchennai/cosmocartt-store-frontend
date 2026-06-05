@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const navigate = useNavigate();
-    
+
     const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
 
@@ -66,7 +66,7 @@ export default function Login() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4 }}
                             className="mt-6 space-y-3">
-                        
+
 
                             <input
                                 type="text"
@@ -122,14 +122,16 @@ export default function Login() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => {
-    login({
-        name: "Demo User",
-        role: "customer",
-        customerType: "b2c"
-    });
+                                login({
+                                    _id: "demo-customer-001",
+                                    name: "Demo User",
+                                    email: "demo@cosmocartt.com",
+                                    role: "customer",
+                                    customerType: "b2c"
+                                });
 
-    navigate("/");
-}}
+                                navigate("/");
+                            }}
                             className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
                         >
                             Login

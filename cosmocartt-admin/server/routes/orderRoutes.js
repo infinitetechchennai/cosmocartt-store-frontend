@@ -32,10 +32,11 @@ router.post("/", async (req, res) => {
 
     } catch (err) {
 
-        console.error(err);
+        console.error("ORDER CREATE ERROR:", err);
 
-        res.json({
-            success: false
+        res.status(500).json({
+            success: false,
+            message: err.message
         });
     }
 });
@@ -52,39 +53,54 @@ router.get("/", async (req, res) => {
 });
 
 // UPDATE STATUS
+// UPDATE STATUS
 router.put("/:id", async (req, res) => {
     try {
 
-        const updateData = {
-            ...req.body
-        };
+        const allowedStatuses = [
+            "Order Placed",
+            "Processing",
+            "Shipped",
+            "Delivered",
+            "Cancelled"
+        ];
 
-        if (req.body.status) {
-
-            updateData.trackingTimeline = [
-                {
-                    status: req.body.status,
-                    date: new Date().toISOString(),
-                }
-            ];
+        if (!allowedStatuses.includes(req.body.status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid order status"
+            });
         }
 
-        const order = await Order.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            { new: true }
-        );
+        const existingOrder = await Order.findById(req.params.id);
+
+        if (!existingOrder) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+        }
+
+        existingOrder.status = req.body.status;
+
+        existingOrder.trackingTimeline.push({
+            status: req.body.status,
+            date: new Date().toISOString()
+        });
+
+        await existingOrder.save();
 
         res.json({
             success: true,
-            order
+            order: existingOrder
         });
 
     } catch (err) {
-        console.error(err);
+        console.error("ORDER STATUS UPDATE ERROR:", err);
 
-        res.json({
-            success: false
+        res.status(500).json({
+            success: false,
+            message: err.message
         });
     }
 });

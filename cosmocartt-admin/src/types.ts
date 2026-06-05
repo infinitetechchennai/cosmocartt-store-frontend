@@ -78,8 +78,9 @@ export interface Order {
   totalAmount: number;
 
   status:
-  | "Pending"
+  | "Order Placed"
   | "Processing"
+  | "Shipped"
   | "Delivered"
   | "Cancelled";
 
