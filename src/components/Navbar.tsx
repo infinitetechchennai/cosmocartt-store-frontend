@@ -247,7 +247,6 @@ transition-all duration-300
         absolute
         right-0
         top-full
-        mt-2
         w-56
         bg-white
         rounded-2xl
