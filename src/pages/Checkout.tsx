@@ -1,9 +1,21 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
+
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+    const [pincode, setPincode] = useState("");
+    const [loading, setLoading] = useState(false);
+
     const { cartItems, clearCart } = useCart();
     const navigate = useNavigate();
 
@@ -38,6 +50,35 @@ export default function Checkout() {
 
     const handlePlaceOrder = async () => {
 
+        if (
+            !firstName.trim() ||
+            !lastName.trim() ||
+            !email.trim() ||
+            !phone.trim() ||
+            !address.trim() ||
+            !city.trim() ||
+            !state.trim() ||
+            !pincode.trim()
+        ) {
+            alert("Please fill all required fields");
+            return;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert("Enter a valid email address");
+            return;
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+            alert("Enter a valid mobile number");
+            return;
+        }
+
+        if (!/^\d{6}$/.test(pincode)) {
+            alert("Enter a valid pincode");
+            return;
+        }
+
         const user = JSON.parse(
             localStorage.getItem("user") || "{}"
         );
@@ -47,10 +88,19 @@ export default function Checkout() {
         const orderData = {
             userId: user._id || "guest-user",
 
-            customerName:
-                user?.name || "Guest Customer",
+            customerName: `${firstName} ${lastName}`,
 
-            email: user.email,
+            email,
+
+            phone,
+
+            address,
+
+            city,
+
+            state,
+
+            pincode,
 
             products: cartItems.map((item: any) => ({
                 productId: item._id,
@@ -116,6 +166,83 @@ export default function Checkout() {
         }
     };
 
+    const states = [
+        "Andhra Pradesh",
+        "Arunachal Pradesh",
+        "Assam",
+        "Bihar",
+        "Chhattisgarh",
+        "Goa",
+        "Gujarat",
+        "Haryana",
+        "Himachal Pradesh",
+        "Jharkhand",
+        "Karnataka",
+        "Kerala",
+        "Madhya Pradesh",
+        "Maharashtra",
+        "Manipur",
+        "Meghalaya",
+        "Mizoram",
+        "Nagaland",
+        "Odisha",
+        "Punjab",
+        "Rajasthan",
+        "Sikkim",
+        "Tamil Nadu",
+        "Telangana",
+        "Tripura",
+        "Uttar Pradesh",
+        "Uttarakhand",
+        "West Bengal",
+        "Andaman and Nicobar Islands",
+        "Chandigarh",
+        "Dadra and Nagar Haveli and Daman and Diu",
+        "Delhi",
+        "Jammu and Kashmir",
+        "Ladakh",
+        "Lakshadweep",
+        "Puducherry"
+    ];
+
+    const citiesByState: Record<string, string[]> = {
+        "Tamil Nadu": [
+            "Chennai",
+            "Coimbatore",
+            "Madurai",
+            "Salem",
+            "Trichy",
+            "Tirunelveli",
+            "Erode"
+        ],
+
+        "Karnataka": [
+            "Bengaluru",
+            "Mysuru",
+            "Mangalore",
+            "Hubli"
+        ],
+
+        "Kerala": [
+            "Kochi",
+            "Trivandrum",
+            "Kozhikode"
+        ],
+
+        "Maharashtra": [
+            "Mumbai",
+            "Pune",
+            "Nagpur",
+            "Nashik"
+        ],
+
+        "Delhi": [
+            "New Delhi"
+        ]
+    };
+
+
+
     return (
         <div className="min-h-screen bg-slate-50">
 
@@ -144,46 +271,113 @@ export default function Checkout() {
 
                                 <div>
                                     <label className="text-sm text-gray-600">First Name</label>
-                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                    <input
+                                        type="text"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                    />
                                 </div>
 
                                 <div>
                                     <label className="text-sm text-gray-600">Last Name</label>
-                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                    <input
+                                        type="text"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                    />
                                 </div>
 
                                 <div>
                                     <label className="text-sm text-gray-600">Email</label>
-                                    <input type="email" className="w-full border p-3 rounded-xl mt-1" />
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                    />
                                 </div>
 
                                 <div>
                                     <label className="text-sm text-gray-600">Phone</label>
-                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                    <input
+                                        type="text"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                    />
                                 </div>
 
                             </div>
 
                             <div className="mt-4">
                                 <label className="text-sm text-gray-600">Address</label>
-                                <textarea className="w-full border p-3 rounded-xl mt-1 h-24" />
+                                <textarea
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    className="w-full border p-3 rounded-xl mt-1 h-24"
+                                />
                             </div>
 
                             <div className="grid md:grid-cols-3 gap-4 mt-4">
 
                                 <div>
                                     <label className="text-sm text-gray-600">City</label>
-                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                    <select
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                        disabled={!state}
+                                    >
+                                        <option value="">
+                                            Select City
+  </option>
+
+                                        {(citiesByState[state] || []).map((cityName) => (
+                                            <option
+                                                key={cityName}
+                                                value={cityName}
+                                            >
+                                                {cityName}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
                                     <label className="text-sm text-gray-600">State</label>
-                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                    <select
+                                        value={state}
+                                        onChange={(e) => {
+                                            setState(e.target.value);
+                                            setCity("");
+                                        }}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                    >
+                                        <option value="">
+                                            Select State
+  </option>
+
+                                        {states.map((item) => (
+                                            <option
+                                                key={item}
+                                                value={item}
+                                            >
+                                                {item}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 <div>
                                     <label className="text-sm text-gray-600">Pincode</label>
-                                    <input type="text" className="w-full border p-3 rounded-xl mt-1" />
+                                    <input
+                                        type="text"
+                                        value={pincode}
+                                        onChange={(e) => setPincode(e.target.value)}
+                                        className="w-full border p-3 rounded-xl mt-1"
+                                    />
                                 </div>
 
                             </div>

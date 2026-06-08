@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Product } from "../types";
 import { Search, Plus, Trash2, Edit2, Check, RefreshCw } from "lucide-react";
 import { categories } from "../data/categories";
+import { Upload } from "lucide-react";
 
 
 
@@ -11,10 +12,13 @@ interface ProductsViewProps {
 }
 
 export default function ProductsView({ products, setProducts }: ProductsViewProps) {
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -30,6 +34,23 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     image: "",
     status: "Active",
   });
+
+  const totalProducts = products.length;
+
+  const inStockProducts =
+    products.filter(
+      (p) => p.stock > 10
+    ).length;
+
+  const lowStockProducts =
+    products.filter(
+      (p) => p.stock > 0 && p.stock <= 10
+    ).length;
+
+  const outOfStockProducts =
+    products.filter(
+      (p) => p.stock === 0
+    ).length;
 
   const filtered = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -172,6 +193,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   };
 
 
+
   const toggleStatus = async (product: Product) => {
     const updatedStatus = product.status === "Active" ? "Inactive" : "Active";
 
@@ -205,7 +227,30 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     }
   };
 
+  const toggleProduct = (id: string) => {
+    if (selectedProducts.includes(id)) {
+      setSelectedProducts(
+        selectedProducts.filter((item) => item !== id)
+      );
+    } else {
+      setSelectedProducts([
+        ...selectedProducts,
+        id
+      ]);
+    }
+  };
 
+  const toggleSelectAll = () => {
+    if (
+      selectedProducts.length === products.length
+    ) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(
+        products.map((p) => p._id)
+      );
+    }
+  };
 
   const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm(
@@ -239,6 +284,111 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     return "SKU-" + random;
   };
 
+  const exportProductsCSV = () => {
+
+    const headers = [
+      "Name",
+      "Brand",
+      "Category",
+      "Subcategory",
+      "SKU",
+      "Cost Price",
+      "Wholesale Price",
+      "Retail Price",
+      "Stock",
+      "Status"
+    ];
+
+    const rows = products.map((product) => [
+
+      product.name,
+
+      product.brand,
+
+      product.category,
+
+      product.subcategory,
+
+      product.sku,
+
+      product.costPrice,
+
+      product.wholesalePrice,
+
+      product.retailPrice,
+
+      product.stock,
+
+      product.status
+
+    ]);
+
+    const csvContent = [
+
+      headers.join(","),
+
+      ...rows.map((row) => row.join(","))
+
+    ].join("\n");
+
+    const blob = new Blob(
+      [csvContent],
+      {
+        type: "text/csv;charset=utf-8;"
+      }
+    );
+
+    const link =
+      document.createElement("a");
+
+    link.href =
+      URL.createObjectURL(blob);
+
+    link.download =
+      "products.csv";
+
+    link.click();
+  };
+
+  const handleBulkDelete = async () => {
+
+    const confirmDelete = window.confirm(
+      `Delete ${selectedProducts.length} selected products?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+
+      await Promise.all(
+        selectedProducts.map((id) =>
+          fetch(
+            `http://localhost:5000/api/products/${id}`,
+            {
+              method: "DELETE",
+            }
+          )
+        )
+      );
+
+      setProducts(
+        products.filter(
+          (p) =>
+            !selectedProducts.includes(p._id)
+        )
+      );
+
+      setSelectedProducts([]);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Bulk delete failed");
+
+    }
+  };
+
   return (
     <div id="products-view-container" className="space-y-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -253,12 +403,173 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     </p>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800"
-        >
-          + Add Product
+
+
+        <div className="flex gap-3">
+
+          <button
+            onClick={handleBulkDelete}
+            disabled={selectedProducts.length === 0}
+            className="
+    px-2
+    py-0.5
+    text-[10px]
+    rounded
+    border
+    bg-red-50
+    border-red-300
+    text-red-600
+    disabled:opacity-50
+  "
+          >
+            Delete
 </button>
+
+          <label
+            className="
+    bg-emerald-600
+    text-white
+    px-4
+    py-2
+    rounded-xl
+    cursor-pointer
+    hover:bg-emerald-700
+    flex
+    items-center
+    gap-2
+  "
+          >
+            Import CSV
+
+  <input
+              type="file"
+              accept=".csv"
+              hidden
+              onChange={async (e) => {
+
+                const file = e.target.files?.[0];
+
+                if (!file) return;
+
+                const formData = new FormData();
+
+                formData.append(
+                  "file",
+                  file
+                );
+
+                try {
+
+                  const response =
+                    await fetch(
+                      "http://localhost:5000/api/products/import",
+                      {
+                        method: "POST",
+                        body: formData,
+                      }
+                    );
+
+                  const data =
+                    await response.json();
+
+                  alert(
+                    `Imported: ${data.imported}
+Skipped: ${data.skipped}`
+                  );
+
+                  window.location.reload();
+
+                } catch (error) {
+
+                  console.error(error);
+
+                  alert("Import Failed");
+
+                }
+
+              }}
+            />
+          </label>
+
+
+
+          <button
+            onClick={exportProductsCSV}
+            className="
+      border
+      border-zinc-300
+      bg-white
+      px-4
+      py-2
+      rounded-lg
+      text-sm
+      font-medium
+    "
+          >
+            Export Products CSV
+  </button>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="
+      bg-black
+      text-white
+      px-4
+      py-2
+      rounded-lg
+      text-sm
+      font-medium
+      hover:bg-zinc-800
+    "
+          >
+            + Add Product
+  </button>
+
+        </div>
+
+      </div>
+
+      <div className="grid grid-cols-4 gap-4">
+
+        <div className="bg-white rounded-2xl p-5 border">
+          <p className="text-sm text-zinc-500">
+            Total Products
+    </p>
+
+          <h2 className="text-3xl font-bold mt-2">
+            {totalProducts}
+          </h2>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border">
+          <p className="text-sm text-zinc-500">
+            In Stock
+    </p>
+
+          <h2 className="text-3xl font-bold text-green-600 mt-2">
+            {inStockProducts}
+          </h2>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border">
+          <p className="text-sm text-zinc-500">
+            Low Stock
+    </p>
+
+          <h2 className="text-3xl font-bold text-orange-500 mt-2">
+            {lowStockProducts}
+          </h2>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border">
+          <p className="text-sm text-zinc-500">
+            Out Of Stock
+    </p>
+
+          <h2 className="text-3xl font-bold text-red-500 mt-2">
+            {outOfStockProducts}
+          </h2>
+        </div>
 
       </div>
 
@@ -276,11 +587,23 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
           />
         </div>
 
+
+
         {/* Responsive Table */}
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-zinc-50/50 text-xs font-semibold text-zinc-400 uppercase border-b border-zinc-150 text-left">
+                <th className="px-4 py-4">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedProducts.length === products.length &&
+                      products.length > 0
+                    }
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th className="px-6 py-4">Image</th>
                 <th className="px-6 py-4">Product</th>
                 <th className="px-6 py-4">SKU</th>
@@ -303,6 +626,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     onClick={() => setSelectedProduct(item)}
                     className="hover:bg-zinc-50 transition-colors cursor-pointer"
                   >
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(item._id)}
+                        onChange={() =>
+                          toggleProduct(item._id)
+                        }
+                      />
+                    </td>
+
                     <td className="px-6 py-4">
                       <img
                         src={item.image}
