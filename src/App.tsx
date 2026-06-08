@@ -14,11 +14,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Orders from "./pages/Orders";
 import OrderSuccess from "./pages/OrderSuccess";
 import ScrollToTop from "./components/ScrollToTop";
+import Wishlist from "./pages/Wishlist";
 
 export default function App() {
   return (
     <>
-      <ScrollToTop />
+      {/* <ScrollToTop /> */}
 
       <Routes>
 
@@ -69,6 +70,11 @@ export default function App() {
         <Route
           path="/order-success"
           element={<OrderSuccess />}
+        />
+
+        <Route
+          path="/wishlist"
+          element={<Wishlist />}
         />
 
       </Routes>

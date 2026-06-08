@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
+import { useWishlist } from "../context/WishlistContext";
 
 interface ProductCardProps {
     product: any;
@@ -10,6 +11,12 @@ export default function ProductCard({
     product,
 }: ProductCardProps) {
     const { addToCart } = useCart();
+
+    const {
+        wishlistItems,
+        addToWishlist,
+        removeFromWishlist
+    } = useWishlist();
 
     const price = product.retailPrice || 0;
 
@@ -25,6 +32,11 @@ export default function ProductCard({
                 ((oldPrice - price) / oldPrice) * 100
             )
             : 0;
+    const isWishlisted =
+        wishlistItems.some(
+            (item: any) =>
+                item._id === product._id
+        );
 
     return (
         <motion.div
@@ -60,9 +72,43 @@ export default function ProductCard({
                         ⭐ Bestseller
           </div>
 
-                    <button className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-sm w-10 h-10 rounded-full shadow-lg hover:scale-110 transition">
-                        ♡
-          </button>
+                    <button
+                        onClick={(e) => {
+
+                            e.preventDefault();
+
+                            e.stopPropagation();
+
+                            if (isWishlisted) {
+
+                                removeFromWishlist(
+                                    product._id
+                                );
+
+                            } else {
+
+                                addToWishlist(product);
+
+                            }
+
+                        }}
+                        className="
+        absolute
+        top-4
+        right-4
+        z-20
+        bg-white/90
+        backdrop-blur-sm
+        w-10
+        h-10
+        rounded-full
+        shadow-lg
+        hover:scale-110
+        transition
+    "
+                    >
+                        {isWishlisted ? "❤️" : "♡"}
+                    </button>
 
                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition duration-300 z-20">
                         <div className="bg-white rounded-full px-4 py-2 shadow-xl text-sm font-semibold">

@@ -1,8 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
-import { products } from "../data/products";
+
+
 
 export default function FeaturedProducts() {
+    const [products, setProducts] = useState<any[]>([]);
+
+    useEffect(() => {
+
+        fetch("http://localhost:5000/api/products")
+            .then((res) => res.json())
+            .then((data) => {
+
+                if (data.success) {
+                    setProducts(data.products);
+                }
+
+            })
+            .catch((err) => console.error(err));
+
+    }, []);
     const productsPerPage = 4;
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,35 +38,62 @@ export default function FeaturedProducts() {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-
-        const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-};
     };
 
     return (
         <section className="max-w-7xl mx-auto px-6 py-16">
 
-            <h2 className="text-3xl font-bold mb-8">
-                Featured Products
-            </h2>
+            <div className="flex items-center justify-between mb-10">
+
+                <div>
+
+                    <p className="text-sm uppercase tracking-wider text-purple-600 font-semibold">
+                        Trending Collection
+        </p>
+
+                    <h2 className="text-4xl font-black text-zinc-900 mt-1">
+                        Featured Products
+        </h2>
+
+                    <p className="text-zinc-500 mt-2">
+                        Discover our best-selling electronics and latest arrivals.
+        </p>
+
+                </div>
+
+                <button
+                    className="
+            px-5
+            py-3
+            rounded-2xl
+            bg-[#4B1E78]
+            text-white
+            font-semibold
+            hover:scale-105
+            transition
+        "
+                >
+                    View All Products →
+    </button>
+
+            </div>
 
             {/* Products Grid */}
 
             <div
                 key={currentPage}
                 className="
-                    grid
-                    grid-cols-1
-                    md:grid-cols-2
-                    lg:grid-cols-4
-                    gap-6
-                    animate-fadeIn
-                "
+        grid
+        grid-cols-1
+        md:grid-cols-2
+        xl:grid-cols-4
+        gap-8
+        animate-fadeIn
+    "
             >
                 {currentProducts.map((product) => (
                     <ProductCard
-                        key={product.id}
+                        key={product._id}
                         product={product}
                     />
                 ))}
@@ -93,10 +137,9 @@ export default function FeaturedProducts() {
                             transition-all
                             duration-300
                             hover:scale-110
-                            ${
-                                currentPage === index + 1
-                                    ? "bg-purple-700 text-white shadow-lg shadow-purple-500/40"
-                                    : "bg-white text-gray-700 hover:bg-purple-100"
+                            ${currentPage === index + 1
+                                ? "bg-purple-700 text-white shadow-lg shadow-purple-500/40"
+                                : "bg-white text-gray-700 hover:bg-purple-100"
                             }
                         `}
                     >

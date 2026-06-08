@@ -70,20 +70,20 @@ export default function Hero() {
           <AnimatePresence mode="wait">
 
             <motion.div
-  key={current}
-  initial={{
-    x: 40,
-  }}
-  animate={{
-    x: 0,
-  }}
-  exit={{
-    x: -40,
-  }}
-  transition={{
-    duration: 0.45,
-    ease: "easeOut",
-  }}
+              key={current}
+              initial={{
+                x: 40,
+              }}
+              animate={{
+                x: 0,
+              }}
+              exit={{
+                x: -40,
+              }}
+              transition={{
+                duration: 0.45,
+                ease: "easeOut",
+              }}
               className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
             >
               <div className="grid lg:grid-cols-2 items-center">
@@ -99,6 +99,22 @@ export default function Hero() {
                   <h1 className="text-5xl md:text-6xl font-black mt-6 leading-tight">
                     {slides[current].title}
                   </h1>
+
+                  <div
+                    className="
+        inline-flex
+        mt-5
+        bg-green-500
+        text-white
+        px-4
+        py-2
+        rounded-full
+        text-sm
+        font-bold
+    "
+                  >
+                    ⚡ Limited Time Offer
+</div>
 
                   <p className="mt-4 text-xl text-gray-200">
                     {slides[current].subtitle}
@@ -117,6 +133,8 @@ export default function Hero() {
                       Explore
                     </button>
 
+
+
                   </div>
 
                 </div>
@@ -132,6 +150,7 @@ export default function Hero() {
                   />
 
                   <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#2B1055]/30"></div>
+
 
                 </div>
 
@@ -168,11 +187,10 @@ export default function Hero() {
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`transition-all duration-300 rounded-full ${
-                current === index
-                  ? "w-10 h-3 bg-[#4B1E78]"
-                  : "w-3 h-3 bg-gray-300"
-              }`}
+              className={`transition-all duration-300 rounded-full ${current === index
+                ? "w-10 h-3 bg-[#4B1E78]"
+                : "w-3 h-3 bg-gray-300"
+                }`}
             />
           ))}
 
