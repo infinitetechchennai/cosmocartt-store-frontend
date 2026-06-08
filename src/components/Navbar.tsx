@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
+import { categories } from "../data/categories";
 
 import {
     Search,
@@ -76,20 +77,61 @@ export default function Navbar() {
                     "
                 >
 
-                    <select
-                        className="
-        bg-transparent
-        text-gray-700
-        border-r
-        pr-4
-        mr-4
-        outline-none
+                    <div className="relative group">
+    <button
+        className="
+            bg-transparent
+            text-gray-700
+            border-r
+            pr-4
+            mr-4
+            font-medium
+            cursor-pointer
+        "
+    >
+        All Categories ▾
+    </button>
+
+    <div
+    className="
+        absolute
+        top-full
+        left-0
+        w-72
+        bg-white
+        shadow-xl
+        rounded-xl
+        border
+        opacity-0
+        invisible
+        group-hover:opacity-100
+        group-hover:visible
+        transition-all
+        duration-200
+        z-50
+        max-h-[450px]
+        overflow-y-auto
     "
-                    >
-                        <option>
-                            All Categories
-    </option>
-                    </select>
+>
+    {categories.map((cat) => (
+        <Link
+            key={cat.name}
+            to={`/products?category=${encodeURIComponent(cat.name)}`}
+            className="
+                block
+                px-4
+                py-3
+                hover:bg-purple-50
+                hover:text-purple-700
+                transition-all
+            "
+        >
+            {cat.name}
+        </Link>
+    ))}
+</div>
+</div>
+                    
                     <input
                         type="text"
                         placeholder="Search products..."
