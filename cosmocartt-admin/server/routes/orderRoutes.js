@@ -13,6 +13,60 @@ router.post("/", async (req, res) => {
 
     try {
 
+        const {
+            customerName,
+            email,
+            phone,
+            address,
+            city,
+            state,
+            pincode,
+            products
+        } = req.body;
+
+        if (
+            !customerName ||
+            !email ||
+            !phone ||
+            !address ||
+            !city ||
+            !state ||
+            !pincode
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "All checkout fields are required"
+            });
+        }
+
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Order must contain products"
+            });
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email address"
+            });
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid mobile number"
+            });
+        }
+
+        if (!/^\d{6}$/.test(pincode)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid pincode"
+            });
+        }
+
         const count = await Order.countDocuments();
         console.log("TOTAL ORDERS:", count);
 

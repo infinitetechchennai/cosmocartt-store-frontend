@@ -17,6 +17,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] =
     useState<Order | null>(null);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
   const [statusFilter, setStatusFilter] = useState<"All" | "Order Placed" | "Processing" | "Shipped" | "Delivered" | "Cancelled">("All");
 
@@ -89,6 +90,124 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
     }
   };
 
+  const processSelectedOrders = async () => {
+
+    try {
+
+      const updatedOrders = await Promise.all(
+
+        selectedOrders
+          .filter((id) => {
+            const order = orders.find(
+              (o) => o._id === id
+            );
+
+            return (
+              order &&
+              order.status === "Order Placed"
+            );
+          })
+          .map(async (id) => {
+
+            const response = await fetch(
+              `http://localhost:5000/api/orders/${id}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  status: "Processing",
+                }),
+              }
+            );
+
+            const data = await response.json();
+
+            return data.order;
+
+          })
+
+      );
+
+      setOrders(
+        orders.map((order) => {
+
+          const updated = updatedOrders.find(
+            (o) => o._id === order._id
+          );
+
+          return updated || order;
+
+        })
+      );
+
+      setSelectedOrders([]);
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+  };
+
+  const exportOrdersCSV = () => {
+
+    const headers = [
+      "Order Number",
+      "Customer",
+      "Email",
+      "Status",
+      "Payment",
+      "Amount",
+      "Date"
+    ];
+
+    const rows = orders.map((order) => [
+
+      order.orderNumber,
+
+      order.customerName,
+
+      order.email,
+
+      order.status,
+
+      order.paymentStatus,
+
+      order.totalAmount,
+
+      new Date(order.createdAt).toLocaleDateString()
+
+    ]);
+
+    const csvContent = [
+
+      headers.join(","),
+
+      ...rows.map((row) => row.join(","))
+
+    ].join("\n");
+
+    const blob = new Blob(
+      [csvContent],
+      {
+        type: "text/csv;charset=utf-8;"
+      }
+    );
+
+    const link =
+      document.createElement("a");
+
+    link.href =
+      URL.createObjectURL(blob);
+
+    link.download =
+      "orders.csv";
+
+    link.click();
+  };
+
   // const addRandomOrder = () => {
   //   const clients = [
   //     { name: "Priya Traders", type: "B2B" as const, min: 25000, max: 95000 },
@@ -145,15 +264,66 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
-          <SlidersHorizontal className="w-4 h-4 text-zinc-400 shrink-0" />
+        <div className="flex items-center gap-3 flex-wrap">
 
+          <button
+            onClick={processSelectedOrders}
+            disabled={
+              selectedOrders.filter((id) => {
+                const order = orders.find(
+                  (o) => o._id === id
+                );
 
+                return (
+                  order &&
+                  order.status === "Order Placed"
+                );
+              }).length === 0
+            }
+            className="
+      px-4
+      py-2
+      rounded-xl
+      bg-[#4B1E78]
+      text-white
+      text-sm
+      disabled:opacity-50
+    "
+          >
+            Process Selected Orders
+  </button>
+
+          <button
+            onClick={exportOrdersCSV}
+            className="
+      px-4
+      py-2
+      rounded-xl
+      border
+      text-sm
+      bg-white
+    "
+          >
+            Export Orders CSV
+  </button>
+
+          <SlidersHorizontal className="w-4 h-4 text-zinc-400" />
 
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-            className="bg-zinc-50 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none"
+            onChange={(e) =>
+              setStatusFilter(e.target.value as any)
+            }
+            className="
+      bg-zinc-50
+      border
+      border-zinc-200
+      rounded-xl
+      px-2.5
+      py-1.5
+      text-xs
+      font-semibold
+    "
           >
             <option value="All">All Statuses</option>
             <option value="Order Placed">Order Placed</option>
@@ -162,6 +332,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
             <option value="Delivered">Delivered</option>
             <option value="Cancelled">Cancelled</option>
           </select>
+
         </div>
       </div>
 
@@ -171,6 +342,36 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-zinc-50/50 text-xs font-semibold text-zinc-400 uppercase border-b border-zinc-150 text-left">
+
+                <th className="px-4 py-4">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectedOrders.length ===
+                      filteredOrders.length
+                    }
+                    onChange={(e) => {
+
+                      if (e.target.checked) {
+
+                        setSelectedOrders(
+                          filteredOrders
+                            .filter(
+                              (o) =>
+                                o.status === "Order Placed"
+                            )
+                            .map((o) => o._id)
+                        );
+
+                      } else {
+
+                        setSelectedOrders([]);
+
+                      }
+
+                    }}
+                  />
+                </th>
                 <th className="px-6 py-4">Order ID</th>
                 <th className="px-6 py-4">Products</th>
                 <th className="px-6 py-4">Qty</th>
@@ -189,6 +390,34 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
               ) : (
                 filteredOrders.map((order) => (
                   <tr key={order._id} className="hover:bg-zinc-50/30 transition-colors">
+                    <td className="px-4 py-4">
+
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(order._id)}
+                        onChange={(e) => {
+
+                          if (e.target.checked) {
+
+                            setSelectedOrders([
+                              ...selectedOrders,
+                              order._id
+                            ]);
+
+                          } else {
+
+                            setSelectedOrders(
+                              selectedOrders.filter(
+                                (id) => id !== order._id
+                              )
+                            );
+
+                          }
+
+                        }}
+                      />
+
+                    </td>
                     <td className="px-6 py-4 font-mono text-xs font-bold text-zinc-900">
                       {order.orderNumber || order._id.slice(-8)}
                     </td>
