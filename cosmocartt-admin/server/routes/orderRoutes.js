@@ -1,5 +1,6 @@
 import express from "express";
 import Order from "../models/Order.js";
+import Product from "../models/Product.js";
 
 const router = express.Router();
 
@@ -23,6 +24,38 @@ router.post("/", async (req, res) => {
             pincode,
             products
         } = req.body;
+
+        for (const item of products) {
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if (!product) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        `${item.name} not found`
+                });
+
+            }
+
+            if (
+                product.stock <
+                item.quantity
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        `${item.name} has only ${product.stock} units left in stock`
+                });
+
+            }
+
+        }
 
         if (
             !customerName ||
@@ -78,6 +111,28 @@ router.post("/", async (req, res) => {
         });
 
         await order.save();
+
+        for (const item of order.products) {
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if (product) {
+
+                product.stock =
+                    Math.max(
+                        0,
+                        product.stock -
+                        item.quantity
+                    );
+
+                await product.save();
+
+            }
+
+        }
 
         res.json({
             success: true,
@@ -186,5 +241,57 @@ router.put("/:id", async (req, res) => {
         });
     }
 });
+
+router.put("/cancel/:id", async (req, res) => {
+
+    try {
+
+        const order =
+            await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+        }
+
+        if (
+            order.status === "Shipped" ||
+            order.status === "Delivered"
+        ) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Order can no longer be cancelled"
+            });
+        }
+
+        order.status = "Cancelled";
+
+        order.trackingTimeline.push({
+            status: "Cancelled",
+            date: new Date().toISOString()
+        });
+
+        await order.save();
+
+        res.json({
+            success: true,
+            order
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false
+        });
+
+    }
+
+});
+
 
 export default router;

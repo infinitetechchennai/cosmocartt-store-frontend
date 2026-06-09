@@ -15,6 +15,7 @@ import Orders from "./pages/Orders";
 import OrderSuccess from "./pages/OrderSuccess";
 import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
+import OrderTracking from "./pages/OrderTracking";
 
 export default function App() {
   return (
@@ -70,6 +71,11 @@ export default function App() {
         <Route
           path="/order-success"
           element={<OrderSuccess />}
+        />
+
+        <Route
+          path="/track-order/:id"
+          element={<OrderTracking />}
         />
 
         <Route

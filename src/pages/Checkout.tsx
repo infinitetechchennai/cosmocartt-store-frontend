@@ -2,7 +2,14 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useNavigate, useLocation } from "react-router-dom";
+
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
+}
 
 export default function Checkout() {
 
@@ -15,11 +22,25 @@ export default function Checkout() {
     const [state, setState] = useState("");
     const [pincode, setPincode] = useState("");
     const [loading, setLoading] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<
+        "COD" | "UPI" | "CARD"
+    >("COD");
 
     const { cartItems, clearCart } = useCart();
+
     const navigate = useNavigate();
 
-    if (cartItems.length === 0) {
+    const location = useLocation();
+
+    const buyNowProduct =
+        location.state?.buyNowProduct;
+
+    const checkoutItems =
+        buyNowProduct
+            ? [buyNowProduct]
+            : cartItems;
+
+    if (checkoutItems.length === 0) {
         return (
             <div className="min-h-screen bg-slate-50">
                 <Navbar />
@@ -41,7 +62,7 @@ export default function Checkout() {
         );
     }
 
-    const total = cartItems.reduce(
+    const total = checkoutItems.reduce(
         (sum, item) =>
             sum +
             item.retailPrice * item.quantity,
@@ -60,22 +81,22 @@ export default function Checkout() {
             !state.trim() ||
             !pincode.trim()
         ) {
-            alert("Please fill all required fields");
+            toast.error("Please fill all required fields");
             return;
         }
 
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            alert("Enter a valid email address");
+            toast.error("Enter a valid email address");
             return;
         }
 
         if (!/^\d{10}$/.test(phone)) {
-            alert("Enter a valid mobile number");
+            toast.error("Enter a valid mobile number");
             return;
         }
 
         if (!/^\d{6}$/.test(pincode)) {
-            alert("Enter a valid pincode");
+            toast.error("Enter a valid pincode");
             return;
         }
 
@@ -102,7 +123,7 @@ export default function Checkout() {
 
             pincode,
 
-            products: cartItems.map((item: any) => ({
+            products: checkoutItems.map((item: any) => ({
                 productId: item._id,
                 name: item.name,
                 quantity: item.quantity,
@@ -113,7 +134,7 @@ export default function Checkout() {
 
             totalAmount: total + 300,
 
-            paymentMethod: "COD",
+            paymentMethod,
 
             trackingTimeline: [
                 {
@@ -123,46 +144,190 @@ export default function Checkout() {
             ],
         };
 
-        try {
+        if (paymentMethod === "COD") {
 
-            console.log("ORDER DATA:", orderData);
 
-            const response = await fetch(
-                "http://localhost:5000/api/orders",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(orderData),
+            try {
+
+                console.log("ORDER DATA:", orderData);
+
+                const response = await fetch(
+                    "http://localhost:5000/api/orders",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(orderData),
+                    }
+                );
+
+                const data = await response.json();
+
+                console.log("ORDER RESPONSE:", data);
+
+                if (!response.ok || !data.success) {
+                    toast.error(data.message || "Failed to place order");
+                    return;
                 }
-            );
 
-            const data = await response.json();
+                localStorage.removeItem("cart");
 
-            console.log("ORDER RESPONSE:", data);
+                toast.success(
+                    "Order placed successfully"
+                );
 
-            if (!response.ok || !data.success) {
-                alert(data.message || "Failed to place order");
-                return;
+                if (!buyNowProduct) {
+                    clearCart();
+                }
+
+                setTimeout(() => {
+
+                    navigate("/order-success", {
+                        state: {
+                            orderId: data.order._id,
+                        },
+                    });
+
+                }, 800);
+
+            } catch (error: any) {
+
+                console.error("PLACE ORDER FETCH ERROR:", error);
+
+                toast.error(error.message || "Server Error");
+
             }
 
-            localStorage.removeItem("cart");
+            return;
 
-            navigate("/order-success", {
-                state: {
-                    orderId: data.order._id,
-                },
-            });
+        }
+        if (
+            paymentMethod === "UPI" ||
+            paymentMethod === "CARD"
+        ) {
 
-            clearCart();
+            try {
 
-        } catch (error: any) {
+                const paymentResponse = await fetch(
+                    "http://localhost:5000/api/payment/create-order",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            amount: total + 300,
+                        }),
+                    }
+                );
 
-            console.error("PLACE ORDER FETCH ERROR:", error);
+                const paymentData =
+                    await paymentResponse.json();
 
-            alert(error.message || "Server Error");
+                if (!paymentData.success) {
+                    toast.error("Failed to create payment");
+                    return;
+                }
 
+                const options = {
+                    key: "rzp_test_SzPll8zWdp7N2C",
+                    amount: paymentData.order.amount,
+                    currency: "INR",
+                    name: "CosmoCartt",
+                    description: "Order Payment",
+                    order_id: paymentData.order.id,
+
+                    modal: {
+                        ondismiss: function () {
+
+                            toast.error(
+                                "Payment cancelled"
+                            );
+
+                        }
+                    },
+
+                    handler: async function (
+                        response: any
+                    ) {
+
+                        try {
+
+                            const verifyResponse =
+                                await fetch(
+                                    "http://localhost:5000/api/payment/verify",
+                                    {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type":
+                                                "application/json",
+                                        },
+                                        body: JSON.stringify(
+                                            response
+                                        ),
+                                    }
+                                );
+
+                            const verifyData =
+                                await verifyResponse.json();
+
+                            if (
+                                !verifyData.success
+                            ) {
+
+                                toast.error(
+                                    "Payment verification failed"
+                                );
+
+                                return;
+                            }
+
+                            console.log(
+                                "PAYMENT VERIFIED"
+                            );
+
+                        } catch (error) {
+
+                            console.error(error);
+
+                            toast.error(
+                                "Verification Error"
+                            );
+
+                        }
+                    },
+                };
+
+                const razorpay =
+                    new window.Razorpay(options);
+
+                razorpay.on(
+                    "payment.failed",
+                    function (response: any) {
+
+                        console.log(
+                            "PAYMENT FAILED",
+                            response
+                        );
+
+                        toast.error(
+                            "Payment failed. Please try again."
+                        );
+
+                    }
+                );
+
+                razorpay.open();
+
+            } catch (error) {
+
+                console.error(error);
+
+                toast.error("Payment Error");
+            }
+
+            return;
         }
     };
 
@@ -394,17 +559,32 @@ export default function Checkout() {
                             <div className="space-y-3">
 
                                 <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
-                                    <input type="radio" name="payment" defaultChecked />
+                                    <input
+                                        type="radio"
+                                        name="payment"
+                                        checked={paymentMethod === "COD"}
+                                        onChange={() => setPaymentMethod("COD")}
+                                    />
                                     <span>Cash on Delivery</span>
                                 </label>
 
                                 <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
-                                    <input type="radio" name="payment" />
+                                    <input
+                                        type="radio"
+                                        name="payment"
+                                        checked={paymentMethod === "UPI"}
+                                        onChange={() => setPaymentMethod("UPI")}
+                                    />
                                     <span>UPI Payment</span>
                                 </label>
 
                                 <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
-                                    <input type="radio" name="payment" />
+                                    <input
+                                        type="radio"
+                                        name="payment"
+                                        checked={paymentMethod === "CARD"}
+                                        onChange={() => setPaymentMethod("CARD")}
+                                    />
                                     <span>Credit / Debit Card</span>
                                 </label>
 
@@ -428,7 +608,7 @@ export default function Checkout() {
 </p>
 
                         <div className="space-y-3">
-                            {cartItems.map((item: any) => (
+                            {checkoutItems.map((item: any) => (
 
                                 <div
                                     key={item.id}
