@@ -92,6 +92,25 @@ export const CartProvider = ({
         localStorage.removeItem("cart");
     };
 
+    const buyNow = (
+        product: any,
+        quantity: number
+    ) => {
+
+        const item = {
+            ...product,
+            quantity
+        };
+
+        setCartItems([item]);
+
+        localStorage.setItem(
+            "cart",
+            JSON.stringify([item])
+        );
+
+    };
+
     const deleteItem = (_id: string) => {
 
         setCartItems((prev) =>
@@ -106,6 +125,7 @@ export const CartProvider = ({
             value={{
                 cartItems,
                 addToCart,
+                buyNow,
                 removeFromCart,
                 deleteItem,
                 clearCart

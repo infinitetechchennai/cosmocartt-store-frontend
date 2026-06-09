@@ -2,6 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export default function Orders() {
 
@@ -9,6 +10,51 @@ export default function Orders() {
 
     const [orders, setOrders] = useState<any[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const cancelOrder = async (
+        orderId: string
+    ) => {
+
+        try {
+
+            const response =
+                await fetch(
+                    `http://localhost:5000/api/orders/cancel/${orderId}`,
+                    {
+                        method: "PUT",
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!data.success) {
+
+                alert(
+                    data.message
+                );
+
+                return;
+            }
+
+            setOrders((prev) =>
+                prev.map((o) =>
+                    o._id === orderId
+                        ? data.order
+                        : o
+                )
+            );
+
+            setSelectedOrder(
+                data.order
+            );
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    };
 
     useEffect(() => {
         fetch(
@@ -166,7 +212,15 @@ export default function Orders() {
                                         className="mt-3 px-4 py-2 text-sm bg-[#4B1E78] text-white rounded hover:opacity-90"
                                     >
                                         View Details
-</button>
+                                    </button>
+
+                                    <Link
+                                        to={`/track-order/${order._id}`}
+                                        className="block mt-2 text-sm text-[#4B1E78] font-medium"
+                                    >
+                                        Track Order
+                                    </Link>
+
                                 </div>
 
                             </div>
@@ -204,23 +258,59 @@ export default function Orders() {
                         <div className="space-y-3 mb-6">
 
                             <p>
-                                <strong>Order ID:</strong>{" "}
+                                <strong>Order ID:</strong>
+                                {" "}
                                 {selectedOrder.orderNumber}
                             </p>
 
                             <p>
-                                <strong>Status:</strong>{" "}
+                                <strong>Status:</strong>
+                                {" "}
                                 {selectedOrder.status}
                             </p>
 
                             <p>
-                                <strong>Payment:</strong>{" "}
+                                <strong>Payment Status:</strong>
+                                {" "}
                                 {selectedOrder.paymentStatus}
                             </p>
 
                             <p>
-                                <strong>Total:</strong>{" "}
-                    ₹{selectedOrder.totalAmount?.toLocaleString()}
+                                <strong>Payment Method:</strong>
+                                {" "}
+                                {selectedOrder.paymentMethod}
+                            </p>
+
+                            <p>
+                                <strong>Order Date:</strong>
+                                {" "}
+                                {new Date(
+                                    selectedOrder.createdAt
+                                ).toLocaleString()}
+                            </p>
+
+                            <p>
+                                <strong>Customer:</strong>
+                                {" "}
+                                {selectedOrder.customerName}
+                            </p>
+
+                            <p>
+                                <strong>Phone:</strong>
+                                {" "}
+                                {selectedOrder.phone}
+                            </p>
+
+                            <p>
+                                <strong>Delivery Address:</strong>
+                                {" "}
+                                {selectedOrder.address},
+        {" "}
+                                {selectedOrder.city},
+        {" "}
+                                {selectedOrder.state}
+                                {" - "}
+                                {selectedOrder.pincode}
                             </p>
 
                         </div>
@@ -235,20 +325,91 @@ export default function Orders() {
 
                                 <div
                                     key={item.productId}
-                                    className="flex justify-between py-2"
+                                    className="flex justify-between items-center py-3 border-b"
                                 >
-                                    <span>
-                                        {item.name} × {item.quantity}
-                                    </span>
 
-                                    <span>
+                                    <div>
+
+                                        <p className="font-medium">
+                                            {item.name}
+                                        </p>
+
+                                        <p className="text-sm text-gray-500">
+                                            Qty: {item.quantity}
+                                        </p>
+
+                                        <p className="text-sm text-gray-500">
+                                            ₹{item.price.toLocaleString()}
+                                                each
+                                                    </p>
+
+                                    </div>
+
+                                    <span className="font-semibold">
                                         ₹{(
-                                            item.price * item.quantity
+                                            item.price *
+                                            item.quantity
                                         ).toLocaleString()}
                                     </span>
+
                                 </div>
 
+
+
+
                             ))}
+
+                        </div>
+
+                        {(
+                            selectedOrder.status ===
+                            "Order Placed" ||
+                            selectedOrder.status ===
+                            "Processing"
+                        ) && (
+
+                                <button
+                                    onClick={() =>
+                                        cancelOrder(
+                                            selectedOrder._id
+                                        )
+                                    }
+                                    className="mb-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                >
+                                    Cancel Order
+                                </button>
+
+                            )}
+
+                        <div className="border-t mt-6 pt-4 space-y-2">
+
+                            <div className="flex justify-between">
+                                <span>Subtotal</span>
+                                <span>
+                                    ₹{selectedOrder.subtotal?.toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span>Shipping</span>
+                                <span>
+                                    ₹{selectedOrder.shippingCharge?.toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span>Tax</span>
+                                <span>
+                                    ₹{selectedOrder.tax?.toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="flex justify-between text-lg font-bold pt-3 border-t">
+                                <span>Total</span>
+                                <span>
+                                    ₹{selectedOrder.totalAmount?.toLocaleString()}
+                                </span>
+                            </div>
 
                         </div>
 

@@ -3,12 +3,17 @@ import { useCart } from "../context/CartContext";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductDetails() {
 
     const { id } = useParams();
 
-    const { addToCart } = useCart();
+    const {
+        addToCart,
+        buyNow
+    } = useCart();
+    const navigate = useNavigate();
 
     const [quantity, setQuantity] = useState(1);
 
@@ -20,6 +25,7 @@ export default function ProductDetails() {
             .then((data) => {
                 if (data.success) {
                     setProduct(data.product);
+                    setQuantity(1);
                 }
             })
             .catch((err) => console.error(err));
@@ -175,7 +181,15 @@ export default function ProductDetails() {
 
                                 <button
                                     onClick={() =>
-                                        setQuantity((prev) => prev + 1)
+                                        setQuantity((prev) =>
+                                            prev < product.stock
+                                                ? prev + 1
+                                                : prev
+                                        )
+                                    }
+                                    disabled={
+                                        product.stock <= 0 ||
+                                        quantity >= product.stock
                                     }
                                     className="w-10 h-10 border rounded-lg"
                                 >
@@ -192,18 +206,38 @@ export default function ProductDetails() {
 
                             <button
                                 onClick={() => {
-                                    for (let i = 0; i < quantity; i++) {
-                                        addToCart(product);
+
+                                    if (product.stock <= 0) {
+                                        toast.error(
+                                            "Product is out of stock"
+                                        );
+                                        return;
                                     }
                                 }}
+                                disabled={product.stock <= 0}
                                 className="bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-xl font-semibold"
                             >
                                 Add To Cart
 </button>
 
-                            <button className="bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold">
+                            <button
+                                disabled={product.stock <= 0}
+                                onClick={() => {
+
+                                    navigate("/checkout", {
+                                        state: {
+                                            buyNowProduct: {
+                                                ...product,
+                                                quantity
+                                            }
+                                        }
+                                    });
+
+                                }}
+                                className="bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold disabled:bg-gray-300"
+                            >
                                 Buy Now
-              </button>
+</button>
 
                         </div>
 

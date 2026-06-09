@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
 import { useWishlist } from "../context/WishlistContext";
+import toast from "react-hot-toast";
 
 interface ProductCardProps {
     product: any;
@@ -145,6 +146,16 @@ export default function ProductCard({
                     <div className="mt-4 inline-flex items-center gap-2 bg-purple-50 text-[#4B1E78] px-3 py-1 rounded-full text-xs font-bold">
                         ✓ Premium Choice
           </div>
+                    {product.stock <= 0 && (
+                        <span className="inline-block bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">
+                            Out of Stock
+                        </span>
+                    )}
+                    {product.stock > 0 && product.stock <= 5 && (
+                        <span className="inline-block bg-amber-100 text-amber-700 text-xs font-medium px-2 py-1 rounded-full">
+                            Only {product.stock} Left
+                        </span>
+                    )}
 
                     <div className="mt-4 flex items-end gap-3">
 
@@ -170,14 +181,37 @@ export default function ProductCard({
 
             </Link>
 
+
+
             <div className="px-5 pb-5">
+                {/* {product.stock <= 0
+                    ? "Out of Stock"
+                    : "Add to Cart"} */}
 
                 <button
-                    onClick={() => addToCart(product)}
-                    className="w-full bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD] text-white py-3 rounded-2xl font-bold tracking-wide shadow-lg hover:shadow-purple-300 hover:scale-[1.03] active:scale-95 transition-all duration-300"
+                    onClick={() => {
+
+                        if (product.stock <= 0) {
+
+                            toast.error(
+                                "This product is currently out of stock"
+                            );
+
+                            return;
+                        }
+
+                        addToCart(product);
+
+                        toast.success(
+                            "Added to cart"
+                        );
+
+                    }}
+                    className="w-full rounded-xl py-2 font-medium bg-[#4B1E78] text-white hover:bg-[#39155d]"
                 >
                     Add To Cart
-        </button>
+</button>
+
 
             </div>
 

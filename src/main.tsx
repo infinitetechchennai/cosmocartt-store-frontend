@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import {
   WishlistProvider
 } from "./context/WishlistContext";
+import { Toaster } from "react-hot-toast";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
@@ -19,6 +20,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <WishlistProvider>
 
           <App />
+
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+            }}
+          />
 
         </WishlistProvider>
 
