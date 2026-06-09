@@ -1,7 +1,9 @@
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 export default function Register() {
@@ -16,6 +18,8 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
+    
+    const [showPassword, setShowPassword] = useState(false);
 
     // B2B
 
@@ -124,7 +128,7 @@ export default function Register() {
                     </motion.div>
                 )}
             </AnimatePresence>
-            <div className="max-w-6xl mx-auto py-8 px-6">
+            <div className="max-w-6xl mx-auto py-2 px-6">
 
 
                 <div className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-white shadow-2xl">
@@ -189,7 +193,7 @@ export default function Register() {
 
                     {/* RIGHT SIDE */}
 
-                    <div className="p-6 lg:p-8">
+                    <div className="p-5 lg:p-6">
 
                         <h1 className="text-4xl font-bold text-center">
                             Create Account
@@ -281,13 +285,25 @@ export default function Register() {
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
 
-                                        <input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="Password"
-                                            className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-                                        />
+                                        <div className="relative">
+
+    <input
+        type={showPassword ? "text" : "password"}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
+    />
+
+    <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
+    >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+    </button>
+
+</div>
 
                                     </motion.div>
 
@@ -352,13 +368,25 @@ export default function Register() {
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
 
-                                        <input
-                                            type="password"
-                                            placeholder="Password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-                                        />
+                                        <div className="relative">
+
+    <input
+        type={showPassword ? "text" : "password"}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
+    />
+
+    <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
+    >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+    </button>
+
+</div>
 
                                     </motion.div>
 
@@ -366,14 +394,106 @@ export default function Register() {
 
                             </AnimatePresence>
 
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={handleRegister}
-                                className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
-                            >
-                                {loading ? "Creating..." : "Create Account"}
-                            </motion.button>
+<motion.button
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
+    onClick={handleRegister}
+    className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
+>
+    {loading ? "Creating..." : "Create Account"}
+</motion.button>
+
+<div className="relative my-8">
+
+    <div className="border-t border-slate-200"></div>
+
+    <span
+        className="
+        absolute
+        left-1/2
+        -translate-x-1/2
+        -top-3
+        bg-white
+        px-4
+        text-xs
+        font-semibold
+        text-slate-400
+        uppercase
+        tracking-[3px]
+        "
+    >
+        Continue With
+    </span>
+
+</div>
+
+<div className="grid grid-cols-2 gap-5">
+
+    <button
+        type="button"
+        className="
+        flex
+        items-center
+        justify-center
+        gap-3
+        h-14
+        rounded-2xl
+        border-2
+        border-slate-300
+        bg-white
+        font-semibold
+        text-[15px]
+        shadow-md
+        hover:shadow-xl
+        hover:border-slate-400
+        hover:-translate-y-1
+        transition-all
+        duration-300
+        "
+    >
+        <FcGoogle size={24} />
+        Google
+    </button>
+
+    <button
+        type="button"
+        className="
+        flex
+        items-center
+        justify-center
+        gap-3
+        h-14
+        rounded-2xl
+        border-2
+        border-slate-300
+        bg-white
+        font-semibold
+        text-[15px]
+        shadow-md
+        hover:shadow-xl
+        hover:border-slate-400
+        hover:-translate-y-1
+        transition-all
+        duration-300
+        "
+    >
+        <FaGithub size={22} />
+        GitHub
+    </button>
+
+</div>
+                            <p className="text-center text-sm text-zinc-500 mt-5">
+
+    Already have an account?
+
+    <Link
+        to="/login"
+        className="text-[#4B1E78] ml-2 font-semibold hover:underline"
+    >
+        Login
+    </Link>
+
+</p>
 
                         </div>
 

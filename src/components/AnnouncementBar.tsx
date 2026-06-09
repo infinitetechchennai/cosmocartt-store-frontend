@@ -1,22 +1,43 @@
+import {
+    Truck,
+    ShieldCheck,
+    Star,
+    Zap
+} from "lucide-react";
+
 export default function AnnouncementBar() {
     return (
-        <div className="bg-black text-white text-sm">
+        <div className="bg-[#491D76] text-white shadow-md">
 
-            <div className="max-w-7xl mx-auto px-6 py-2 flex justify-center md:justify-between items-center">
+            <div className="max-w-7xl mx-auto px-6">
 
-                <p>
-                    🚚 Free Shipping on Orders Above ₹999
-                </p>
+                <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 py-3 text-sm font-medium">
 
-                <div className="hidden md:flex gap-8">
+                    <div className="flex items-center gap-2">
+                        <Truck size={16} />
+                        <span>Free Shipping Above ₹999</span>
+                    </div>
 
-                    <span>
-                        🔒 Secure Payments
-                    </span>
+                    <div className="hidden md:block h-4 w-px bg-white/30"></div>
 
-                    <span>
-                        ⭐ Trusted by Customers
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <ShieldCheck size={16} />
+                        <span>100% Secure Payments</span>
+                    </div>
+
+                    <div className="hidden md:block h-4 w-px bg-white/30"></div>
+
+                    <div className="flex items-center gap-2">
+                        <Star size={16} />
+                        <span>Trusted by 10,000+ Customers</span>
+                    </div>
+
+                    <div className="hidden md:block h-4 w-px bg-white/30"></div>
+
+                    <div className="flex items-center gap-2">
+                        <Zap size={16} />
+                        <span>Fast Delivery Across India</span>
+                    </div>
 
                 </div>
 

@@ -115,7 +115,7 @@ export default function Footer() {
         <img
             src={instagramIcon}
             alt="Instagram"
-            className="w-6 h-6 object-contain"
+            className="w-8 h-8 object-contain"
         />
     </button>
 
@@ -123,7 +123,7 @@ export default function Footer() {
         <img
             src={youtubeIcon}
             alt="YouTube"
-            className="w-6 h-6 object-contain"
+            className="w-10 h-10 object-contain"
         />
     </button>
 
@@ -131,7 +131,7 @@ export default function Footer() {
         <img
             src={googleIcon}
             alt="Google"
-            className="w-6 h-6 object-contain"
+            className="w-10 h-10 object-contain"
         />
     </button>
 
@@ -139,7 +139,7 @@ export default function Footer() {
         <img
             src={githubIcon}
             alt="GitHub"
-            className="w-6 h-6 object-contain"
+            className="w-10 h-10 object-contain"
         />
     </button>
 
@@ -199,10 +199,13 @@ export default function Footer() {
         <span className="opacity-0 group-hover:opacity-100">→</span>
     </Link>
 
-    <a className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2">
-        <span>Wishlist</span>
-        <span className="opacity-0 group-hover:opacity-100">→</span>
-    </a>
+    <Link
+    to="/wishlist"
+    className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2"
+>
+    <span>Wishlist</span>
+    <span className="opacity-0 group-hover:opacity-100">→</span>
+</Link>
 
     <a className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-2">
         <span>Order Tracking</span>

@@ -48,7 +48,14 @@ export default function Hero() {
     <section className="bg-slate-50 py-6 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
 
-        <div className="relative overflow-hidden rounded-3xl shadow-2xl">
+        <div className="
+relative
+overflow-hidden
+rounded-3xl
+shadow-2xl
+border
+border-purple-300/20
+">
 
           {/* Progress Bar */}
 
@@ -67,25 +74,28 @@ export default function Hero() {
 
           </div>
 
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
 
             <motion.div
-              key={current}
-              initial={{
-                x: 40,
-              }}
-              animate={{
-                x: 0,
-              }}
-              exit={{
-                x: -40,
-              }}
-              transition={{
-                duration: 0.45,
-                ease: "easeOut",
-              }}
-              className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
-            >
+  key={current}
+  initial={{
+    opacity: 0,
+    x: 60,
+  }}
+  animate={{
+    opacity: 1,
+    x: 0,
+  }}
+  exit={{
+    opacity: 0,
+    x: -60,
+  }}
+  transition={{
+    duration: 0.7,
+    ease: "easeInOut",
+  }}
+  className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
+>
               <div className="grid lg:grid-cols-2 items-center">
 
                 {/* LEFT */}
@@ -96,9 +106,15 @@ export default function Hero() {
                     India's Trusted Electronics Marketplace
                   </span>
 
-                  <h1 className="text-5xl md:text-6xl font-black mt-6 leading-tight">
-                    {slides[current].title}
-                  </h1>
+                  <motion.h1
+  key={slides[current].title}
+  initial={{ opacity: 0, y: 25 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.2, duration: 0.6 }}
+  className="text-5xl md:text-6xl font-black mt-6 leading-tight"
+>
+  {slides[current].title}
+</motion.h1>
 
                   <div
                     className="
@@ -116,15 +132,21 @@ export default function Hero() {
                     ⚡ Limited Time Offer
 </div>
 
-                  <p className="mt-4 text-xl text-gray-200">
-                    {slides[current].subtitle}
-                  </p>
+                  <motion.p
+  key={slides[current].subtitle}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.35, duration: 0.6 }}
+  className="mt-4 text-xl text-gray-200"
+>
+  {slides[current].subtitle}
+</motion.p>
 
                   <div className="flex gap-4 mt-8">
 
                     <Link
                       to="/products"
-                      className="bg-white text-[#4B1E78] px-8 py-4 rounded-xl font-bold hover:scale-105 transition"
+                      className="bg-white text-[#4B1E78] px-8 py-4 rounded-xl font-bold hover:scale-105 transition-all duration-300"
                     >
                       Shop Now
                     </Link>
@@ -136,6 +158,30 @@ export default function Hero() {
 
 
                   </div>
+                  <div className="flex gap-8 mt-10 flex-wrap">
+
+  <div>
+    <h3 className="text-3xl font-black">50K+</h3>
+    <p className="text-purple-200 text-sm">
+      Happy Customers
+    </p>
+  </div>
+
+  <div>
+    <h3 className="text-3xl font-black">1000+</h3>
+    <p className="text-purple-200 text-sm">
+      Products
+    </p>
+  </div>
+
+  <div>
+    <h3 className="text-3xl font-black">50+</h3>
+    <p className="text-purple-200 text-sm">
+      Brands
+    </p>
+  </div>
+
+</div>
 
                 </div>
 
@@ -143,16 +189,29 @@ export default function Hero() {
 
                 <div className="relative">
 
-                  <img
-                    src={slides[current].image}
-                    alt={slides[current].title}
-                    className="w-full h-[500px] object-cover"
-                  />
+  <motion.img
+  key={slides[current].image}
+  src={slides[current].image}
+  alt={slides[current].title}
+  initial={{
+    scale: 1.08,
+  }}
+  animate={{
+    scale: 1,
+  }}
+  transition={{
+    duration: 5,
+    ease: "easeOut",
+  }}
+  className="w-full h-[600px] object-cover"
+/>
 
-                  <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#2B1055]/30"></div>
+  <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#2B1055]/30"></div>
 
 
-                </div>
+
+
+</div>
 
               </div>
             </motion.div>
@@ -163,7 +222,11 @@ export default function Hero() {
 
           <button
             onClick={prevSlide}
-            className="absolute left-5 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
+            className="absolute left-5 top-1/2 -translate-y-1/2 bg-white/70
+hover:bg-white
+hover:scale-110
+transition-all
+duration-300 h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
           >
             ❮
           </button>
@@ -172,7 +235,11 @@ export default function Hero() {
 
           <button
             onClick={nextSlide}
-            className="absolute right-5 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
+            className="absolute right-5 top-1/2 -translate-y-1/2 bg-white/70
+hover:bg-white
+hover:scale-110
+transition-all
+duration-300 h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
           >
             ❯
           </button>

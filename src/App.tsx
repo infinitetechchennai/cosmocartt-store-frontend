@@ -19,10 +19,9 @@ import Wishlist from "./pages/Wishlist";
 export default function App() {
   return (
     <>
-      {/* <ScrollToTop /> */}
+      <ScrollToTop />
 
       <Routes>
-
         <Route
           path="/"
           element={<Home />}

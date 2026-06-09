@@ -19,7 +19,7 @@ body {
         brightness(0)
         invert(1)
         drop-shadow(0 0 8px rgba(255,255,255,0.7))
-        drop-shadow(0 0 18px rgba(255,255,255,0.45));
+        drop-shadow(0 0 18px rgba(105, 54, 54, 0.45));
     transition: all 0.35s ease;
 }
 
@@ -62,9 +62,11 @@ body {
     0% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.15);
     }
+
     100% {
         transform: scale(1);
     }
@@ -73,6 +75,8 @@ body {
 .cart-badge {
     animation: pulseCart 2s infinite;
 }
+
+/* Logo glow animation */
 @keyframes logoGlow {
     0% {
         filter: drop-shadow(0 0 8px rgba(255,255,255,.5));
@@ -90,6 +94,8 @@ body {
 .logo-glow {
     animation: logoGlow 3s ease-in-out infinite;
 }
+
+/* Fade animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -104,4 +110,26 @@ body {
 
 .animate-fadeIn {
     animation: fadeIn 0.4s ease;
+}
+
+/* ==========================================
+   HIDE BROWSER PASSWORD EYE ICONS
+   ========================================== */
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input::-ms-reveal {
+    display: none;
+}
+
+input::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    display: none !important;
+}
+
+input::-webkit-textfield-decoration-container {
+    display: none !important;
 }

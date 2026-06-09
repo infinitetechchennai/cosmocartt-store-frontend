@@ -3,6 +3,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -54,9 +57,9 @@ export default function Login() {
 
                     {/* RIGHT SIDE */}
 
-                    <div className="p-5 lg:p-8">
+                    <div className="p-8 lg:p-10">
 
-                        <h1 className="text-4xl font-bold text-center">
+                        <h1 className="text-5xl font-black text-center tracking-tight">
                             Welcome Back
                         </h1>
 
@@ -64,15 +67,60 @@ export default function Login() {
                             Login to your CosmoCartt account
                         </p>
 
-                        <motion.div
-                            initial={{ opacity: 0, y: 25 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
-                            className="mt-6 space-y-3">
+                        <form
+    onSubmit={async (e) => {
+        e.preventDefault();
+
+        try {
+            setLoading(true);
+
+            const response = await fetch(
+                "http://localhost:5000/api/customers/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+                alert(data.message);
+                return;
+            }
+
+            login(data.customer);
+
+            navigate("/");
+
+        } catch (error) {
+
+            console.error(error);
+            alert("Login failed");
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    }}
+>
+<motion.div
+    initial={{ opacity: 0, y: 25 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+    className="mt-6 space-y-3"
+>
 
 
                             <input
-                                type="text"
+                                type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Email"
@@ -100,9 +148,12 @@ export default function Login() {
                                             !showPassword
                                         )
                                     }
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
-                                >
-                                    {showPassword ? "🙈" : "👁️"}
+className="absolute right-4 top-1/2 -translate-y-1/2 text-black"                                >
+                                    {showPassword ? (
+  <EyeOff size={20} />
+) : (
+  <Eye size={20} />
+)}
                                 </button>
 
                             </div>
@@ -126,78 +177,94 @@ export default function Login() {
                         </motion.div>
 
                         <motion.button
+                        type="submit"
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={async () => {
-
-                                try {
-
-                                    setLoading(true);
-
-                                    const response = await fetch(
-                                        "http://localhost:5000/api/customers/login",
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/json"
-                                            },
-                                            body: JSON.stringify({
-                                                email,
-                                                password
-                                            })
-                                        }
-                                    );
-
-                                    const data = await response.json();
-
-                                    if (!data.success) {
-                                        alert(data.message);
-                                        return;
-                                    }
-
-                                    login(data.customer);
-
-                                    navigate("/");
-
-                                } catch (error) {
-
-                                    console.error(error);
-
-                                    alert("Login failed");
-
-                                } finally {
-
-                                    setLoading(false);
-
-                                }
-
-                            }}
+        
                             className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
                         >
                             {loading ? "Logging In..." : "Login"}
                         </motion.button>
 
-                        <div className="relative my-6">
+                        <div className="relative my-8">
 
-                            <div className="border-t"></div>
+    <div className="border-t border-slate-200"></div>
 
-                            <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white px-3 text-sm text-gray-400">
-                                OR
-                            </span>
+    <span
+        className="
+        absolute
+        left-1/2
+        -translate-x-1/2
+        -top-3
+        bg-white
+        px-4
+        text-xs
+        font-semibold
+        text-slate-400
+        uppercase
+        tracking-[3px]
+        "
+    >
+        Continue With
+    </span>
 
-                        </div>
+</div>
 
-                        <div className="grid grid-cols-2 gap-3">
+<div className="grid grid-cols-2 gap-5">
 
-                            <button className="border rounded-xl py-3 font-medium hover:bg-slate-50 transition">
-                                Google
-                            </button>
+    <button
+        type="button"
+        className="
+        flex
+        items-center
+        justify-center
+        gap-3
+        h-14
+        rounded-2xl
+        border-2
+        border-slate-300
+        bg-white
+        font-semibold
+        text-[15px]
+        shadow-md
+        hover:shadow-xl
+        hover:border-slate-400
+        hover:-translate-y-1
+        transition-all
+        duration-300
+        "
+    >
+        <FcGoogle size={24} />
+        Google
+    </button>
 
-                            <button className="border rounded-xl py-3 font-medium hover:bg-slate-50 transition">
-                                GitHub
-                            </button>
+    <button
+        type="button"
+        className="
+        flex
+        items-center
+        justify-center
+        gap-3
+        h-14
+        rounded-2xl
+        border-2
+        border-slate-300
+        bg-white
+        font-semibold
+        text-[15px]
+        shadow-md
+        hover:shadow-xl
+        hover:border-slate-400
+        hover:-translate-y-1
+        transition-all
+        duration-300
+        "
+    >
+        <FaGithub size={22} />
+        GitHub
+    </button>
 
-                        </div>
+</div>
 
                         <p className="text-center text-sm text-zinc-500 mt-5">
 
@@ -211,6 +278,7 @@ export default function Login() {
                             </a>
 
                         </p>
+                        </form>
 
                     </div>
 

@@ -3,6 +3,8 @@ import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import { Trash2 } from "lucide-react";
+import { products } from "../data/products";
+import { useState } from "react";
 
 export default function Cart() {
   const {
@@ -21,6 +23,32 @@ export default function Cart() {
   const shipping = subtotal > 0 ? 0 : 0;
   const discount = 0;
   const total = subtotal - discount + shipping;
+  const [recommendPage, setRecommendPage] =
+  useState(1);
+
+const recommendPerPage = 4;
+
+const recommendedProducts =
+  products.filter(
+    (product) =>
+      !cartItems.some(
+        (item: any) =>
+          item._id === product._id
+      )
+  );
+
+const recommendTotalPages = Math.ceil(
+  recommendedProducts.length /
+    recommendPerPage
+);
+
+const visibleRecommended =
+  recommendedProducts.slice(
+    (recommendPage - 1) *
+      recommendPerPage,
+    recommendPage * recommendPerPage
+  );
+  
 
   return (
     <div className="min-h-screen bg-[#f6f6f6]">
@@ -156,22 +184,7 @@ export default function Cart() {
                   </div>
                 ))}
               </div>
-
-              {/* UPDATE BUTTON */}
-
-              <button
-                className="
-                  mt-8
-                  px-8
-                  py-4
-                  rounded-full
-                  bg-black
-                  text-white
-                  font-semibold
-                "
-              >
-                Update Cart
-              </button>
+              
             </div>
 
             {/* RIGHT */}
@@ -266,15 +279,20 @@ export default function Cart() {
               <Link
                 to="/checkout"
                 className="
-                  block
-                  text-center
-                  mt-8
-                  py-4
-                  rounded-full
-                  bg-black
-                  text-white
-                  font-semibold
-                "
+  block
+  text-center
+  mt-8
+  py-4
+  rounded-2xl
+  bg-gradient-to-r
+  from-[#4B1E78]
+  to-[#6F2DBD]
+  text-white
+  font-bold
+  shadow-lg
+  hover:scale-[1.02]
+  transition-all
+"
               >
                 Checkout Now
               </Link>
@@ -283,7 +301,139 @@ export default function Cart() {
         )}
       </div>
 
-      <Footer />
+{/* RECOMMENDED PRODUCTS */}
+
+<div className="max-w-7xl mx-auto px-6 pb-16">
+
+  <div className="flex items-center justify-between mb-8">
+
+    <div>
+      <h2 className="text-3xl font-bold">
+        You May Also Like
+      </h2>
+
+      <p className="text-slate-500 mt-2">
+        Recommended products for you
+      </p>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+
+  {visibleRecommended.map((product: any) => (
+
+    <div
+      key={product._id}
+      className="
+  group
+  bg-white
+  rounded-3xl
+  border
+  border-slate-200
+  overflow-hidden
+  hover:shadow-2xl
+  hover:-translate-y-2
+  transition-all
+  duration-300
+"
+    >
+
+      <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
+
+        <img
+          src={product.image}
+          alt={product.name}
+          className="
+  h-40
+  object-contain
+  group-hover:scale-110
+  transition-all
+  duration-300
+"
+        />
+
+      </div>
+
+      <div className="p-5">
+
+        <h3 className="font-semibold line-clamp-2">
+          {product.name}
+        </h3>
+
+        <p className="mt-3 text-2xl font-bold text-[#6F2DBD]">
+          ₹{product.retailPrice}
+        </p>
+
+        <button
+          onClick={() => addToCart(product)}
+          className="
+            w-full
+            mt-4
+            py-3
+            rounded-xl
+            bg-[#6F2DBD]
+            text-white
+          "
+        >
+          Add To Cart
+        </button>
+
+      </div>
+
+    </div>
+
+  ))}
+
+</div>
+<div className="flex justify-center gap-3 mt-10">
+
+  <button
+    onClick={() =>
+      setRecommendPage((p) =>
+        Math.max(1, p - 1)
+      )
+    }
+    disabled={recommendPage === 1}
+    className="px-4 py-2 border rounded-xl"
+  >
+    ←
+  </button>
+
+  <span
+    className="
+      px-5
+      py-2
+      bg-[#6F2DBD]
+      text-white
+      rounded-xl
+    "
+  >
+    {recommendPage}
+  </span>
+
+  <button
+    onClick={() =>
+      setRecommendPage((p) =>
+        Math.min(
+          recommendTotalPages,
+          p + 1
+        )
+      )
+    }
+    disabled={
+      recommendPage ===
+      recommendTotalPages
+    }
+    className="px-4 py-2 border rounded-xl"
+  >
+    →
+  </button>
+
+</div>
+    </div>
+
+  </div>
+
+</div>
+
+<Footer />
     </div>
   );
 }
