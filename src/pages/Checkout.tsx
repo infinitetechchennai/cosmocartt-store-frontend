@@ -231,7 +231,7 @@ export default function Checkout() {
                 }
 
                 const options = {
-                    key: "rzp_test_SzPll8zWdp7N2C",
+                    key: "rzp_test_SzWOSqm0kgH1d3",
                     amount: paymentData.order.amount,
                     currency: "INR",
                     name: "CosmoCartt",
@@ -285,6 +285,59 @@ export default function Checkout() {
 
                             console.log(
                                 "PAYMENT VERIFIED"
+                            );
+
+                            const orderResponse = await fetch(
+                                "http://localhost:5000/api/orders",
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                        ...orderData,
+                                        paymentStatus: "Paid",
+                                        razorpayPaymentId:
+                                            response.razorpay_payment_id,
+                                        razorpayOrderId:
+                                            response.razorpay_order_id,
+                                    }),
+                                }
+                            );
+
+                            const orderResult =
+                                await orderResponse.json();
+
+                            if (
+                                !orderResponse.ok ||
+                                !orderResult.success
+                            ) {
+
+                                toast.error(
+                                    "Failed to save order"
+                                );
+
+                                return;
+                            }
+
+                            localStorage.removeItem("cart");
+
+                            if (!buyNowProduct) {
+                                clearCart();
+                            }
+
+                            toast.success(
+                                "Order placed successfully"
+                            );
+
+                            navigate(
+                                "/order-success",
+                                {
+                                    state: {
+                                        orderId:
+                                            orderResult.order._id,
+                                    },
+                                }
                             );
 
                         } catch (error) {

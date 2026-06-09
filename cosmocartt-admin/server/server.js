@@ -9,12 +9,19 @@ import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
-
+import shiprocketRoutes
+  from "./routes/shiprocketRoutes.js";
 
 
 dotenv.config();
 
 const app = express();
+
+app.use(
+  "/api/shiprocket",
+  shiprocketRoutes
+);
+
 
 app.use(
   cors({
