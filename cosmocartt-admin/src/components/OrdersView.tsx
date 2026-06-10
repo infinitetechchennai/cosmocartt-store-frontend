@@ -19,7 +19,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
     useState<Order | null>(null);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
-  const [statusFilter, setStatusFilter] = useState<"All" | "Order Placed" | "Processing" | "Shipped" | "Delivered" | "Cancelled">("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | "Order Placed" | "Shipped" | "Delivered" | "Cancelled">("All");
 
   const filteredOrders = orders.filter((o) => {
 
@@ -43,6 +43,75 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
     return matchesSearch && matchesStatus;
   });
+
+  const createShipment = async (
+    orderId: string
+  ) => {
+
+    try {
+
+      const response = await fetch(
+        `http://localhost:5000/api/shiprocket/create-shipment/${orderId}`
+      );
+
+      console.log(
+        "STATUS:",
+        response.status
+      );
+
+      console.log(
+        "OK:",
+        response.ok
+      );
+
+      const text =
+        await response.text();
+
+      console.log(
+        "RAW RESPONSE:",
+        text
+      );
+
+      const data =
+        JSON.parse(text);
+
+      console.log(
+        "SHIPMENT RESPONSE",
+        data
+      );
+
+      if (!data.success) {
+
+        alert(
+          data.error?.message ||
+          "Shipment creation failed"
+        );
+
+        return;
+      }
+
+      window.location.reload();
+
+      alert(
+        "Shipment created successfully"
+      );
+
+    } catch (error: any) {
+
+      console.error(
+        "CREATE SHIPMENT ERROR",
+        error
+      );
+
+      alert(
+        error?.message ||
+        "Shipment creation failed"
+      );
+
+    }
+
+  };
+
 
   const updateStatus = async (
     id: string,
@@ -90,11 +159,11 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
     }
   };
 
-  const processSelectedOrders = async () => {
+  const createSelectedShipments = async () => {
 
     try {
 
-      const updatedOrders = await Promise.all(
+      await Promise.all(
 
         selectedOrders
           .filter((id) => {
@@ -104,51 +173,27 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
             return (
               order &&
-              order.status === "Order Placed"
+              !order.shipmentId
             );
           })
           .map(async (id) => {
 
-            const response = await fetch(
-              `http://localhost:5000/api/orders/${id}`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  status: "Processing",
-                }),
-              }
+            await fetch(
+              `http://localhost:5000/api/shiprocket/create-shipment/${id}`
             );
-
-            const data = await response.json();
-
-            return data.order;
 
           })
 
       );
 
-      setOrders(
-        orders.map((order) => {
-
-          const updated = updatedOrders.find(
-            (o) => o._id === order._id
-          );
-
-          return updated || order;
-
-        })
-      );
-
-      setSelectedOrders([]);
+      window.location.reload();
 
     } catch (error) {
 
       console.error(error);
 
     }
+
   };
 
   const exportOrdersCSV = () => {
@@ -267,7 +312,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
         <div className="flex items-center gap-3 flex-wrap">
 
           <button
-            onClick={processSelectedOrders}
+            onClick={createSelectedShipments}
             disabled={
               selectedOrders.filter((id) => {
                 const order = orders.find(
@@ -276,7 +321,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
                 return (
                   order &&
-                  order.status === "Order Placed"
+                  !order.shipmentId
                 );
               }).length === 0
             }
@@ -290,7 +335,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
       disabled:opacity-50
     "
           >
-            Process Selected Orders
+            Create Shipment
   </button>
 
           <button
@@ -327,7 +372,6 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
           >
             <option value="All">All Statuses</option>
             <option value="Order Placed">Order Placed</option>
-            <option value="Processing">Processing</option>
             <option value="Shipped">Shipped</option>
             <option value="Delivered">Delivered</option>
             <option value="Cancelled">Cancelled</option>
@@ -373,6 +417,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   />
                 </th>
                 <th className="px-6 py-4">Order ID</th>
+                <th className="px-6 py-4">Shipment</th>
                 <th className="px-6 py-4">Products</th>
                 <th className="px-6 py-4">Qty</th>
                 <th className="px-6 py-4">Grand GTV</th>
@@ -422,6 +467,43 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                       {order.orderNumber || order._id.slice(-8)}
                     </td>
 
+                    <td className="px-6 py-4">
+
+                      {order.shipmentId ? (
+
+                        <span
+                          className="
+        px-2
+        py-1
+        rounded-full
+        text-xs
+        bg-green-100
+        text-green-700
+      "
+                        >
+                          Created
+                        </span>
+
+                      ) : (
+
+                        <span
+                          className="
+        px-2
+        py-1
+        rounded-full
+        text-xs
+        bg-orange-100
+        text-orange-700
+      "
+                        >
+                          Pending
+                        </span>
+
+                      )}
+
+                    </td>
+
+
                     <td className="px-6 py-4 font-medium text-zinc-800">
                       {order.products
                         ?.map((p) => p.name)
@@ -447,15 +529,21 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${order.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                        order.status === "Pending" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                          order.status === "Processing" ? "bg-blue-50 text-blue-700 border-blue-200" :
-                            "bg-red-50 text-red-700 border-red-200"
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${order.status === "Delivered"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : order.status === "Shipped"
+                          ? "bg-blue-50 text-blue-700 border-blue-200"
+                          : order.status === "Order Placed"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-red-50 text-red-700 border-red-200"
                         }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${order.status === "Delivered" ? "bg-emerald-500" :
-                          order.status === "Pending" ? "bg-amber-500" :
-                            order.status === "Processing" ? "bg-blue-500" :
-                              "bg-red-500"
+                        <span className={`w-1.5 h-1.5 rounded-full ${order.status === "Delivered"
+                          ? "bg-emerald-500"
+                          : order.status === "Shipped"
+                            ? "bg-blue-500"
+                            : order.status === "Order Placed"
+                              ? "bg-amber-500"
+                              : "bg-red-500"
                           }`}></span>
                         {order.status}
                       </span>
@@ -466,23 +554,22 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                       <div className="flex items-center justify-end gap-1.5">
                         {order.status !== "Delivered" && order.status !== "Cancelled" && (
                           <>
-                            {order.status === "Order Placed" && (
-                              <button
-                                onClick={() => updateStatus(order._id, "Processing")}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded"
-                              >
-                                Process
-                              </button>
-                            )}
 
-                            {order.status === "Processing" && (
-                              <button
-                                onClick={() => updateStatus(order._id, "Shipped")}
-                                className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded"
-                              >
-                                Ship
-                              </button>
-                            )}
+
+                            {order.shipmentId &&
+                              order.status === "Order Placed" && (
+                                <button
+                                  onClick={() =>
+                                    updateStatus(
+                                      order._id,
+                                      "Shipped"
+                                    )
+                                  }
+                                  className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded"
+                                >
+                                  Ship
+                                </button>
+                              )}
 
                             {order.status === "Shipped" && (
                               <button
@@ -503,6 +590,29 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                             </button>
                           </>
                         )}
+
+                        {
+                          !order.shipmentId &&
+                          order.status !== "Cancelled" &&
+                          order.status !== "Delivered" && (
+                            <button
+                              onClick={() =>
+                                createShipment(order._id)
+                              }
+                              className="
+        px-2
+        py-1
+        text-xs
+        bg-purple-100
+        text-purple-700
+        rounded
+      "
+                            >
+                              🚚 Create Shipment
+                            </button>
+                          )
+                        }
+
                         <button
                           onClick={() => setSelectedOrder(order)}
                           className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded"
@@ -648,6 +758,20 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                 </span>
               </div>
 
+              {selectedOrder.shipmentId && (
+                <p>
+                  <strong>Shipment ID:</strong>{" "}
+                  {selectedOrder.shipmentId}
+                </p>
+              )}
+
+              {selectedOrder.shiprocketOrderId && (
+                <p>
+                  <strong>Shiprocket Order ID:</strong>{" "}
+                  {selectedOrder.shiprocketOrderId}
+                </p>
+              )}
+
               <div className="flex justify-between text-lg font-bold">
                 <span>Total Amount</span>
 
@@ -655,6 +779,8 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   ₹{selectedOrder.totalAmount}
                 </span>
               </div>
+
+
 
             </div>
 

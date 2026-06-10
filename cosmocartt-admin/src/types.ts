@@ -71,15 +71,28 @@ export interface User {
 export interface Order {
   _id: string;
 
+  orderNumber?: string;
+
   customerName: string;
 
   email: string;
 
   totalAmount: number;
 
+  shiprocketOrderId?: string;
+
+  shipmentId?: string;
+
+  awbCode?: string;
+
+  courierName?: string;
+
+  shippingStatus?: string;
+
+  paymentStatus?: string;
+
   status:
   | "Order Placed"
-  | "Processing"
   | "Shipped"
   | "Delivered"
   | "Cancelled";

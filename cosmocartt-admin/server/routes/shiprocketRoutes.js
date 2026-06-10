@@ -54,6 +54,36 @@ router.get(
 
             }
 
+            if (
+                !order.phone ||
+                !order.address ||
+                !order.city ||
+                !order.state ||
+                !order.pincode
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    error: {
+                        message:
+                            "Order missing shipping details"
+                    }
+                });
+
+            }
+
+            if (order.shipmentId) {
+
+                return res.json({
+                    success: true,
+                    message:
+                        "Shipment already exists",
+                    shipmentId:
+                        order.shipmentId
+                });
+
+            }
+
             const shipmentData =
                 await createShipment(
                     order
@@ -72,10 +102,19 @@ router.get(
 
             await order.save();
 
+            console.log(
+                "ORDER SAVED:",
+                order._id
+            );
+
             res.json({
                 success: true,
                 shipmentData
             });
+
+            console.log(
+                "SUCCESS RESPONSE SENT"
+            );
 
         } catch (error) {
 
