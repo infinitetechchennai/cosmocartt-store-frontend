@@ -16,6 +16,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import OrderTracking from "./pages/OrderTracking";
+import RazorpayTest from "./pages/RazorpayTest";
 
 export default function App() {
   return (
@@ -80,6 +81,11 @@ export default function App() {
         <Route
           path="/wishlist"
           element={<Wishlist />}
+        />
+
+        <Route
+          path="/razorpay-test"
+          element={<RazorpayTest />}
         />
 
       </Routes>

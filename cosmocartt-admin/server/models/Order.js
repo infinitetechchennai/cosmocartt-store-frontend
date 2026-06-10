@@ -68,6 +68,16 @@ const orderSchema = new mongoose.Schema(
             default: "Pending"
         },
 
+        shiprocketOrderId: String,
+
+        shipmentId: String,
+
+        awbCode: String,
+
+        courierName: String,
+
+        trackingUrl: String,
+
         status: {
             type: String,
             default: "Order Placed",

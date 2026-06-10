@@ -254,6 +254,11 @@ export default function Checkout() {
 
                         try {
 
+                            console.log(
+                                "RAZORPAY RESPONSE",
+                                response
+                            );
+
                             const verifyResponse =
                                 await fetch(
                                     "http://localhost:5000/api/payment/verify",
@@ -272,6 +277,11 @@ export default function Checkout() {
                             const verifyData =
                                 await verifyResponse.json();
 
+                            console.log(
+                                "VERIFY RESPONSE",
+                                verifyData
+                            );
+
                             if (
                                 !verifyData.success
                             ) {
@@ -283,30 +293,38 @@ export default function Checkout() {
                                 return;
                             }
 
-                            console.log(
-                                "PAYMENT VERIFIED"
-                            );
+                            console.log("PAYMENT VERIFIED");
 
-                            const orderResponse = await fetch(
-                                "http://localhost:5000/api/orders",
-                                {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({
-                                        ...orderData,
-                                        paymentStatus: "Paid",
-                                        razorpayPaymentId:
-                                            response.razorpay_payment_id,
-                                        razorpayOrderId:
-                                            response.razorpay_order_id,
-                                    }),
-                                }
-                            );
+                            const orderResponse =
+                                await fetch(
+                                    "http://localhost:5000/api/orders",
+                                    {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type":
+                                                "application/json",
+                                        },
+                                        body: JSON.stringify({
+                                            ...orderData,
+
+                                            paymentStatus: "Paid",
+
+                                            razorpayOrderId:
+                                                response.razorpay_order_id,
+
+                                            razorpayPaymentId:
+                                                response.razorpay_payment_id,
+                                        }),
+                                    }
+                                );
 
                             const orderResult =
                                 await orderResponse.json();
+
+                            console.log(
+                                "ORDER RESPONSE",
+                                orderResult
+                            );
 
                             if (
                                 !orderResponse.ok ||
@@ -360,9 +378,14 @@ export default function Checkout() {
                     function (response: any) {
 
                         console.log(
-                            "PAYMENT FAILED",
-                            response
+                            "PAYMENT FAILED FULL",
+                            JSON.stringify(response, null, 2)
                         );
+
+                        // console.log(
+                        //     "PAYMENT FAILED",
+                        //     response
+                        // );
 
                         toast.error(
                             "Payment failed. Please try again."
