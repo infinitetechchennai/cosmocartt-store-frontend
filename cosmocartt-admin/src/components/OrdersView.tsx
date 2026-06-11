@@ -842,7 +842,11 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
         </div>
       </div>
       {selectedOrder && (
+
+
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+
+
 
           <div
             className="
@@ -867,6 +871,8 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
               >
                 ✕
         </button>
+
+
             </div>
 
             <div className="space-y-2 mb-6">
@@ -1071,6 +1077,24 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   ₹{selectedOrder.totalAmount}
                 </span>
               </div>
+
+              <button
+                onClick={() =>
+                  window.open(
+                    `http://localhost:5000/api/invoice/${selectedOrder._id}`,
+                    "_blank"
+                  )
+                }
+                className="
+    px-4 py-2
+    bg-indigo-600
+    text-white
+    rounded-lg
+    hover:bg-indigo-700
+  "
+              >
+                Download Invoice
+</button>
 
 
 

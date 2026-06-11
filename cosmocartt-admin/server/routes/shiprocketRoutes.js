@@ -101,6 +101,25 @@ router.get(
             order.shipmentId =
                 shipmentData.shipment_id || "";
 
+            /* MOCK SHIPPING DATA */
+
+            order.awbCode =
+                `AWB${Date.now()}`;
+
+            order.courierName =
+                "Delhivery";
+
+            order.trackingUrl =
+                `https://www.delhivery.com/track/package/${order.awbCode}`;
+
+            order.status =
+                "Shipped";
+
+            order.trackingTimeline.push({
+                status: "Shipped",
+                date: new Date().toISOString()
+            });
+
             await order.save();
 
             console.log(
