@@ -3,7 +3,8 @@ import axios from "axios";
 import {
     getShiprocketToken,
     createShipment,
-    getCourierOptions
+    getCourierOptions,
+    getShipmentDetails
 } from "../services/shiprocketService.js";
 
 import Order from "../models/Order.js";
@@ -190,5 +191,59 @@ router.get("/generate-awb/:shipmentId", async (req, res) => {
 
     }
 });
+
+router.get(
+    "/tracking/:orderId",
+    async (req, res) => {
+
+        try {
+
+            const order =
+                await Order.findById(
+                    req.params.orderId
+                );
+
+            if (
+                !order ||
+                !order.shipmentId
+            ) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Shipment not found"
+                });
+
+            }
+
+            const trackingData =
+                await getShipmentDetails(
+                    order.shipmentId
+                );
+
+            console.log(
+                trackingData
+            );
+
+            res.json({
+                success: true,
+                trackingData
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                error:
+                    error.response?.data ||
+                    error.message
+            });
+
+        }
+
+    }
+);
 
 export default router;

@@ -100,15 +100,42 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const count = await Order.countDocuments();
-        console.log("TOTAL ORDERS:", count);
+        const lastOrder =
+            await Order.findOne()
+                .sort({
+                    createdAt: -1
+                });
+
+        let nextNumber = 1;
+
+        if (
+            lastOrder &&
+            lastOrder.orderNumber
+        ) {
+
+            nextNumber =
+                parseInt(
+                    lastOrder.orderNumber.replace(
+                        "CC-",
+                        ""
+                    )
+                ) + 1;
+
+        }
 
         const order = new Order({
+
             ...req.body,
 
             orderNumber:
-                `CC-${String(count + 1).padStart(6, "0")}`,
+                `CC-${String(nextNumber).padStart(6, "0")}`
+
         });
+
+        console.log(
+            "NEW ORDER NUMBER:",
+            order.orderNumber
+        );
 
         await order.save();
 
@@ -190,13 +217,54 @@ router.get("/user/:userId", async (req, res) => {
 
 });
 
+
+router.get(
+    "/:id",
+    async (req, res) => {
+
+        try {
+
+            const order =
+                await Order.findById(
+                    req.params.id
+                );
+
+            if (!order) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Order not found"
+                });
+
+            }
+
+            res.json({
+                success: true,
+                order
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message
+            });
+
+        }
+
+    }
+);
+
 // UPDATE STATUS
 router.put("/:id", async (req, res) => {
     try {
 
         const allowedStatuses = [
             "Order Placed",
-            "Processing",
             "Shipped",
             "Delivered",
             "Cancelled"
@@ -274,6 +342,24 @@ router.put("/cancel/:id", async (req, res) => {
             date: new Date().toISOString()
         });
 
+        for (const item of order.products) {
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if (product) {
+
+                product.stock +=
+                    item.quantity;
+
+                await product.save();
+
+            }
+
+        }
+
         await order.save();
 
         res.json({
@@ -292,6 +378,48 @@ router.put("/cancel/:id", async (req, res) => {
     }
 
 });
+
+router.delete(
+    "/:id",
+    async (req, res) => {
+
+        try {
+
+            const deletedOrder =
+                await Order.findByIdAndDelete(
+                    req.params.id
+                );
+
+            if (!deletedOrder) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Order not found"
+                });
+
+            }
+
+            res.json({
+                success: true,
+                message:
+                    "Order deleted"
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message
+            });
+
+        }
+
+    }
+);
 
 
 export default router;

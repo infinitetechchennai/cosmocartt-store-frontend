@@ -79,13 +79,15 @@ export interface Order {
 
   totalAmount: number;
 
-  shiprocketOrderId?: string;
-
   shipmentId?: string;
+
+  shiprocketOrderId?: string;
 
   awbCode?: string;
 
   courierName?: string;
+
+  trackingUrl?: string;
 
   shippingStatus?: string;
 

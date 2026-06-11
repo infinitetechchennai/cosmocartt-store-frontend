@@ -18,13 +18,6 @@ dotenv.config();
 const app = express();
 
 app.use(
-  "/api/shiprocket",
-  shiprocketRoutes
-);
-
-
-
-app.use(
   cors({
     origin: [
       "http://localhost:3000",
@@ -32,6 +25,14 @@ app.use(
     ],
     credentials: true
   })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(
+  "/api/shiprocket",
+  shiprocketRoutes
 );
 
 app.use(express.json());
