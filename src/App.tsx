@@ -1,6 +1,6 @@
 import {
-  Routes,
-  Route
+Routes,
+Route
 } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -16,79 +16,86 @@ import OrderSuccess from "./pages/OrderSuccess";
 import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import OrderTracking from "./pages/OrderTracking";
-import RazorpayTest from "./pages/RazorpayTest";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ForgotPassword from "./pages/ForgotPassword";
 
 export default function App() {
-  return (
-    <>
-      <ScrollToTop />
+return (
+<> <ToastContainer
+     position="top-right"
+     autoClose={3000}
+     theme="colored"
+   />
 
-      <Routes>
-        <Route
-          path="/"
-          element={<Home />}
-        />
+```
+  <ScrollToTop />
 
-        <Route
-          path="/products"
-          element={<Products />}
-        />
+  <Routes>
+    <Route
+      path="/"
+      element={<Home />}
+    />
 
-        <Route
-          path="/product/:id"
-          element={<ProductDetails />}
-        />
+    <Route
+      path="/products"
+      element={<Products />}
+    />
 
-        <Route
-          path="/cart"
-          element={<Cart />}
-        />
+    <Route
+      path="/product/:id"
+      element={<ProductDetails />}
+    />
 
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
+    <Route
+      path="/cart"
+      element={<Cart />}
+    />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+    <Route
+      path="/checkout"
+      element={
+        <ProtectedRoute>
+          <Checkout />
+        </ProtectedRoute>
+      }
+    />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+    <Route
+      path="/login"
+      element={<Login />}
+    />
 
-        <Route
-          path="/orders"
-          element={<Orders />}
-        />
+    <Route
+      path="/register"
+      element={<Register />}
+    />
 
-        <Route
-          path="/order-success"
-          element={<OrderSuccess />}
-        />
+<Route
+    path="/forgot-password"
+    element={<ForgotPassword />}
+/>
 
-        <Route
-          path="/track-order/:id"
-          element={<OrderTracking />}
-        />
+    <Route
+      path="/orders"
+      element={<Orders />}
+    />
 
-        <Route
-          path="/wishlist"
-          element={<Wishlist />}
-        />
+    <Route
+      path="/order-success"
+      element={<OrderSuccess />}
+    />
 
-        <Route
-          path="/razorpay-test"
-          element={<RazorpayTest />}
-        />
+    <Route
+      path="/track-order/:id"
+      element={<OrderTracking />}
+    />
 
-      </Routes>
-    </>
-  );
+    <Route
+      path="/wishlist"
+      element={<Wishlist />}
+    />
+  </Routes>
+</>
+);
 }
