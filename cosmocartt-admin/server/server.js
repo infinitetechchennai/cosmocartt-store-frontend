@@ -1,0 +1,62 @@
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import customerRoutes from "./routes/customerRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import shiprocketRoutes
+  from "./routes/shiprocketRoutes.js";
+
+
+dotenv.config();
+
+const app = express();
+
+app.use(
+  "/api/shiprocket",
+  shiprocketRoutes
+);
+
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/customers", customerRoutes);
+
+console.log("MONGO_URI =", process.env.MONGO_URI);
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+app.use("/api/auth", authRoutes);
+
+app.use("/api/products", productRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Server Running");
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
