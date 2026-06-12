@@ -3,7 +3,8 @@ import axios from "axios";
 import {
     getShiprocketToken,
     createShipment,
-    getCourierOptions
+    getCourierOptions,
+    getShipmentDetails
 } from "../services/shiprocketService.js";
 
 import Order from "../models/Order.js";
@@ -54,6 +55,36 @@ router.get(
 
             }
 
+            if (
+                !order.phone ||
+                !order.address ||
+                !order.city ||
+                !order.state ||
+                !order.pincode
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    error: {
+                        message:
+                            "Order missing shipping details"
+                    }
+                });
+
+            }
+
+            if (order.shipmentId) {
+
+                return res.json({
+                    success: true,
+                    message:
+                        "Shipment already exists",
+                    shipmentId:
+                        order.shipmentId
+                });
+
+            }
+
             const shipmentData =
                 await createShipment(
                     order
@@ -70,13 +101,40 @@ router.get(
             order.shipmentId =
                 shipmentData.shipment_id || "";
 
+            /* MOCK SHIPPING DATA */
+
+            order.awbCode =
+                `AWB${Date.now()}`;
+
+            order.courierName =
+                "Delhivery";
+
+            order.trackingUrl =
+                `https://www.delhivery.com/track/package/${order.awbCode}`;
+
+            order.status =
+                "Shipped";
+
+            order.trackingTimeline.push({
+                status: "Shipped",
+                date: new Date().toISOString()
+            });
+
             await order.save();
+
+            console.log(
+                "ORDER SAVED:",
+                order._id
+            );
 
             res.json({
                 success: true,
                 shipmentData
             });
 
+            console.log(
+                "SUCCESS RESPONSE SENT"
+            );
         } catch (error) {
 
             console.error(
@@ -151,5 +209,59 @@ router.get("/generate-awb/:shipmentId", async (req, res) => {
 
     }
 });
+
+router.get(
+    "/tracking/:orderId",
+    async (req, res) => {
+
+        try {
+
+            const order =
+                await Order.findById(
+                    req.params.orderId
+                );
+
+            if (
+                !order ||
+                !order.shipmentId
+            ) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        "Shipment not found"
+                });
+
+            }
+
+            const trackingData =
+                await getShipmentDetails(
+                    order.shipmentId
+                );
+
+            console.log(
+                trackingData
+            );
+
+            res.json({
+                success: true,
+                trackingData
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                success: false,
+                error:
+                    error.response?.data ||
+                    error.message
+            });
+
+        }
+
+    }
+);
 
 export default router;

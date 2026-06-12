@@ -313,32 +313,25 @@ export default function Footer() {
 
         {brands.map((brand) => (
 
-    <Link
-        key={brand}
-        to={`/products?brand=${encodeURIComponent(brand)}`}
-        onClick={() =>
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-            })
-        }
-        className="
-            px-3
-            py-1.5
-            text-xs
-            rounded-full
-            bg-white/10
-            hover:bg-white/20
-            transition-all
-            duration-300
-            cursor-pointer
-            hover:scale-105
-        "
-    >
-        {brand}
-    </Link>
+            <span
+                key={brand}
+                className="
+                    px-3
+                    py-1.5
+                    text-xs
+                    rounded-full
+                    bg-white/10
+                    hover:bg-white/20
+                    transition-all
+                    duration-300
+                    cursor-pointer
+                    hover:scale-105
+                "
+            >
+                {brand}
+            </span>
 
-))}
+        ))}
 
     </div>
 

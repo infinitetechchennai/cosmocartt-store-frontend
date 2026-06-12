@@ -11,31 +11,39 @@ import customerRoutes from "./routes/customerRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import shiprocketRoutes
   from "./routes/shiprocketRoutes.js";
-
+import invoiceRoutes
+  from "./routes/invoiceRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
 app.use(
-  "/api/shiprocket",
-  shiprocketRoutes
-);
-
-
-app.use(
   cors({
-    origin: true,
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173"
+    ],
     credentials: true
   })
 );
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+  "/api/shiprocket",
+  shiprocketRoutes
+);
+
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/customers", customerRoutes);
+app.use(
+  "/api/invoice",
+  invoiceRoutes
+);
 
 console.log("MONGO_URI =", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI)

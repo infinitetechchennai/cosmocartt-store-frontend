@@ -18,16 +18,16 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
-    
+
     const [showPassword, setShowPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState("");
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [errors, setErrors] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-});
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+    });
 
     // B2B
 
@@ -39,74 +39,74 @@ export default function Register() {
     const navigate = useNavigate();
     const checkPasswordStrength = (password: string) => {
 
-    if (password.length <= 3) {
+        if (password.length <= 3) {
 
-        setPasswordStrength("Weak");
+            setPasswordStrength("Weak");
 
-    }
-    else if (password.length >= 10 && /\d/.test(password)) {
+        }
+        else if (password.length >= 10 && /\d/.test(password)) {
 
-        setPasswordStrength("Strong");
+            setPasswordStrength("Strong");
 
-    }
-    else {
+        }
+        else {
 
-        setPasswordStrength("Medium");
+            setPasswordStrength("Medium");
 
-    }
+        }
 
-};
+    };
     const validateForm = () => {
 
-    const newErrors = {
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
+        const newErrors = {
+            name: "",
+            email: "",
+            phone: "",
+            password: "",
+        };
+
+        let valid = true;
+
+        if (!name.trim()) {
+            newErrors.name = "Full Name is required";
+            valid = false;
+        }
+
+        if (!email.trim()) {
+            newErrors.email = "Email is required";
+            valid = false;
+        } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+        ) {
+            newErrors.email = "Please enter a valid email address";
+            valid = false;
+        }
+
+        if (!phone.trim()) {
+            newErrors.phone = "Phone number is required";
+            valid = false;
+        }
+
+        if (!password.trim()) {
+            newErrors.password = "Password is required";
+            valid = false;
+        }
+
+        setErrors(newErrors);
+
+        return valid;
     };
-
-    let valid = true;
-
-    if (!name.trim()) {
-        newErrors.name = "Full Name is required";
-        valid = false;
-    }
-
-    if (!email.trim()) {
-    newErrors.email = "Email is required";
-    valid = false;
-} else if (
-    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
-) {
-    newErrors.email = "Please enter a valid email address";
-    valid = false;
-}
-
-    if (!phone.trim()) {
-        newErrors.phone = "Phone number is required";
-        valid = false;
-    }
-
-    if (!password.trim()) {
-        newErrors.password = "Password is required";
-        valid = false;
-    }
-
-    setErrors(newErrors);
-
-    return valid;
-};
 
     const handleRegister = async () => {
 
-    if (!validateForm()) {
-        return;
-    }
-if (!acceptedTerms) {
-    alert("Please accept Terms & Conditions");
-    return;
-}
-    try {
+        if (!validateForm()) {
+            return;
+        }
+        if (!acceptedTerms) {
+            alert("Please accept Terms & Conditions");
+            return;
+        }
+        try {
 
             setLoading(true);
 
@@ -333,126 +333,121 @@ if (!acceptedTerms) {
 
                                         <div className="grid grid-cols-2 gap-3">
 
-    <div>
-        <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Full Name"
-            className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${
-                errors.name
-                    ? "border border-red-500"
-                    : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-            }`}
-        />
+                                            <div>
+                                                <input
+                                                    type="text"
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                    placeholder="Full Name"
+                                                    className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${errors.name
+                                                        ? "border border-red-500"
+                                                        : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
+                                                        }`}
+                                                />
 
-        {errors.name && (
-            <p className="text-red-500 text-xs mt-1">
-                {errors.name}
-            </p>
-        )}
-    </div>
+                                                {errors.name && (
+                                                    <p className="text-red-500 text-xs mt-1">
+                                                        {errors.name}
+                                                    </p>
+                                                )}
+                                            </div>
 
-    <div>
-        <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone Number"
-            className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${
-                errors.phone
-                    ? "border border-red-500"
-                    : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-            }`}
-        />
+                                            <div>
+                                                <input
+                                                    type="text"
+                                                    value={phone}
+                                                    onChange={(e) => setPhone(e.target.value)}
+                                                    placeholder="Phone Number"
+                                                    className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${errors.phone
+                                                        ? "border border-red-500"
+                                                        : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
+                                                        }`}
+                                                />
 
-        {errors.phone && (
-            <p className="text-red-500 text-xs mt-1">
-                {errors.phone}
-            </p>
-        )}
-    </div>
+                                                {errors.phone && (
+                                                    <p className="text-red-500 text-xs mt-1">
+                                                        {errors.phone}
+                                                    </p>
+                                                )}
+                                            </div>
 
-</div>
+                                        </div>
 
-<div>
-    <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${
-            errors.email
-                ? "border border-red-500"
-                : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-        }`}
-    />
+                                        <div>
+                                            <input
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="Email"
+                                                className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${errors.email
+                                                    ? "border border-red-500"
+                                                    : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
+                                                    }`}
+                                            />
 
-    {errors.email && (
-        <p className="text-red-500 text-xs mt-1">
-            {errors.email}
-        </p>
-    )}
-</div>
+                                            {errors.email && (
+                                                <p className="text-red-500 text-xs mt-1">
+                                                    {errors.email}
+                                                </p>
+                                            )}
+                                        </div>
                                         <div className="relative">
 
-    <input
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(e) => {
-    setPassword(e.target.value);
-    checkPasswordStrength(e.target.value);
-}}
-        placeholder="Password"
-        className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-    />
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                value={password}
+                                                onChange={(e) => {
+                                                    setPassword(e.target.value);
+                                                    checkPasswordStrength(e.target.value);
+                                                }}
+                                                placeholder="Password"
+                                                className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
+                                            />
 
-    <button
-        type="button"
-        onClick={() => setShowPassword(!showPassword)}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
-    >
-        {showPassword ? <FaEyeSlash /> : <FaEye />}
-    </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
+                                            >
+                                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                            </button>
 
-</div>
-{errors.password && (
-    <p className="text-red-500 text-xs mt-1">
-        {errors.password}
-    </p>
-)}
-    {password && (
-<div className="mt-2">
+                                        </div>
+                                        {errors.password && (
+                                            <p className="text-red-500 text-xs mt-1">
+                                                {errors.password}
+                                            </p>
+                                        )}
+                                        {password && (
+                                            <div className="mt-2">
 
-        <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
+                                                <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
 
-            <div
-                className={`h-full transition-all duration-300 ${
-                    passwordStrength === "Weak"
-                        ? "w-1/3 bg-red-500"
-                        : passwordStrength === "Medium"
-                        ? "w-2/3 bg-yellow-500"
-                        : "w-full bg-green-500"
-                }`}
-            />
+                                                    <div
+                                                        className={`h-full transition-all duration-300 ${passwordStrength === "Weak"
+                                                            ? "w-1/3 bg-red-500"
+                                                            : passwordStrength === "Medium"
+                                                                ? "w-2/3 bg-yellow-500"
+                                                                : "w-full bg-green-500"
+                                                            }`}
+                                                    />
 
-        </div>
+                                                </div>
 
-        <p
-            className={`text-xs mt-1 font-medium ${
-                passwordStrength === "Weak"
-                    ? "text-red-500"
-                    : passwordStrength === "Medium"
-                    ? "text-yellow-600"
-                    : "text-green-600"
-            }`}
-        >
-            {passwordStrength} Password
+                                                <p
+                                                    className={`text-xs mt-1 font-medium ${passwordStrength === "Weak"
+                                                        ? "text-red-500"
+                                                        : passwordStrength === "Medium"
+                                                            ? "text-yellow-600"
+                                                            : "text-green-600"
+                                                        }`}
+                                                >
+                                                    {passwordStrength} Password
         </p>
 
-    </div>
+                                            </div>
 
-)}
+                                        )}
 
                                     </motion.div>
 
@@ -519,75 +514,75 @@ if (!acceptedTerms) {
 
                                         <div className="relative">
 
-    <input
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(e) => {
-    setPassword(e.target.value);
-    checkPasswordStrength(e.target.value);
-}}
-        placeholder="Password"
-        className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-    />
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                value={password}
+                                                onChange={(e) => {
+                                                    setPassword(e.target.value);
+                                                    checkPasswordStrength(e.target.value);
+                                                }}
+                                                placeholder="Password"
+                                                className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
+                                            />
 
-    <button
-        type="button"
-        onClick={() => setShowPassword(!showPassword)}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
-    >
-        {showPassword ? <FaEyeSlash /> : <FaEye />}
-    </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
+                                            >
+                                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                            </button>
 
-</div>
+                                        </div>
 
                                     </motion.div>
 
                                 )}
 
                             </AnimatePresence>
-<div className="flex items-center gap-3 mt-4">
+                            <div className="flex items-center gap-3 mt-4">
 
-    <input
-        type="checkbox"
-        checked={acceptedTerms}
-        onChange={(e) => setAcceptedTerms(e.target.checked)}
-        className="w-4 h-4 accent-[#4B1E78]"
-    />
+                                <input
+                                    type="checkbox"
+                                    checked={acceptedTerms}
+                                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                    className="w-4 h-4 accent-[#4B1E78]"
+                                />
 
-    <p className="text-sm text-slate-600">
-        I agree to the
+                                <p className="text-sm text-slate-600">
+                                    I agree to the
         <span className="text-[#4B1E78] font-semibold cursor-pointer ml-1">
-            Terms & Conditions
+                                        Terms & Conditions
         </span>
-    </p>
+                                </p>
 
-</div>
-<motion.button
-disabled={loading}
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={handleRegister}
-    className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
->
-    {loading ? (
-    <div className="flex items-center justify-center gap-2">
+                            </div>
+                            <motion.button
+                                disabled={loading}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={handleRegister}
+                                className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
+                            >
+                                {loading ? (
+                                    <div className="flex items-center justify-center gap-2">
 
-        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
 
-        <span>Creating Account...</span>
+                                        <span>Creating Account...</span>
 
-    </div>
-) : (
-    "Create Account"
-)}
-</motion.button>
+                                    </div>
+                                ) : (
+                                    "Create Account"
+                                )}
+                            </motion.button>
 
-<div className="relative my-8">
+                            <div className="relative my-8">
 
-    <div className="border-t border-slate-200"></div>
+                                <div className="border-t border-slate-200"></div>
 
-    <span
-        className="
+                                <span
+                                    className="
         absolute
         left-1/2
         -translate-x-1/2
@@ -600,17 +595,17 @@ disabled={loading}
         uppercase
         tracking-[3px]
         "
-    >
-        Continue With
+                                >
+                                    Continue With
     </span>
 
-</div>
+                            </div>
 
-<div className="grid grid-cols-2 gap-5">
+                            <div className="grid grid-cols-2 gap-5">
 
-    <button
-        type="button"
-        className="
+                                <button
+                                    type="button"
+                                    className="
         flex
         items-center
         justify-center
@@ -629,14 +624,14 @@ disabled={loading}
         transition-all
         duration-300
         "
-    >
-        <FcGoogle size={24} />
+                                >
+                                    <FcGoogle size={24} />
         Google
     </button>
 
-    <button
-        type="button"
-        className="
+                                <button
+                                    type="button"
+                                    className="
         flex
         items-center
         justify-center
@@ -655,24 +650,24 @@ disabled={loading}
         transition-all
         duration-300
         "
-    >
-        <FaGithub size={22} />
+                                >
+                                    <FaGithub size={22} />
         GitHub
     </button>
 
-</div>
+                            </div>
                             <p className="text-center text-sm text-zinc-500 mt-5">
 
-    Already have an account?
+                                Already have an account?
 
     <Link
-        to="/login"
-        className="text-[#4B1E78] ml-2 font-semibold hover:underline"
-    >
-        Login
+                                    to="/login"
+                                    className="text-[#4B1E78] ml-2 font-semibold hover:underline"
+                                >
+                                    Login
     </Link>
 
-</p>
+                            </p>
 
                         </div>
 
