@@ -1187,10 +1187,36 @@ export default function UsersView({
                           )
                         }
 
+                        {
+                          user.customerType === "b2b" &&
+                          user.verificationStatus === "Pending" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  updateVerification(
+                                    user._id,
+                                    "Verified"
+                                  )
+                                }
+                                className="text-xs px-3 py-1 rounded-lg bg-green-100 text-green-700"
+                              >
+                                Approve
+      </button>
 
-
-
-
+                              <button
+                                onClick={() =>
+                                  updateVerification(
+                                    user._id,
+                                    "Rejected"
+                                  )
+                                }
+                                className="text-xs px-3 py-1 rounded-lg bg-red-100 text-red-700"
+                              >
+                                Reject
+      </button>
+                            </>
+                          )
+                        }
 
                         {loggedUser?.role === "admin" && (
 
