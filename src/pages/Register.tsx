@@ -34,6 +34,8 @@ export default function Register() {
     const [businessName, setBusinessName] = useState("");
     const [contactPerson, setContactPerson] = useState("");
     const [gstNumber, setGstNumber] = useState("");
+    const [gstCertificate, setGstCertificate] =
+        useState<File | null>(null);
 
 
     const navigate = useNavigate();
@@ -67,9 +69,28 @@ export default function Register() {
 
         let valid = true;
 
-        if (!name.trim()) {
-            newErrors.name = "Full Name is required";
-            valid = false;
+        if (accountType === "personal") {
+
+            if (!name.trim()) {
+
+                newErrors.name =
+                    "Full Name is required";
+
+                valid = false;
+
+            }
+
+        } else {
+
+            if (!contactPerson.trim()) {
+
+                newErrors.name =
+                    "Contact Person is required";
+
+                valid = false;
+
+            }
+
         }
 
         if (!email.trim()) {
@@ -110,36 +131,78 @@ export default function Register() {
 
             setLoading(true);
 
-            const payload =
-                accountType === "personal"
-                    ? {
-                        name,
-                        email,
-                        phone,
-                        password,
-                        customerType: "b2c"
-                    }
-                    : {
-                        name: contactPerson,
-                        email,
-                        phone,
-                        password,
+            const formData = new FormData();
 
-                        customerType: "b2b",
+            formData.append(
+                "email",
+                email
+            );
 
-                        businessName,
-                        contactPerson,
-                        gstNumber
-                    };
+            formData.append(
+                "phone",
+                phone
+            );
+
+            formData.append(
+                "password",
+                password
+            );
+
+            if (accountType === "personal") {
+
+                formData.append(
+                    "name",
+                    name
+                );
+
+                formData.append(
+                    "customerType",
+                    "b2c"
+                );
+
+            } else {
+
+                formData.append(
+                    "name",
+                    contactPerson
+                );
+
+                formData.append(
+                    "customerType",
+                    "b2b"
+                );
+
+                formData.append(
+                    "businessName",
+                    businessName
+                );
+
+                formData.append(
+                    "contactPerson",
+                    contactPerson
+                );
+
+                formData.append(
+                    "gstNumber",
+                    gstNumber
+                );
+
+                if (gstCertificate) {
+
+                    formData.append(
+                        "gstCertificate",
+                        gstCertificate
+                    );
+
+                }
+
+            }
 
             const response = await fetch(
                 "http://localhost:5000/api/customers/register",
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
+                    body: formData
                 }
             );
 
@@ -511,6 +574,23 @@ export default function Register() {
                                             onChange={(e) => setGstNumber(e.target.value)}
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
+
+                                        <div>
+                                            <label className="block mb-2 text-sm font-medium">
+                                                GST Certificate (PDF)
+    </label>
+
+                                            <input
+                                                type="file"
+                                                accept=".pdf"
+                                                onChange={(e) =>
+                                                    setGstCertificate(
+                                                        e.target.files?.[0] || null
+                                                    )
+                                                }
+                                                className="w-full border rounded-lg p-3"
+                                            />
+                                        </div>
 
                                         <div className="relative">
 
