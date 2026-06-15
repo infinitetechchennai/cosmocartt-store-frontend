@@ -135,7 +135,6 @@ router.get(
             console.log(
                 "SUCCESS RESPONSE SENT"
             );
-
         } catch (error) {
 
             console.error(

@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -18,36 +18,36 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+});
+
+const validateForm = () => {
+
+    const newErrors = {
         email: "",
         password: "",
-    });
-
-    const validateForm = () => {
-
-        const newErrors = {
-            email: "",
-            password: "",
-        };
-
-        let valid = true;
-
-        if (!email.trim()) {
-            newErrors.email = "Email is required";
-            valid = false;
-        } else if (!email.endsWith("@gmail.com")) {
-            newErrors.email = "Only Gmail addresses are allowed";
-            valid = false;
-        }
-
-        if (!password.trim()) {
-            newErrors.password = "Password is required";
-            valid = false;
-        }
-
-        setErrors(newErrors);
-
-        return valid;
     };
+
+    let valid = true;
+
+    if (!email.trim()) {
+    newErrors.email = "Email is required";
+    valid = false;
+} else if (!email.endsWith("@gmail.com")) {
+    newErrors.email = "Only Gmail addresses are allowed";
+    valid = false;
+}
+
+    if (!password.trim()) {
+        newErrors.password = "Password is required";
+        valid = false;
+    }
+
+    setErrors(newErrors);
+
+    return valid;
+};
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]">
@@ -101,176 +101,185 @@ export default function Login() {
                         </p>
 
                         <form
-                            onSubmit={async (e) => {
-                                e.preventDefault();
+    onSubmit={async (e) => {
+        e.preventDefault();
 
-                                if (!validateForm()) {
-                                    return;
-                                }
+if (!validateForm()) {
+    return;
+}
 
-                                try {
-                                    setLoading(true);
+        try {
+            setLoading(true);
 
-                                    const response = await fetch(
-                                        "http://localhost:5000/api/customers/login",
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/json"
-                                            },
-                                            body: JSON.stringify({
-                                                email,
-                                                password
-                                            })
-                                        }
-                                    );
+            const response = await fetch(
+                "http://localhost:5000/api/customers/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    })
+                }
+            );
 
-                                    const data = await response.json();
+            const data = await response.json();
 
-                                    if (!data.success) {
+            if (!data.success) {
 
-                                        setErrors({
-                                            email: "",
-                                            password: "Incorrect email or password"
-                                        });
+    setErrors({
+        email: "",
+        password: "Incorrect email or password"
+    });
 
-                                        return;
-                                    }
+    return;
+}
 
-                                    toast.success("Login Successful 🎉");
+            toast.success("Login Successful 🎉");
 
-                                    login(data.customer);
+login(data.customer);
 
-                                    setTimeout(() => {
-                                        navigate("/");
-                                    }, 1500);
+setTimeout(() => {
+    navigate("/");
+}, 1500);
 
-                                } catch (error) {
+        } catch (error) {
 
-                                    console.error(error);
-                                    alert("Login failed");
+            console.error(error);
+            alert("Login failed");
 
-                                } finally {
+        } finally {
 
-                                    setLoading(false);
+            setLoading(false);
 
-                                }
-                            }}
-                        >
-                            <motion.div
-                                initial={{ opacity: 0, y: 25 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4 }}
-                                className="mt-6 space-y-3"
-                            >
+        }
+    }}
+>
+<motion.div
+    initial={{ opacity: 0, y: 25 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+    className="mt-6 space-y-3"
+>
 
 
-                                <div>
+                            <div>
 
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => {
-                                            setEmail(e.target.value);
+    <input
+        type="email"
+        value={email}
+        onChange={(e) => {
+    setEmail(e.target.value);
 
-                                            setErrors((prev) => ({
-                                                ...prev,
-                                                email: ""
-                                            }));
-                                        }}
-                                        placeholder="Email"
-                                        className={`w-full p-3 rounded-xl transition-all duration-300 outline-none ${errors.email
-                                            ? "border border-red-500"
-                                            : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-                                            }`}
-                                    />
+    setErrors((prev) => ({
+        ...prev,
+        email: ""
+    }));
+}}
+        placeholder="Email"
+        className={`w-full p-3 rounded-xl transition-all duration-300 outline-none ${
+            errors.email
+                ? "border border-red-500"
+                : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
+        }`}
+    />
 
-                                    {errors.email && (
-                                        <p className="text-red-500 text-xs mt-1">
-                                            {errors.email}
-                                        </p>
-                                    )}
+    {errors.email && (
+        <p className="text-red-500 text-xs mt-1">
+            {errors.email}
+        </p>
+    )}
 
-                                </div>
+</div>
 
-                                <div>
+                            <div>
 
-                                    <div className="relative">
+    <div className="relative">
 
-                                        <input
-                                            type={showPassword ? "text" : "password"}
-                                            value={password}
-                                            onChange={(e) => {
-                                                setPassword(e.target.value);
+        <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => {
+    setPassword(e.target.value);
 
-                                                setErrors((prev) => ({
-                                                    ...prev,
-                                                    password: ""
-                                                }));
-                                            }}
-                                            placeholder="Password"
-                                            className={`w-full p-3 rounded-xl transition-all duration-300 outline-none ${errors.password
-                                                ? "border border-red-500"
-                                                : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-                                                }`}
-                                        />
+    setErrors((prev) => ({
+        ...prev,
+        password: ""
+    }));
+}}
+            placeholder="Password"
+            className={`w-full p-3 rounded-xl transition-all duration-300 outline-none ${
+                errors.password
+                    ? "border border-red-500"
+                    : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
+            }`}
+        />
 
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-black"
-                                        >
-                                            {showPassword ? (
-                                                <EyeOff size={20} />
-                                            ) : (
-                                                <Eye size={20} />
-                                            )}
-                                        </button>
+        <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-black"
+        >
+            {showPassword ? (
+                <EyeOff size={20} />
+            ) : (
+                <Eye size={20} />
+            )}
+        </button>
 
-                                    </div>
+    </div>
 
-                                    {errors.password && (
-                                        <p className="text-red-500 text-xs mt-1">
-                                            {errors.password}
-                                        </p>
-                                    )}
+    {errors.password && (
+        <p className="text-red-500 text-xs mt-1">
+            {errors.password}
+        </p>
+    )}
 
-                                </div>
+</div>
 
-                                <div className="flex justify-between items-center text-sm">
+                            <div className="flex justify-between items-center text-sm">
 
-                                    <label className="flex items-center gap-2">
-                                        <input type="checkbox" />
+                                <label className="flex items-center gap-2">
+                                    <input type="checkbox" />
                                     Remember Me
                                 </label>
 
-                                    <a
-                                        href="/forgot-password"
-                                        className="text-[#4B1E78] font-medium hover:underline"
-                                    >
-                                        Forgot Password?
+                                <Link
+    to="/forgot-password"
+    className="text-[#4B1E78] font-medium hover:underline"
+>
+    Forgot Password?
+</Link>
+
+                                <a
+    href="/forgot-password"
+    className="text-[#4B1E78] font-medium hover:underline"
+>
+    Forgot Password?
 </a>
 
-                                </div>
+                            </div>
 
-                            </motion.div>
+                        </motion.div>
 
-                            <motion.button
-                                type="submit"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                        <motion.button
+                        type="submit"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+        
+                            className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
+                        >
+                            {loading ? "Logging In..." : "Login"}
+                        </motion.button>
 
-                                className="w-full mt-6 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
-                            >
-                                {loading ? "Logging In..." : "Login"}
-                            </motion.button>
+                        <div className="relative my-8">
 
-                            <div className="relative my-8">
+    <div className="border-t border-slate-200"></div>
 
-                                <div className="border-t border-slate-200"></div>
-
-                                <span
-                                    className="
+    <span
+        className="
         absolute
         left-1/2
         -translate-x-1/2
@@ -283,17 +292,17 @@ export default function Login() {
         uppercase
         tracking-[3px]
         "
-                                >
-                                    Continue With
+    >
+        Continue With
     </span>
 
-                            </div>
+</div>
 
-                            <div className="grid grid-cols-2 gap-5">
+<div className="grid grid-cols-2 gap-5">
 
-                                <button
-                                    type="button"
-                                    className="
+    <button
+        type="button"
+        className="
         flex
         items-center
         justify-center
@@ -312,14 +321,14 @@ export default function Login() {
         transition-all
         duration-300
         "
-                                >
-                                    <FcGoogle size={24} />
+    >
+        <FcGoogle size={24} />
         Google
     </button>
 
-                                <button
-                                    type="button"
-                                    className="
+    <button
+        type="button"
+        className="
         flex
         items-center
         justify-center
@@ -338,25 +347,25 @@ export default function Login() {
         transition-all
         duration-300
         "
-                                >
-                                    <FaGithub size={22} />
+    >
+        <FaGithub size={22} />
         GitHub
     </button>
 
-                            </div>
+</div>
 
-                            <p className="text-center text-sm text-zinc-500 mt-5">
+                        <p className="text-center text-sm text-zinc-500 mt-5">
 
-                                Don't have an account?
+                            Don't have an account?
 
                             <a
-                                    href="/register"
-                                    className="text-[#4B1E78] ml-2 font-semibold"
-                                >
-                                    Register
+                                href="/register"
+                                className="text-[#4B1E78] ml-2 font-semibold"
+                            >
+                                Register
                             </a>
 
-                            </p>
+                        </p>
                         </form>
 
                     </div>
