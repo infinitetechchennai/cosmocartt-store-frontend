@@ -253,6 +253,13 @@ setTimeout(() => {
     Forgot Password?
 </Link>
 
+                                <a
+    href="/forgot-password"
+    className="text-[#4B1E78] font-medium hover:underline"
+>
+    Forgot Password?
+</a>
+
                             </div>
 
                         </motion.div>
