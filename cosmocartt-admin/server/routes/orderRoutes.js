@@ -100,16 +100,38 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const count = await Order.countDocuments();
-        console.log("TOTAL ORDERS:", count);
+        const lastOrder = await Order.findOne()
+            .sort({ createdAt: -1 });
+
+        let nextNumber = 1;
+
+        if (
+            lastOrder &&
+            lastOrder.orderNumber
+        ) {
+
+            const lastNumber =
+                parseInt(
+
+                    lastOrder.orderNumber
+                        .replace("CC-", "")
+
+                );
+
+            nextNumber =
+                lastNumber + 1;
+
+        }
 
         const order = new Order({
+
             ...req.body,
 
             orderNumber:
-                `CC-${String(count + 1).padStart(6, "0")}`,
-        });
+                `CC-${String(nextNumber)
+                    .padStart(6, "0")}`
 
+        });
         await order.save();
 
         for (const item of order.products) {

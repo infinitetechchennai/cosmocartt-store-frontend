@@ -167,3 +167,24 @@ export const getCourierOptions = async (
 
     return response.data;
 };
+
+export const getShipmentDetails = async (
+    shipmentId
+) => {
+
+    const token =
+        await getShiprocketToken();
+
+    const response =
+        await axios.get(
+            `https://apiv2.shiprocket.in/v1/external/courier/track/shipment/${shipmentId}`,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
+            }
+        );
+
+    return response.data;
+};
