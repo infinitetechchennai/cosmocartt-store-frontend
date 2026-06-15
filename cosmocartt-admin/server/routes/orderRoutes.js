@@ -9,6 +9,11 @@ router.get("/test", (req, res) => {
     res.json({ message: "Orders API working ✅" });
 });
 
+// router.put(
+//     "/:id/request-refund",
+//     requestRefund
+// );
+
 // CREATE ORDER
 router.post("/", async (req, res) => {
 
@@ -315,5 +320,56 @@ router.put("/cancel/:id", async (req, res) => {
 
 });
 
+export const requestRefund = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            reason
+        } = req.body;
+
+        const order =
+            await Order.findById(
+                req.params.id
+            );
+
+        if (!order) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+
+        order.refundStatus =
+            "Requested";
+
+        order.refundReason =
+            reason;
+
+        order.refundRequestedAt =
+            new Date();
+
+        await order.save();
+
+        res.json({
+            success: true
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message:
+                error.message
+        });
+
+    }
+
+};
 
 export default router;

@@ -1,0 +1,59 @@
+diff --git a/cosmocartt-admin/server/services/shiprocketService.js b/cosmocartt-admin/server/services/shiprocketService.js
+index 37523de..7441391 100644
+--- a/cosmocartt-admin/server/services/shiprocketService.js
++++ b/cosmocartt-admin/server/services/shiprocketService.js
+@@ -146,26 +146,6 @@ export const createShipment =
+         }
+     };
+ 
+-export const getShipmentDetails =
+-    async (shipmentId) => {
+-
+-        const token =
+-            await getShiprocketToken();
+-
+-        const response =
+-            await axios.get(
+-                `https://apiv2.shiprocket.in/v1/external/courier/track/shipment/${shipmentId}`,
+-                {
+-                    headers: {
+-                        Authorization:
+-                            `Bearer ${token}`,
+-                    },
+-                }
+-            );
+-
+-        return response.data;
+-
+-    };
+ 
+ export const getCourierOptions = async (
+     shipmentId
+@@ -185,5 +165,26 @@ export const getCourierOptions = async (
+             }
+         );
+ 
++    return response.data;
++};
++
++export const getShipmentDetails = async (
++    shipmentId
++) => {
++
++    const token =
++        await getShiprocketToken();
++
++    const response =
++        await axios.get(
++            `https://apiv2.shiprocket.in/v1/external/courier/track/shipment/${shipmentId}`,
++            {
++                headers: {
++                    Authorization:
++                        `Bearer ${token}`
++                }
++            }
++        );
++
+     return response.data;
+ };
+\ No newline at end of file
