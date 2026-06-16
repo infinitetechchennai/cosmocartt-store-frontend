@@ -693,7 +693,7 @@ export default function Checkout() {
 
                                     {/* IMAGE */}
                                     <img
-                                        src={item.image}
+                                        src={`http://localhost:5000${product.images?.[0]}`}
                                         alt={item.name}
                                         className="w-14 h-14 object-cover rounded-lg border"
                                     />

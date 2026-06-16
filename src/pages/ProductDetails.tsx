@@ -19,6 +19,8 @@ export default function ProductDetails() {
     const [quantity, setQuantity] = useState(1);
 
     const [product, setProduct] = useState<any>(null);
+    const [selectedImage, setSelectedImage] =
+        useState(product.images?.[0] || "");
 
     useEffect(() => {
         fetch(`http://localhost:5000/api/products/${id}`)
@@ -55,9 +57,9 @@ export default function ProductDetails() {
                         <div className="bg-white rounded-3xl p-6 shadow-sm">
 
                             <img
-                                src={product.image}
-                                alt="product"
-                                className="w-full h-[500px] object-contain"
+                                src={selectedImage}
+                                alt={product.name}
+                                className="w-full rounded-xl"
                             />
 
                         </div>
@@ -71,11 +73,18 @@ export default function ProductDetails() {
                                     className="bg-white border rounded-xl p-2 cursor-pointer hover:border-[#4B1E78]"
                                 >
 
-                                    <img
-                                        src={product.image}
-                                        alt=""
-                                        className="w-full h-20 object-cover rounded-lg"
-                                    />
+                                    <div className="flex gap-2 mt-4">
+                                        {product.images?.map((img) => (
+                                            <img
+                                                key={img}
+                                                src={img}
+                                                onClick={() =>
+                                                    setSelectedImage(img)
+                                                }
+                                                className="w-20 h-20 object-cover cursor-pointer border"
+                                            />
+                                        ))}
+                                    </div>
 
                                 </div>
 
@@ -208,16 +217,16 @@ export default function ProductDetails() {
                             <button
                                 onClick={() => {
 
-    if (product.stock <= 0) {
-        alert("Product is out of stock");
-        return;
-    }
+                                    if (product.stock <= 0) {
+                                        alert("Product is out of stock");
+                                        return;
+                                    }
 
-    addToCart({
-        ...product,
-        quantity
-    });
-}}
+                                    addToCart({
+                                        ...product,
+                                        quantity
+                                    });
+                                }}
                                 disabled={product.stock <= 0}
                                 className="bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-xl font-semibold"
                             >

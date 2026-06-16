@@ -31,7 +31,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     wholesalePrice: 0,
     retailPrice: 0,
     stock: 0,
-    image: "",
+    images: [],
     status: "Active",
   });
 
@@ -96,7 +96,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       return alert("Stock cannot be negative");
     }
 
-    if (!newProduct.image) {
+    if (
+      !newProduct.images ||
+      newProduct.images.length === 0
+    ) {
       return alert("Please upload product image");
     }
 
@@ -131,7 +134,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
           wholesalePrice: 0,
           retailPrice: 0,
           stock: 0,
-          image: "",
+          images: [],
           status: "Active",
         });
 
@@ -638,7 +641,7 @@ Skipped: ${data.skipped}`
 
                     <td className="px-6 py-4">
                       <img
-                        src={item.image}
+                        src={`http://localhost:5000${item.images?.[0]}`}
                         alt={item.name}
                         className="w-12 h-12 object-cover rounded-lg border"
                       />
@@ -922,9 +925,9 @@ Skipped: ${data.skipped}`
                     }}
                   />
 
-                  {editProduct.image && (
+                  {editProduct.images?.[0] && (
                     <img
-                      src={editProduct.image}
+                      src={editProduct.images?.[0]}
                       alt="preview"
                       className="mt-3 h-20 rounded border"
                     />
@@ -1197,9 +1200,9 @@ Skipped: ${data.skipped}`
                   }}
                 />
 
-                {newProduct.image && (
+                {newProduct.images?.[0] && (
                   <img
-                    src={newProduct.image}
+                    src={newProduct.images?.[0]}
                     alt="preview"
                     className="mt-3 h-20 rounded border"
                   />
@@ -1241,7 +1244,7 @@ Skipped: ${data.skipped}`
             </p>
 
             <img
-              src={selectedProduct.image}
+              src={selectedProduct.images?.[0]}
               className="w-full h-48 object-cover rounded-xl mb-4"
             />
 

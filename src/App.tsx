@@ -1,13 +1,9 @@
-import {
-  Routes,
-  Route
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import BackcaseBrands from "./pages/BackcaseBrands";
 import BackcaseModels from "./pages/BackcaseModels";
-import BackcaseProducts from "./pages/BackcaseProducts";
 import BrandModels from "./pages/BrandModels";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
@@ -37,16 +33,9 @@ export default function App() {
       <ScrollToTop />
 
       <Routes>
+        <Route path="/" element={<Home />} />
 
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-        <Route
-          path="/products"
-          element={<Products />}
-        />
+        <Route path="/products" element={<Products />} />
 
         <Route
           path="/brand-models/:brand"
@@ -63,27 +52,12 @@ export default function App() {
           element={<BackcaseModels />}
         />
 
-        {/* SHOP NOW BUTTON ROUTE */}
-        <Route
-          path="/backcase-products"
-          element={<BackcaseProducts />}
-        />
-
-        {/* BRAND + MODEL PRODUCTS ROUTE */}
-        <Route
-          path="/backcase-products/:brand/:model"
-          element={<BackcaseProducts />}
-        />
-
         <Route
           path="/product/:id"
           element={<ProductDetails />}
         />
 
-        <Route
-          path="/cart"
-          element={<Cart />}
-        />
+        <Route path="/cart" element={<Cart />} />
 
         <Route
           path="/checkout"
@@ -94,25 +68,16 @@ export default function App() {
           }
         />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+        <Route path="/register" element={<Register />} />
 
         <Route
           path="/forgot-password"
           element={<ForgotPassword />}
         />
 
-        <Route
-          path="/orders"
-          element={<Orders />}
-        />
+        <Route path="/orders" element={<Orders />} />
 
         <Route
           path="/order-success"
@@ -128,7 +93,6 @@ export default function App() {
           path="/wishlist"
           element={<Wishlist />}
         />
-
       </Routes>
     </>
   );

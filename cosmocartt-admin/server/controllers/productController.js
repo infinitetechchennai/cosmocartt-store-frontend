@@ -2,6 +2,7 @@ import Product from "../models/Product.js";
 import csv from "csv-parser";
 import { Readable } from "stream";
 import { Parser } from "json2csv";
+import fs from "fs";
 
 export const createProduct = async (req, res) => {
     try {
@@ -116,9 +117,13 @@ export const updateProduct = async (req, res) => {
 };
 
 export const importProductsCSV = async (req, res) => {
+    console.log("IMPORT ROUTE HIT");
     try {
 
         if (!req.file) {
+            console.log("FILE NAME:", req.file?.originalname);
+            console.log("FILE SIZE:", req.file?.size);
+            console.log("BUFFER EXISTS:", !!req.file?.buffer);
             return res.status(400).json({
                 success: false,
                 message: "CSV file is required",
@@ -127,14 +132,28 @@ export const importProductsCSV = async (req, res) => {
 
         const products = [];
 
-        const stream = Readable.from(req.file.buffer);
+
+
+        const stream =
+            fs.createReadStream(
+                req.file.path
+            );
 
         stream
             .pipe(csv())
+            .on("error", (err) => {
+                console.error("CSV ERROR:", err);
+            })
             .on("data", (row) => {
+
+                console.log("ROW:", row);
+
                 products.push(row);
+
+
             })
             .on("end", async () => {
+                console.log("ROWS FOUND:", products.length);
 
                 let imported = 0;
                 let skipped = 0;
@@ -167,14 +186,30 @@ export const importProductsCSV = async (req, res) => {
                             Number(item.retailPrice),
                         stock:
                             Number(item.stock || 0),
-                        image:
-                            item.image || "",
+                        images:
+                            item.images
+                                ? item.images
+                                    .split("|")
+                                    .map(img => img.trim())
+                                : [],
                         status:
                             item.status || "Active",
                     });
 
                     imported++;
                 }
+
+                console.log({
+                    imported,
+                    skipped,
+                    totalRows: products.length
+                });
+
+                console.log({
+                    imported,
+                    skipped,
+                    totalRows: products.length
+                });
 
                 return res.status(200).json({
                     success: true,
@@ -211,7 +246,7 @@ export const exportProductsCSV = async (req, res) => {
             "wholesalePrice",
             "retailPrice",
             "stock",
-            "image",
+            "images",
             "status"
         ];
 
@@ -220,8 +255,17 @@ export const exportProductsCSV = async (req, res) => {
                 fields,
             });
 
+        const formattedProducts =
+            products.map(product => ({
+                ...product,
+                images:
+                    product.images?.join("|") || ""
+            }));
+
         const csv =
-            parser.parse(products);
+            parser.parse(formattedProducts);
+
+
 
         res.header(
             "Content-Type",
