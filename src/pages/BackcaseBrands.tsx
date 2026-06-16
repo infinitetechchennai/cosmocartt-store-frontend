@@ -1,8 +1,22 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+const brands = [
+    "Apple",
+    "Samsung",
+    "Vivo",
+    "Oppo",
+    "OnePlus",
+    "Google Pixel",
+    "Infinix",
+    "iQOO",
+    "Motorola",
+    "Nothing",
+    "Poco",
+    "Realme",
+    "Xiaomi"
+];
 
-const brands = ["Apple", "Samsung", "Vivo", "Oppo", "OnePlus"];
 
 const trending = [
     "Shockproof Case",
@@ -63,7 +77,7 @@ export default function BackcaseBrands() {
                     {brands.map((brand) => (
                         <Link
                             key={brand}
-                            to={`/backcase-models/${brand}`}
+                           to={`/brand-models/${brand}`}
                             className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all text-center"
                         >
                             <div className="h-32 bg-purple-50 rounded-2xl flex items-center justify-center text-5xl">

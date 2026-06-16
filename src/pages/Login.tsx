@@ -251,12 +251,6 @@ export default function Login() {
                                         Forgot Password?
 </Link>
 
- HEAD
-                                
-=======
- 92d2e9949ca1d36b63d250a85b2c09c052c4b1bb
-
-
                                 </div>
 
                             </motion.div>

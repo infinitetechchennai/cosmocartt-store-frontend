@@ -2,19 +2,17 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useParams, Link } from "react-router-dom";
 
-const caseTypes = [
-    "Shockproof Case",
-    "Clear Case",
-    "Silicone Case",
-    "Leather Case",
-    "Camera Protection Case",
-    "Matte Finish Case",
-    "Transparent Case",
-    "MagSafe Case",
-];
-
 export default function BackcaseModels() {
-    const { brand } = useParams();
+    const { brand, model } = useParams();
+
+    const caseTypes = [
+        `Back Cover for ${model}`,
+        `Transparent Mobile Back Case for ${model}`,
+        `MagSafe Magnetic Phone Case for ${model}`,
+        `Nature TPU Pro Border Case for ${model}`,
+        `Nillkin Case for ${model}`,
+        `Clear Transparent Case for ${model}`,
+    ];
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -23,10 +21,10 @@ export default function BackcaseModels() {
             <div className="max-w-7xl mx-auto px-6 py-8">
 
                 <Link
-                    to="/backcase-brands"
+                    to={`/brand-models/${brand}`}
                     className="text-[#4B1E78] font-semibold hover:underline"
                 >
-                    ← Back to Brands
+                    ← Back to {brand} Models
                 </Link>
 
                 <div className="bg-gradient-to-r from-[#2B1055] to-[#6F2DBD] rounded-3xl p-10 mt-6 mb-8 text-white shadow-xl">
@@ -35,11 +33,11 @@ export default function BackcaseModels() {
                     </p>
 
                     <h1 className="text-5xl font-black mt-3">
-                        {brand} Backcases
+                        {model} Backcases
                     </h1>
 
                     <p className="mt-3 text-purple-100">
-                        Premium backcases for {brand} phones.
+                        Premium back covers and cases for {model}.
                     </p>
                 </div>
 
@@ -55,7 +53,7 @@ export default function BackcaseModels() {
 
                             <div className="p-5">
                                 <h2 className="font-black text-slate-900">
-                                    {brand} {type}
+                                    {type}
                                 </h2>
 
                                 <p className="text-sm text-slate-500 mt-2">
