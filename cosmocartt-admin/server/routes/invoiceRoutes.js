@@ -39,71 +39,121 @@ router.get("/:orderId", async (req, res) => {
         doc.pipe(res);
 
         doc
-            .fontSize(24)
-            .fontSize(28)
+            .fontSize(30)
+            .fillColor("#4B1E78")
             .text("COSMOCARTT", {
                 align: "center"
             });
 
         doc
-            .fontSize(16)
-            .text("TAX INVOICE", {
+            .fontSize(14)
+            .fillColor("black")
+            .text("GST TAX INVOICE", {
                 align: "center"
             });
+
+        doc.moveDown(2);
+
+        doc
+            .fontSize(12)
+            .text(`Invoice No: INV-${order.orderNumber}`);
+
+        doc.text(
+            `Order No: ${order.orderNumber}`
+        );
+
+        doc.text(
+            `Invoice Date: ${new Date(order.createdAt).toLocaleDateString()}`
+        );
 
         doc.moveDown();
 
         doc
-            .fontSize(12)
-            .text(`Invoice Date: ${new Date().toLocaleDateString()}`);
+            .fontSize(14)
+            .fillColor("#4B1E78")
+            .text("Seller Details");
 
-        doc.text(
-            `Order Number: ${order.orderNumber}`
-        );
+        doc
+            .fillColor("black")
+            .fontSize(11)
+            .text("CosmoCartt");
 
-        doc.moveDown();
+        doc.text("Chennai, Tamil Nadu");
 
-        doc.text(
-            `Customer: ${order.customerName}`
-        );
+        doc.text("GSTIN: 33ABCDE1234F1Z5");
 
-        doc.text(
-            `Email: ${order.email}`
-        );
-
-        doc.text(
-            `Phone: ${order.phone}`
-        );
+        doc.text("support@cosmocartt.com");
 
         doc.moveDown();
 
-        doc.text("Shipping Address:");
+        doc
+            .fontSize(14)
+            .fillColor("#4B1E78")
+            .text("Customer Details");
+
+        doc
+            .fillColor("black")
+            .fontSize(11)
+            .text(order.customerName);
+
+        doc.text(order.email);
+
+        doc.text(order.phone);
 
         doc.text(
             `${order.address}, ${order.city}, ${order.state} - ${order.pincode}`
         );
 
+        doc.moveDown(2);
+
+        doc
+            .fontSize(14)
+            .fillColor("#4B1E78")
+            .text("Order Items");
+
         doc.moveDown();
 
-        doc.fontSize(14).text("Products");
-
-        doc.moveDown(0.5);
-
         order.products.forEach(
-            (item) => {
+            (item, index) => {
 
-                doc.fontSize(12).text(
-                    `${item.name} | Qty: ${item.quantity} | ₹${item.price}`
+                doc
+                    .fillColor("black")
+                    .fontSize(11)
+                    .text(
+                        `${index + 1}. ${item.name}`
+                    );
+
+                doc.text(
+                    `Qty: ${item.quantity}`
                 );
 
+                doc.text(
+                    `Price: ₹${item.price}`
+                );
+
+                doc.text(
+                    `Total: ₹${item.quantity * item.price}`
+                );
+
+                doc.moveDown();
             }
         );
 
         doc.moveDown();
 
-        doc.text(
-            `Subtotal: ₹${order.subtotal}`
-        );
+        doc
+            .fontSize(14)
+            .fillColor("#4B1E78")
+            .text("Payment Summary");
+
+        doc.moveDown(0.5);
+
+        doc
+            .fillColor("black")
+            .fontSize(11)
+            .text(
+                `Subtotal: ₹${order.subtotal}`
+            );
 
         doc.text(
             `Shipping: ₹${order.shippingCharge}`
@@ -113,9 +163,13 @@ router.get("/:orderId", async (req, res) => {
             `Tax: ₹${order.tax}`
         );
 
-        doc.text(
-            `Total: ₹${order.totalAmount}`
-        );
+        doc.moveDown(0.5);
+
+        doc
+            .fontSize(13)
+            .text(
+                `Grand Total: ₹${order.totalAmount}`
+            );
 
         doc.moveDown();
 
@@ -125,6 +179,24 @@ router.get("/:orderId", async (req, res) => {
 
         doc.text(
             `Payment Status: ${order.paymentStatus}`
+        );
+
+        doc.moveDown(3);
+
+        doc.text(
+            "This is a computer generated invoice.",
+            {
+                align: "center"
+            }
+        );
+
+        doc.moveDown();
+
+        doc.text(
+            "Authorized Signature",
+            {
+                align: "right"
+            }
         );
 
         doc.end();

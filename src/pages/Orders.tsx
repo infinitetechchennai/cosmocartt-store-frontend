@@ -56,6 +56,73 @@ export default function Orders() {
 
     };
 
+    const requestRefund = async (
+        orderId: string
+    ) => {
+
+        const reason =
+            prompt(
+                "Reason for refund?"
+            );
+
+        if (!reason) return;
+
+        try {
+
+            const response =
+                await fetch(
+                    `http://localhost:5000/api/orders/${orderId}/request-refund`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            reason
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!data.success) {
+
+                alert(
+                    data.message
+                );
+
+                return;
+
+            }
+
+            setOrders(prev =>
+                prev.map(order =>
+                    order._id === orderId
+                        ? {
+                            ...order,
+                            refundStatus:
+                                "Requested"
+                        }
+                        : order
+                )
+            );
+
+            alert(
+                "Refund requested successfully"
+            );
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    };
+
     useEffect(() => {
         fetch(
             `http://localhost:5000/api/orders/user/${user?._id}`
@@ -313,6 +380,18 @@ export default function Orders() {
                                 {selectedOrder.pincode}
                             </p>
 
+                            <p>
+                                <strong>
+                                    Refund Status:
+    </strong>
+                                {" "}
+                                {
+                                    selectedOrder.refundStatus
+                                    ||
+                                    "Not Requested"
+                                }
+                            </p>
+
                         </div>
 
                         <div className="border-t pt-4">
@@ -409,13 +488,59 @@ export default function Orders() {
                                 <span>
                                     ₹{selectedOrder.totalAmount?.toLocaleString()}
                                 </span>
+
                             </div>
+
+                            {
+                                selectedOrder.status === "Delivered"
+
+                                &&
+
+                                selectedOrder.refundStatus !==
+                                "Requested"
+
+                                && (
+
+                                    <div className="mt-6">
+
+                                        <button
+                                            onClick={() =>
+                                                requestRefund(
+                                                    selectedOrder._id
+                                                )
+                                            }
+                                            className="
+                    w-full
+                    bg-red-600
+                    hover:bg-red-700
+                    text-white
+                    py-3
+                    rounded-xl
+                    font-medium
+                "
+                                        >
+                                            Request Refund
+            </button>
+
+                                    </div>
+
+                                )
+                            }
+
+
 
                         </div>
 
+
+
                     </div>
 
+
+
+
                 </div>
+
+
 
             )}
 

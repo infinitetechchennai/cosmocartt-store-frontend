@@ -861,9 +861,49 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
           >
 
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">
-                Order Details
-        </h2>
+              <div className="flex items-center justify-between">
+
+                <div>
+
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    Order #{selectedOrder.orderNumber}
+                  </h2>
+
+                  <p className="text-sm text-slate-500 mt-1">
+                    {new Date(selectedOrder.createdAt).toLocaleString()}
+                  </p>
+
+                </div>
+
+                <div className="flex gap-2">
+
+                  <span
+                    className="
+        px-3 py-1 rounded-full
+        bg-blue-100
+        text-blue-700
+        text-sm
+        font-semibold
+      "
+                  >
+                    {selectedOrder.status}
+                  </span>
+
+                  <span
+                    className="
+        px-3 py-1 rounded-full
+        bg-green-100
+        text-green-700
+        text-sm
+        font-semibold
+      "
+                  >
+                    {selectedOrder.paymentStatus}
+                  </span>
+
+                </div>
+
+              </div>
 
               <button
                 onClick={() => setSelectedOrder(null)}
@@ -883,27 +923,34 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   selectedOrder._id}
               </p>
 
-              <p>
-                <strong>Customer:</strong>{" "}
-                {selectedOrder.customerName}
-              </p>
+              <div className="grid md:grid-cols-2 gap-4">
 
-              <p>
-                <strong>Email:</strong>{" "}
-                {selectedOrder.email}
-              </p>
+                <div className="border rounded-xl p-4">
 
-              <p>
-                <strong>Status:</strong>{" "}
-                {selectedOrder.status}
-              </p>
+                  <h3 className="font-semibold mb-3">
+                    Customer Information
+    </h3>
 
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(
-                  selectedOrder.createdAt
-                ).toLocaleString()}
-              </p>
+                  <p>{selectedOrder.customerName}</p>
+                  <p>{selectedOrder.email}</p>
+                  <p>{selectedOrder.phone}</p>
+
+                </div>
+
+                <div className="border rounded-xl p-4">
+
+                  <h3 className="font-semibold mb-3">
+                    Shipping Information
+    </h3>
+
+                  <p>{selectedOrder.address}</p>
+                  <p>{selectedOrder.city}</p>
+                  <p>{selectedOrder.state}</p>
+                  <p>{selectedOrder.pincode}</p>
+
+                </div>
+
+              </div>
 
               <p>
                 <strong>Shipment ID:</strong>{" "}
@@ -965,6 +1012,8 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
             </div>
 
+
+
             <h3 className="font-semibold text-lg mb-3">
               Ordered Products
 </h3>
@@ -981,7 +1030,14 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-20 h-20 object-cover rounded-lg border"
+                      className="
+w-24
+h-24
+object-contain
+rounded-xl
+border
+bg-white
+"
                     />
 
                     <div className="flex-1">
@@ -1024,7 +1080,14 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
             </div>
 
-            <div className="mt-6 border-t pt-4">
+            <div
+              className="
+    mt-6
+    bg-slate-50
+    rounded-2xl
+    p-6
+  "
+            >
 
               <div className="flex justify-between mb-2">
                 <span className="text-zinc-500">
@@ -1054,6 +1117,55 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                 </p>
               )}
 
+              <div className="mt-6">
+
+                <h3 className="font-semibold mb-4">
+                  Order Timeline
+  </h3>
+
+                <div className="space-y-4">
+
+                  {selectedOrder.trackingTimeline?.map(
+                    (item, index) => (
+
+                      <div
+                        key={index}
+                        className="flex gap-3"
+                      >
+
+                        <div
+                          className="
+              w-3
+              h-3
+              bg-green-500
+              rounded-full
+              mt-2
+            "
+                        />
+
+                        <div>
+
+                          <p className="font-medium">
+                            {item.status}
+                          </p>
+
+                          <p className="text-sm text-gray-500">
+                            {new Date(
+                              item.date
+                            ).toLocaleString()}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
               {/* {/* {selectedOrder.trackingUrl && (
 
                 <p>
@@ -1070,12 +1182,40 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
 
 
-              <div className="flex justify-between text-lg font-bold">
-                <span>Total Amount</span>
+              <div className="mt-6 bg-slate-50 rounded-xl p-5">
 
-                <span>
-                  ₹{selectedOrder.totalAmount}
-                </span>
+                <h3 className="font-semibold text-lg mb-4">
+                  Payment Summary
+    </h3>
+
+                <div className="flex justify-between mb-2">
+                  <span>Subtotal</span>
+                  <span>
+                    ₹{selectedOrder.subtotal || 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between mb-2">
+                  <span>Shipping</span>
+                  <span>
+                    ₹{selectedOrder.shippingCharge || 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between mb-2">
+                  <span>Tax</span>
+                  <span>
+                    ₹{selectedOrder.tax || 0}
+                  </span>
+                </div>
+
+                <div className="border-t mt-3 pt-3 flex justify-between text-lg font-bold">
+                  <span>Total</span>
+                  <span>
+                    ₹{selectedOrder.totalAmount}
+                  </span>
+                </div>
+
               </div>
 
               <button
@@ -1086,12 +1226,16 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   )
                 }
                 className="
-    px-4 py-2
-    bg-indigo-600
-    text-white
-    rounded-lg
-    hover:bg-indigo-700
-  "
+mt-4
+w-full
+bg-[#4B1E78]
+hover:bg-[#39155d]
+text-white
+font-semibold
+py-3
+rounded-xl
+transition-all
+"
               >
                 Download Invoice
 </button>

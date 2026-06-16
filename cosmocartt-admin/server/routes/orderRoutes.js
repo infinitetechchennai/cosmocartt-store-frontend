@@ -9,10 +9,6 @@ router.get("/test", (req, res) => {
     res.json({ message: "Orders API working ✅" });
 });
 
-// router.put(
-//     "/:id/request-refund",
-//     requestRefund
-// );
 
 // CREATE ORDER
 router.post("/", async (req, res) => {
@@ -371,5 +367,39 @@ export const requestRefund = async (
     }
 
 };
+
+
+router.put(
+    "/:id/request-refund",
+    requestRefund
+);
+
+router.get(
+    "/test-refund/:id",
+    async (req, res) => {
+
+        const order =
+            await Order.findById(
+                req.params.id
+            );
+
+        order.refundStatus =
+            "Requested";
+
+        order.refundReason =
+            "Test Refund";
+
+        order.refundRequestedAt =
+            new Date();
+
+        await order.save();
+
+        res.json({
+            success: true,
+            order
+        });
+
+    }
+);
 
 export default router;
