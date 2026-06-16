@@ -1028,7 +1028,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   >
 
                     <img
-                      src={product.image}
+                      src={`http://localhost:5000${product.images?.[0]}`}
                       alt={product.name}
                       className="
 w-24

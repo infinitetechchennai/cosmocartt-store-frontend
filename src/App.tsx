@@ -1,6 +1,6 @@
 import {
-Routes,
-Route
+  Routes,
+  Route
 } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -23,89 +23,87 @@ import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "./pages/ForgotPassword";
 
 export default function App() {
-return (
-<> <ToastContainer
-     position="top-right"
-     autoClose={3000}
-     theme="colored"
-   />
-
-```
-  <ScrollToTop />
-
-  <Routes>
-    <Route
-      path="/"
-      element={<Home />}
+  return (
+    <> <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      theme="colored"
     />
+      <ScrollToTop />
 
-    <Route
-      path="/products"
-      element={<Products />}
-    />
-<Route
-  path="/backcase-brands"
-  element={<BackcaseBrands />}
-/>
+      <Routes>
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-<Route
-  path="/backcase-models/:brand"
-  element={<BackcaseModels />}
-/>
-    <Route
-      path="/product/:id"
-      element={<ProductDetails />}
-    />
+        <Route
+          path="/products"
+          element={<Products />}
+        />
+        <Route
+          path="/backcase-brands"
+          element={<BackcaseBrands />}
+        />
 
-    <Route
-      path="/cart"
-      element={<Cart />}
-    />
+        <Route
+          path="/backcase-models/:brand"
+          element={<BackcaseModels />}
+        />
+        <Route
+          path="/product/:id"
+          element={<ProductDetails />}
+        />
 
-    <Route
-      path="/checkout"
-      element={
-        <ProtectedRoute>
-          <Checkout />
-        </ProtectedRoute>
-      }
-    />
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
 
-    <Route
-      path="/login"
-      element={<Login />}
-    />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/register"
-      element={<Register />}
-    />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-<Route
-    path="/forgot-password"
-    element={<ForgotPassword />}
-/>
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-    <Route
-      path="/orders"
-      element={<Orders />}
-    />
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
 
-    <Route
-      path="/order-success"
-      element={<OrderSuccess />}
-    />
+        <Route
+          path="/orders"
+          element={<Orders />}
+        />
 
-    <Route
-      path="/track-order/:id"
-      element={<OrderTracking />}
-    />
+        <Route
+          path="/order-success"
+          element={<OrderSuccess />}
+        />
 
-    <Route
-      path="/wishlist"
-      element={<Wishlist />}
-    />
-  </Routes>
-</>
-);
+        <Route
+          path="/track-order/:id"
+          element={<OrderTracking />}
+        />
+
+        <Route
+          path="/wishlist"
+          element={<Wishlist />}
+        />
+      </Routes>
+    </>
+  );
 }

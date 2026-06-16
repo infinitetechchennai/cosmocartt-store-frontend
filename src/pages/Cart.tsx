@@ -15,40 +15,40 @@ export default function Cart() {
   } = useCart();
 
   const subtotal = cartItems.reduce(
-  (sum: number, item: any) =>
-    sum + item.retailPrice * item.quantity,
-  0
-);
+    (sum: number, item: any) =>
+      sum + item.retailPrice * item.quantity,
+    0
+  );
 
   const shipping = subtotal > 0 ? 0 : 0;
   const discount = 0;
   const total = subtotal - discount + shipping;
   const [recommendPage, setRecommendPage] =
-  useState(1);
+    useState(1);
 
-const recommendPerPage = 4;
+  const recommendPerPage = 4;
 
-const recommendedProducts =
-  products.filter(
-    (product) =>
-      !cartItems.some(
-        (item: any) =>
-          item._id === product._id
-      )
-  );
+  const recommendedProducts =
+    products.filter(
+      (product) =>
+        !cartItems.some(
+          (item: any) =>
+            item._id === product._id
+        )
+    );
 
-const recommendTotalPages = Math.ceil(
-  recommendedProducts.length /
+  const recommendTotalPages = Math.ceil(
+    recommendedProducts.length /
     recommendPerPage
-);
-
-const visibleRecommended =
-  recommendedProducts.slice(
-    (recommendPage - 1) *
-      recommendPerPage,
-    recommendPage * recommendPerPage
   );
-  
+
+  const visibleRecommended =
+    recommendedProducts.slice(
+      (recommendPage - 1) *
+      recommendPerPage,
+      recommendPage * recommendPerPage
+    );
+
 
   return (
     <div className="min-h-screen bg-[#f6f6f6]">
@@ -109,7 +109,7 @@ const visibleRecommended =
                     <div className="flex items-center gap-4">
                       <div className="h-24 w-24 rounded-2xl bg-slate-100 flex items-center justify-center overflow-hidden">
                         <img
-                          src={item.image}
+                          src={`http://localhost:5000${product.images?.[0]}`}
                           alt={item.name}
                           className="h-20 object-contain"
                         />
@@ -184,7 +184,7 @@ const visibleRecommended =
                   </div>
                 ))}
               </div>
-              
+
             </div>
 
             {/* RIGHT */}
@@ -301,27 +301,27 @@ const visibleRecommended =
         )}
       </div>
 
-{/* RECOMMENDED PRODUCTS */}
+      {/* RECOMMENDED PRODUCTS */}
 
-<div className="max-w-7xl mx-auto px-6 pb-16">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
 
-  <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8">
 
-    <div>
-      <h2 className="text-3xl font-bold">
-        You May Also Like
+          <div>
+            <h2 className="text-3xl font-bold">
+              You May Also Like
       </h2>
 
-      <p className="text-slate-500 mt-2">
-        Recommended products for you
+            <p className="text-slate-500 mt-2">
+              Recommended products for you
       </p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
 
-  {visibleRecommended.map((product: any) => (
+              {visibleRecommended.map((product: any) => (
 
-    <div
-      key={product._id}
-      className="
+                <div
+                  key={product._id}
+                  className="
   group
   bg-white
   rounded-3xl
@@ -333,37 +333,37 @@ const visibleRecommended =
   transition-all
   duration-300
 "
-    >
+                >
 
-      <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
+                  <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
 
-        <img
-          src={product.image}
-          alt={product.name}
-          className="
+                    <img
+                      src={`http://localhost:5000${product.images?.[0]}`}
+                      alt={product.name}
+                      className="
   h-40
   object-contain
   group-hover:scale-110
   transition-all
   duration-300
 "
-        />
+                    />
 
-      </div>
+                  </div>
 
-      <div className="p-5">
+                  <div className="p-5">
 
-        <h3 className="font-semibold line-clamp-2">
-          {product.name}
-        </h3>
+                    <h3 className="font-semibold line-clamp-2">
+                      {product.name}
+                    </h3>
 
-        <p className="mt-3 text-2xl font-bold text-[#6F2DBD]">
-          ₹{product.retailPrice}
-        </p>
+                    <p className="mt-3 text-2xl font-bold text-[#6F2DBD]">
+                      ₹{product.retailPrice}
+                    </p>
 
-        <button
-          onClick={() => addToCart(product)}
-          className="
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="
             w-full
             mt-4
             py-3
@@ -371,69 +371,69 @@ const visibleRecommended =
             bg-[#6F2DBD]
             text-white
           "
-        >
-          Add To Cart
+                    >
+                      Add To Cart
         </button>
 
-      </div>
+                  </div>
 
-    </div>
+                </div>
 
-  ))}
+              ))}
 
-</div>
-<div className="flex justify-center gap-3 mt-10">
+            </div>
+            <div className="flex justify-center gap-3 mt-10">
 
-  <button
-    onClick={() =>
-      setRecommendPage((p) =>
-        Math.max(1, p - 1)
-      )
-    }
-    disabled={recommendPage === 1}
-    className="px-4 py-2 border rounded-xl"
-  >
-    ←
+              <button
+                onClick={() =>
+                  setRecommendPage((p) =>
+                    Math.max(1, p - 1)
+                  )
+                }
+                disabled={recommendPage === 1}
+                className="px-4 py-2 border rounded-xl"
+              >
+                ←
   </button>
 
-  <span
-    className="
+              <span
+                className="
       px-5
       py-2
       bg-[#6F2DBD]
       text-white
       rounded-xl
     "
-  >
-    {recommendPage}
-  </span>
+              >
+                {recommendPage}
+              </span>
 
-  <button
-    onClick={() =>
-      setRecommendPage((p) =>
-        Math.min(
-          recommendTotalPages,
-          p + 1
-        )
-      )
-    }
-    disabled={
-      recommendPage ===
-      recommendTotalPages
-    }
-    className="px-4 py-2 border rounded-xl"
-  >
-    →
+              <button
+                onClick={() =>
+                  setRecommendPage((p) =>
+                    Math.min(
+                      recommendTotalPages,
+                      p + 1
+                    )
+                  )
+                }
+                disabled={
+                  recommendPage ===
+                  recommendTotalPages
+                }
+                className="px-4 py-2 border rounded-xl"
+              >
+                →
   </button>
 
-</div>
-    </div>
+            </div>
+          </div>
 
-  </div>
+        </div>
 
-</div>
+      </div>
 
-<Footer />
+      <Footer />
     </div>
   );
 }
