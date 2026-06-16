@@ -1,6 +1,15 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import spotlightImage from "../assets/spotlight product.png.png";
+
+import {
+Truck,
+ShieldCheck,
+Star,
+Zap
+} from "lucide-react";
+
 const brands = [
     "Apple",
     "Samsung",
@@ -37,10 +46,25 @@ export default function BackcaseBrands() {
                 <div className="bg-gradient-to-r from-[#2B1055] to-[#6F2DBD] rounded-3xl p-10 text-white shadow-2xl">
                     <p className="text-purple-200">Mobile Accessories</p>
 
-                    <h1 className="text-5xl font-black mt-3">
-                        Premium Mobile Cases
-                    </h1>
+                    <h1 className="text-5xl md:text-6xl font-black mt-3 leading-tight">
+    Protect Your Phone
+    <br />
+    Without Compromising Style
+</h1>
 
+<div className="flex gap-4 mt-6 flex-wrap">
+  <span className="bg-white/20 px-4 py-2 rounded-full text-sm">
+    1000+ Designs
+  </span>
+
+  <span className="bg-white/20 px-4 py-2 rounded-full text-sm">
+    Free Shipping
+  </span>
+
+  <span className="bg-white/20 px-4 py-2 rounded-full text-sm">
+    Premium Quality
+  </span>
+</div>
                     <p className="mt-4 text-purple-100 max-w-xl">
                         Explore stylish, shockproof and premium backcases for your favorite mobile brands.
                     </p>
@@ -58,40 +82,108 @@ export default function BackcaseBrands() {
                         </div>
                     ))}
                 </div>
+<div className="grid md:grid-cols-3 gap-5 mt-8">
 
+  <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-3xl p-6">
+    <p className="text-sm opacity-80">LIMITED OFFER</p>
+    <h3 className="text-2xl font-black mt-2">
+      Up To 50% OFF
+    </h3>
+    <p className="mt-2">Premium Shockproof Cases</p>
+  </div>
+
+  <div className="bg-gradient-to-r from-pink-500 to-orange-500 text-white rounded-3xl p-6">
+    <p className="text-sm opacity-80">HOT DEAL</p>
+    <h3 className="text-2xl font-black mt-2">
+      Buy 2 Get 1
+    </h3>
+    <p className="mt-2">Selected Collections</p>
+  </div>
+
+  <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-3xl p-6">
+    <p className="text-sm opacity-80">NEW ARRIVAL</p>
+    <h3 className="text-2xl font-black mt-2">
+      Premium Series
+    </h3>
+    <p className="mt-2">Latest Case Collection</p>
+  </div>
+
+</div>
                 {/* FEATURES */}
                 <div className="grid md:grid-cols-4 gap-4 mt-8">
-                    {["🚚 Free Shipping", "🛡 Secure Payments", "⭐ Trusted Quality", "⚡ Fast Delivery"].map((item) => (
-                        <div className="bg-white rounded-2xl p-5 shadow-md text-center font-semibold">
-                            {item}
-                        </div>
-                    ))}
-                </div>
+
+  <div className="bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition text-center">
+    <Truck className="mx-auto text-[#4B1E78]" size={32} />
+    <p className="font-semibold mt-3">Free Shipping</p>
+  </div>
+
+  <div className="bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition text-center">
+    <ShieldCheck className="mx-auto text-[#4B1E78]" size={32} />
+    <p className="font-semibold mt-3">Secure Payments</p>
+  </div>
+
+  <div className="bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition text-center">
+    <Star className="mx-auto text-[#4B1E78]" size={32} />
+    <p className="font-semibold mt-3">Trusted Quality</p>
+  </div>
+
+  <div className="bg-white rounded-3xl p-6 shadow-md hover:shadow-xl transition text-center">
+    <Zap className="mx-auto text-[#4B1E78]" size={32} />
+    <p className="font-semibold mt-3">Fast Delivery</p>
+  </div>
+
+</div>
 
                 {/* BRAND CATEGORIES */}
                 <h2 className="text-3xl font-black mt-12 mb-6">
                     Choose Your Brand
                 </h2>
 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
                     {brands.map((brand) => (
                         <Link
-                            key={brand}
-                           to={`/brand-models/${brand}`}
-                            className="bg-white rounded-3xl p-6 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all text-center"
-                        >
-                            <div className="h-32 bg-purple-50 rounded-2xl flex items-center justify-center text-5xl">
-                                📱
-                            </div>
+  key={brand}
+  to={`/brand-models/${brand}`}
+  className="
+  group
+  bg-white
+  rounded-3xl
+  p-5
+  border
+  border-slate-200
+  hover:border-[#4B1E78]
+  hover:shadow-2xl
+  transition-all
+  duration-300
+  text-center
+  "
+>
+  <div
+    className="
+    h-24
+    rounded-2xl
+    bg-gradient-to-br
+    from-purple-50
+    to-pink-50
+    flex
+    items-center
+    justify-center
+    text-3xl
+    group-hover:scale-110
+    transition
+  "
+  >
+    📱
+  </div>
 
-                            <h3 className="font-black mt-4">
-                                {brand}
-                            </h3>
+  <h3 className="font-bold mt-4 text-slate-800">
+    {brand}
+  </h3>
 
-                            <p className="text-sm text-slate-500 mt-1">
-                                Backcases
-                            </p>
-                        </Link>
+  <p className="text-xs text-slate-500 mt-1">
+    Explore Cases →
+  </p>
+</Link>
                     ))}
                 </div>
 
@@ -118,26 +210,27 @@ export default function BackcaseBrands() {
                     ))}
                 </div>
 
-                {/* SPOTLIGHT */}
-                <div className="bg-white rounded-3xl p-8 mt-12 shadow-xl grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <h2 className="text-4xl font-black">
-                            Product Spotlight
-                        </h2>
+                {/* PRODUCT SPOTLIGHT */}
 
-                        <p className="text-slate-500 mt-4">
-                            Premium shockproof cases with camera protection, matte finish and perfect grip.
-                        </p>
+<div className="relative mt-16">
 
-                        <button className="mt-6 bg-[#4B1E78] text-white px-6 py-3 rounded-xl font-bold">
-                            Shop Now
-                        </button>
-                    </div>
+  <img
+    src={spotlightImage}
+    alt="Cosmocartt Product Spotlight"
+    className="
+      w-full
+      rounded-[32px]
+      shadow-2xl
+    "
+  />
 
-                    <div className="h-72 bg-purple-50 rounded-3xl flex items-center justify-center text-8xl">
-                        📱
-                    </div>
-                </div>
+<Link
+  to="/products"
+  className="absolute left-[5.5%] bottom-[24%] w-[190px] h-[60px] z-10"
+>
+</Link>
+</div>
+
 
             </div>
 

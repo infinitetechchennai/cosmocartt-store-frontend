@@ -1,6 +1,6 @@
 import {
-Routes,
-Route
+  Routes,
+  Route
 } from "react-router-dom";
 
 import Home from "./pages/Home";
@@ -20,101 +20,116 @@ import OrderSuccess from "./pages/OrderSuccess";
 import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import OrderTracking from "./pages/OrderTracking";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "./pages/ForgotPassword";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function App() {
-return (
-<> <ToastContainer
-     position="top-right"
-     autoClose={3000}
-     theme="colored"
-   />
+  return (
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="colored"
+      />
 
-  <ScrollToTop />
+      <ScrollToTop />
 
-  <Routes>
-    <Route
-      path="/"
-      element={<Home />}
-    />
+      <Routes>
 
-    <Route
-      path="/products"
-      element={<Products />}
-    />
-    <Route
-    path="/brand-models/:brand"
-    element={<BrandModels />}
-/>
-<Route
-  path="/backcase-brands"
-  element={<BackcaseBrands />}
-/>
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-<Route
-  path="/backcase-models/:brand/:model"
-  element={<BackcaseModels />}
-/>
-<Route
-  path="/backcase-products/:brand/:model"
-  element={<BackcaseProducts />}
-/>
-    <Route
-      path="/product/:id"
-      element={<ProductDetails />}
-    />
+        <Route
+          path="/products"
+          element={<Products />}
+        />
 
-    <Route
-      path="/cart"
-      element={<Cart />}
-    />
+        <Route
+          path="/brand-models/:brand"
+          element={<BrandModels />}
+        />
 
-    <Route
-      path="/checkout"
-      element={
-        <ProtectedRoute>
-          <Checkout />
-        </ProtectedRoute>
-      }
-    />
+        <Route
+          path="/backcase-brands"
+          element={<BackcaseBrands />}
+        />
 
-    <Route
-      path="/login"
-      element={<Login />}
-    />
+        <Route
+          path="/backcase-models/:brand/:model"
+          element={<BackcaseModels />}
+        />
 
-    <Route
-      path="/register"
-      element={<Register />}
-    />
+        {/* SHOP NOW BUTTON ROUTE */}
+        <Route
+          path="/backcase-products"
+          element={<BackcaseProducts />}
+        />
 
-<Route
-    path="/forgot-password"
-    element={<ForgotPassword />}
-/>
+        {/* BRAND + MODEL PRODUCTS ROUTE */}
+        <Route
+          path="/backcase-products/:brand/:model"
+          element={<BackcaseProducts />}
+        />
 
-    <Route
-      path="/orders"
-      element={<Orders />}
-    />
+        <Route
+          path="/product/:id"
+          element={<ProductDetails />}
+        />
 
-    <Route
-      path="/order-success"
-      element={<OrderSuccess />}
-    />
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
 
-    <Route
-      path="/track-order/:id"
-      element={<OrderTracking />}
-    />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
 
-    <Route
-      path="/wishlist"
-      element={<Wishlist />}
-    />
-  </Routes>
-</>
-);
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/orders"
+          element={<Orders />}
+        />
+
+        <Route
+          path="/order-success"
+          element={<OrderSuccess />}
+        />
+
+        <Route
+          path="/track-order/:id"
+          element={<OrderTracking />}
+        />
+
+        <Route
+          path="/wishlist"
+          element={<Wishlist />}
+        />
+
+      </Routes>
+    </>
+  );
 }
