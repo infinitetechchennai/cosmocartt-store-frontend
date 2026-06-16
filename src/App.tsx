@@ -30,7 +30,6 @@ return (
      theme="colored"
    />
 
-```
   <ScrollToTop />
 
   <Routes>
