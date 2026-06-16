@@ -7,12 +7,17 @@ import {
     updateCustomer,
     deleteCustomer
 } from "../controllers/customerController.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
 router.get("/", getCustomers);
 
-router.post("/register", registerCustomer);
+router.post(
+    "/register",
+    upload.single("gstCertificate"),
+    registerCustomer
+);
 
 router.post("/login", loginCustomer);
 

@@ -83,6 +83,27 @@ const orderSchema = new mongoose.Schema(
             default: "Order Placed",
         },
 
+        refundStatus: {
+            type: String,
+            enum: [
+                "Not Requested",
+                "Requested",
+                "Approved",
+                "Rejected",
+                "Completed"
+            ],
+            default: "Not Requested"
+        },
+
+        refundReason: {
+            type: String,
+            default: ""
+        },
+
+        refundRequestedAt: Date,
+
+        refundProcessedAt: Date,
+
         trackingTimeline: [
             {
                 status: String,

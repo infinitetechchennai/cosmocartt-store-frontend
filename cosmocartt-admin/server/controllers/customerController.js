@@ -54,6 +54,11 @@ export const registerCustomer = async (req, res) => {
 
                 ...req.body,
 
+                gstCertificate:
+                    req.file
+                        ? req.file.filename
+                        : "",
+
                 password: hashedPassword
 
             });

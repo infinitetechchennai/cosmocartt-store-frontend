@@ -44,6 +44,10 @@ export default function UsersView({
   const [editPermissions, setEditPermissions] =
     useState<string[]>([]);
 
+  const [selectedCustomers,
+    setSelectedCustomers] =
+    useState<string[]>([]);
+
   // FETCH USERS FROM BACKEND
   useEffect(() => {
 
@@ -139,6 +143,134 @@ export default function UsersView({
   });
 
 
+  const updateVerification = async (
+    id: string,
+    status: string
+  ) => {
+
+    try {
+
+      const res = await fetch(
+        `http://localhost:5000/api/customers/${id}`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            verificationStatus:
+              status
+          })
+        }
+      );
+
+      if (!res.ok) {
+
+        alert(
+          "Failed to update"
+        );
+
+        return;
+
+      }
+
+      setCustomers(
+
+        customers.map((c: any) =>
+
+          c._id === id
+
+            ? {
+              ...c,
+              verificationStatus: status
+            }
+
+            : c
+
+        )
+
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+
+  const bulkApprove = async () => {
+
+    try {
+
+      await Promise.all(
+
+        selectedCustomers.map(
+
+          (id) =>
+
+            fetch(
+
+              `http://localhost:5000/api/customers/${id}`,
+
+              {
+
+                method: "PUT",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+
+                  verificationStatus:
+                    "Verified"
+
+                })
+
+              }
+
+            )
+
+        )
+
+      );
+
+      setCustomers(
+
+        customers.map((c: any) =>
+
+          selectedCustomers.includes(
+            c._id
+          )
+
+            ? {
+              ...c,
+              verificationStatus:
+                "Verified"
+            }
+
+            : c
+
+        )
+
+      );
+
+      setSelectedCustomers([]);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
 
   const toggleStatus = async (user: any) => {
 
@@ -177,17 +309,39 @@ export default function UsersView({
 
       const updatedUser = await res.json();
 
-      setUsers(
+      if (isCustomer) {
 
-        users.map((u: any) =>
+        setCustomers(
 
-          u._id === updatedUser._id
-            ? updatedUser
-            : u
+          customers.map((c: any) =>
 
-        )
+            c._id === updatedUser._id
 
-      );
+              ? updatedUser
+
+              : c
+
+          )
+
+        );
+
+      } else {
+
+        setUsers(
+
+          users.map((u: any) =>
+
+            u._id === updatedUser._id
+
+              ? updatedUser
+
+              : u
+
+          )
+
+        );
+
+      }
 
     } catch (error) {
 
@@ -467,6 +621,42 @@ export default function UsersView({
 
         </div>
 
+        {
+          userTypeFilter === "b2b" && (
+
+            <button
+              onClick={bulkApprove}
+
+              disabled={
+                selectedCustomers.length === 0
+              }
+
+              className={`
+      px-4 py-2 rounded-xl
+      text-white font-medium
+
+      ${selectedCustomers.length === 0
+
+                  ? "bg-zinc-300 cursor-not-allowed"
+
+                  : "bg-green-600 hover:bg-green-700"
+                }
+      `}
+            >
+
+              Approve Selected
+
+              {
+                selectedCustomers.length > 0 &&
+                ` (${selectedCustomers.length})`
+              }
+
+            </button>
+
+          )
+        }
+
+
         {loggedUser?.role === "admin" && (
 
           <button
@@ -716,6 +906,65 @@ export default function UsersView({
 
               <tr className="bg-zinc-50 text-xs uppercase text-zinc-500">
 
+                <th className="px-3 py-4">
+
+                  {
+                    userTypeFilter === "b2b" && (
+
+                      <input
+                        type="checkbox"
+
+                        checked={
+                          filteredUsers
+                            .filter(
+                              (u: any) =>
+                                u.customerType === "b2b" &&
+                                u.verificationStatus !==
+                                "Verified"
+                            )
+                            .every(
+                              (u: any) =>
+                                selectedCustomers.includes(
+                                  u._id
+                                )
+                            )
+                        }
+
+                        onChange={(e) => {
+
+                          if (e.target.checked) {
+
+                            setSelectedCustomers(
+
+                              filteredUsers
+
+                                .filter(
+                                  (u: any) =>
+                                    u.customerType === "b2b" &&
+                                    u.verificationStatus !==
+                                    "Verified"
+                                )
+
+                                .map(
+                                  (u: any) => u._id
+                                )
+
+                            );
+
+                          } else {
+
+                            setSelectedCustomers([]);
+
+                          }
+
+                        }}
+                      />
+
+                    )
+                  }
+
+                </th>
+
                 <th className="px-6 py-4 text-left">
                   Name
                 </th>
@@ -736,13 +985,17 @@ export default function UsersView({
                   Last Login
                 </th>
 
-                <th className="px-6 py-4 text-left">
-                  Activity
-</th>
+
+
 
                 <th className="px-6 py-4 text-left">
                   Status
-</th>
+                </th>
+
+                <th className="px-6 py-4 text-left">
+                  Verification
+                </th>
+
 
                 {loggedUser?.role === "admin" && (
 
@@ -765,7 +1018,54 @@ export default function UsersView({
                   className="border-b hover:bg-zinc-50 transition"
                 >
 
+                  <td className="px-3 py-4">
+
+                    {
+                      userTypeFilter === "b2b" &&
+                      user.customerType === "b2b" &&
+                      user.verificationStatus !== "Verified" && (
+
+                        <input
+                          type="checkbox"
+
+                          checked={
+                            selectedCustomers.includes(
+                              user._id
+                            )
+                          }
+
+                          onChange={(e) => {
+
+                            if (e.target.checked) {
+
+                              setSelectedCustomers([
+                                ...selectedCustomers,
+                                user._id
+                              ]);
+
+                            } else {
+
+                              setSelectedCustomers(
+
+                                selectedCustomers.filter(
+                                  id => id !== user._id
+                                )
+
+                              );
+
+                            }
+
+                          }}
+                        />
+
+                      )
+                    }
+
+                  </td>
+
                   {/* NAME */}
+
+
                   <td className="px-6 py-4 font-medium">
                     {user.name}
                   </td>
@@ -780,6 +1080,9 @@ export default function UsersView({
 
 
                   {/* ROLE */}
+
+
+
                   <td className="px-6 py-4">
 
                     <span className={`
@@ -807,7 +1110,8 @@ export default function UsersView({
                     {
                       user.lastLogin
 
-                        ? new Date(user.lastLogin).toLocaleString()
+                        ? new Date(user.lastLogin)
+                          .toLocaleDateString()
 
                         : "Never"
                     }
@@ -815,17 +1119,9 @@ export default function UsersView({
                   </td>
 
                   {/* ACTIVITY */}
-                  <td className="px-6 py-4 text-sm">
 
-                    {
-                      user.activityLogs?.length > 0
 
-                        ? user.activityLogs[0].action
 
-                        : "No Activity"
-                    }
-
-                  </td>
 
                   <td className="px-6 py-4">
 
@@ -840,14 +1136,90 @@ export default function UsersView({
 
                   </td>
 
+                  <td className="px-6 py-4">
+
+                    {
+                      user.customerType === "b2b"
+                        ? (
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold
+                            ${user.verificationStatus === "Verified"
+                                ? "bg-green-100 text-green-700"
+                                : user.verificationStatus === "Rejected"
+                                  ? "bg-red-100 text-red-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                              }`}
+                          >
+                            {user.verificationStatus || "Pending"}
+                          </span>
+                        )
+                        : "-"
+                    }
+
+                  </td>
+
                   {/* ACTIONS */}
                   {loggedUser?.role === "admin" && (
 
                     <td className="px-6 py-4 text-right">
 
+
+
                       <div className="flex justify-end gap-3">
 
+                        {
+                          user.customerType === "b2b" &&
+                          user.gstCertificate && (
+
+
+                            <button
+                              onClick={() =>
+                                window.open(
+                                  `http://localhost:5000/uploads/gst/${user.gstCertificate}`,
+                                  "_blank"
+                                )
+                              }
+                              className="text-[10px] px-2 py-1 rounded-md ..."
+                            >
+                              GST📄
+                            </button>
+
+                          )
+                        }
+
+                        {
+                          user.customerType === "b2b" &&
+                          user.verificationStatus === "Pending" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  updateVerification(
+                                    user._id,
+                                    "Verified"
+                                  )
+                                }
+                                className="text-xs px-3 py-1 rounded-lg bg-green-100 text-green-700"
+                              >
+                                Approve
+      </button>
+
+                              <button
+                                onClick={() =>
+                                  updateVerification(
+                                    user._id,
+                                    "Rejected"
+                                  )
+                                }
+                                className="text-xs px-3 py-1 rounded-lg bg-red-100 text-red-700"
+                              >
+                                Reject
+      </button>
+                            </>
+                          )
+                        }
+
                         {loggedUser?.role === "admin" && (
+
 
                           <button
                             onClick={() => toggleStatus(user)}
@@ -862,6 +1234,8 @@ export default function UsersView({
                           </button>
 
                         )}
+
+
 
                         {loggedUser?.role === "admin" && (
 
