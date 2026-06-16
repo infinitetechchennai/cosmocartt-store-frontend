@@ -43,101 +43,129 @@ export default function CategoryNavbar() {
 
                 <div className="flex items-center gap-8 h-14">
 
-                    {/* ALL CATEGORIES */}
+                   {/* ALL CATEGORIES */}
 
-                    <div className="relative group">
+<div className="relative group">
 
-                        <button
-                            className="
-                            flex
-                            items-center
-                            gap-2
-                            bg-[#4B1E78]
-                            text-white
-                            px-8
-                            min-w-[190px]
-                            h-11
-                            rounded-xl
-                            font-semibold
-                            whitespace-nowrap
+    <button
+        className="
+        flex items-center gap-2
+        bg-[#4B1E78]
+        text-white
+        px-8
+        min-w-[190px]
+        h-11
+        rounded-xl
+        font-semibold
+        whitespace-nowrap
+        "
+    >
+        <Menu size={18} />
+        All Categories
+        <ChevronDown size={16} />
+    </button>
+
+    <div className="fixed inset-0 bg-black/60 hidden group-hover:block z-40"></div>
+
+    <div
+        className="
+        absolute
+        top-full
+        left-0
+        mt-0
+        w-[760px]
+        h-[560px]
+        bg-[#151515]
+        text-white
+        hidden
+        group-hover:flex
+        z-50
+        shadow-2xl
+        "
+    >
+        <div className="relative w-[360px] bg-[#222222]">
+
+            <div className="px-5 py-4 border-b border-white/20 font-bold">
+                Shop by Category
+            </div>
+
+            {categories.map((category) => (
+               <div
+    key={category.name}
+    className="group/item"
+>
+                    <Link
+                        to={`/products?category=${encodeURIComponent(category.name)}`}
+                        className="
+                        flex
+                        items-center
+                        justify-between
+                        px-5
+                        py-3.5
+                        text-sm
+                        font-semibold
+                        hover:bg-[#12D6B0]
+                        hover:text-black
+                        transition
                         "
-                        >
-                            <Menu size={18} />
+                    >
+                        <span>{category.name}</span>
+                        <ChevronDown size={15} className="-rotate-90" />
+                    </Link>
 
-                            All Categories
-
-                            <ChevronDown size={16} />
-                        </button>
-
-                        <div
-                            className="
-                            absolute
-                            top-full
-                            left-0
-                            mt-3
-                            w-[1000px]
-                            bg-white
-                            rounded-3xl
-                            shadow-2xl
-                            border
-                            border-slate-200
-                            p-8
-                            hidden
-                            group-hover:grid
-                            grid-cols-4
-                            gap-8
-                            z-50
+                    <div
+    className="
+    absolute
+    top-0
+    left-full
+                        w-[400px]
+                        h-[560px]
+                        bg-[#151515]
+                        border-l-4
+                        border-[#12D6B0]
+                        p-6
+                        hidden
+                        group-hover/item:block
                         "
-                        >
-
-                            {categories.map((category) => (
-
-                                <div key={category.name}>
-
-                                    <h3
-                                        className="
-                                        font-bold
-                                        text-[#4B1E78]
-                                        mb-4
+                    >
+                        <div className="space-y-4">
+                            {category.subcategories.map((sub) => (
+                                <Link
+                                    key={sub}
+                                    to={`/products?category=${encodeURIComponent(category.name)}&subcategory=${encodeURIComponent(sub)}`}
+                                    className="
+                                    flex
+                                    items-center
+                                    justify-between
+                                    text-sm
+                                    font-medium
+                                    text-gray-200
+                                    hover:text-[#12D6B0]
+                                    transition
                                     "
-                                    >
-                                        {category.name}
-                                    </h3>
-
-                                    <div className="space-y-2">
-
-                                        {category.subcategories
-                                            .slice(0, 5)
-                                            .map((sub) => (
-
-                                                <Link
-                                                    key={sub}
-                                                    to="/products"
-                                                    className="
-                                                    block
-                                                    text-sm
-                                                    text-slate-600
-                                                    hover:text-[#4B1E78]
-                                                    transition
-                                                "
-                                                >
-                                                    {sub}
-                                                </Link>
-
-                                            ))}
-
-                                    </div>
-
-                                </div>
-
+                                >
+                                    <span>{sub}</span>
+                                    <ChevronDown size={14} className="-rotate-90" />
+                                </Link>
                             ))}
-
                         </div>
-
                     </div>
+                </div>
+            ))}
 
-                    {/* NAVIGATION */}
+        </div>
 
+        <div className="w-[400px] bg-[#151515] p-6 border-l-4 border-[#12D6B0]">
+            <p className="text-gray-400 text-sm">
+                Hover category to see subcategories
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+                                           {/* NAVIGATION */}
                     <div className="flex items-center gap-10">
 
                         {navItems.map((item) => {
@@ -228,7 +256,7 @@ export default function CategoryNavbar() {
 
                         {/* MORE */}
 
-                        <div className="relative group">
+                        <div className="relative">
 
                             <button
                                 className="

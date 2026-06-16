@@ -22,6 +22,7 @@ export default function Products() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [selectedSubcategory, setSelectedSubcategory] = useState("");
+    const [hoveredCategory, setHoveredCategory] = useState("");
 
     useEffect(() => {
         const query = searchParams.get("search");
@@ -146,63 +147,97 @@ export default function Products() {
 
                 </div>
 
-                <div className="grid lg:grid-cols-4 gap-8">
+               <div className="grid lg:grid-cols-4 gap-8 relative z-10">
 
                     {/* Sidebar */}
 
-                    <div className="space-y-5 sticky top-24 h-fit">
+                    <div className="space-y-5 sticky top-24 h-fit relative z-[9999]">
 
-                        {/* Categories */}
+                        
+{/* Categories */}
 
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                            <h3 className="font-bold text-lg mb-4">
-                                Categories
+<div
+    onMouseLeave={() => setHoveredCategory("")}
+    className="relative bg-white p-5 rounded-2xl shadow-sm border border-slate-200"
+>
+    <h3 className="font-bold text-lg mb-4">
+        Categories
     </h3>
 
-                            {categories.map((cat) => (
+    {categories.map((cat) => (
+        <button
+            key={cat.name}
+            onMouseEnter={() => setHoveredCategory(cat.name)}
+            onClick={() => {
+                setSelectedCategory(cat.name);
+                setSelectedSubcategory("");
+                setCurrentPage(1);
+            }}
+            className={`w-full flex justify-between items-center text-left px-4 py-3 rounded-xl transition-all duration-300 ${
+                selectedCategory === cat.name || hoveredCategory === cat.name
+                    ? "bg-[#4B1E78] text-white shadow-lg"
+                    : "hover:bg-purple-50 text-slate-700"
+            }`}
+        >
+            <span>{cat.name}</span>
+            <span>›</span>
+        </button>
+    ))}
 
-                                <button
-                                    key={cat.name}
-                                    onClick={() => {
-                                        setSelectedCategory(cat.name);
-                                        setSelectedSubcategory("");
-                                        setCurrentPage(1);
-                                    }}
-                                    className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === cat.name
-                                        ? "bg-[#4B1E78] text-white shadow-xl ring-4 ring-purple-200"
-                                        : "hover:bg-slate-100"
-                                        }`}
-                                >
-                                    {cat.name}
-                                </button>
-
-                            ))}
-
-                            {selectedCategory && (
-                                <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mt-4">
-                                    <h3 className="font-bold text-lg mb-4">
-                                        Subcategories
+    {hoveredCategory && (
+        <div
+            className="
+absolute
+left-[calc(100%+12px)]
+top-0
+w-72
+bg-white/95
+backdrop-blur-xl
+rounded-2xl
+shadow-2xl
+border
+border-purple-100
+p-5
+z-[99999]
+animate-fadeIn
+"
+        >
+            <h3 className="font-bold text-[#4B1E78] mb-4">
+                {hoveredCategory}
             </h3>
 
-                                    {categories
-                                        .find((cat) => cat.name === selectedCategory)
-                                        ?.subcategories.map((sub) => (
-                                            <button
-                                                key={sub}
-                                                onClick={() => setSelectedSubcategory(sub)}
-                                                className={`w-full text-left px-4 py-2 rounded-lg ${selectedSubcategory === sub
-                                                    ? "bg-purple-600 text-white"
-                                                    : "hover:bg-slate-100"
-                                                    }`}
-                                            >
-                                                {sub}
-                                            </button>
-                                        ))}
-                                </div>
-                            )}
-                        </div>
+            <div className="space-y-2">
+                {categories
+                    .find((cat) => cat.name === hoveredCategory)
+                    ?.subcategories.map((sub) => (
+                        <button
+                            key={sub}
+                           onClick={() => {
 
-                        {/* Brands */}
+    if (sub === "Cases & Covers") {
+        window.location.href = "/backcase-brands";
+        return;
+    }
+
+    setSelectedCategory(hoveredCategory);
+    setSelectedSubcategory(sub);
+    setCurrentPage(1);
+}}
+                            className={`w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ${
+                                selectedSubcategory === sub
+                                    ? "bg-purple-600 text-white"
+                                    : "hover:bg-purple-50 hover:text-[#4B1E78]"
+                            }`}
+                        >
+                            {sub}
+                        </button>
+                    ))}
+            </div>
+        </div>
+    )}
+</div>
+                           
+                                {/* Brands */}      
 
                         <div className="bg-white p-5 rounded-xl">
                             <h3 className="font-semibold mb-3">
@@ -267,7 +302,7 @@ export default function Products() {
 
                     <div
                         ref={productsSectionRef}
-                        className="lg:col-span-3"
+                       className="lg:col-span-3 relative z-0"
                     >
 
                         <div className="flex gap-4 mb-6 flex-wrap">

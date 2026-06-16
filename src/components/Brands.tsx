@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import apple from "../assets/apple.png";
 import samsung from "../assets/samsung.png";
@@ -8,35 +10,34 @@ import hp from "../assets/hp.png";
 import asus from "../assets/asus.png";
 
 const brands = [
-  {
-    name: "Apple",
-    image: apple,
-  },
-  {
-    name: "Samsung",
-    image: samsung,
-  },
-  {
-    name: "Sony",
-    image: sony,
-  },
-  {
-    name: "Dell",
-    image: dell,
-  },
-  {
-    name: "HP",
-    image: hp,
-  },
-  {
-    name: "Asus",
-    image: asus,
-  },
+  { name: "Apple", image: apple },
+  { name: "Samsung", image: samsung },
+  { name: "Sony", image: sony },
+  { name: "Dell", image: dell },
+  { name: "HP", image: hp },
+  { name: "Asus", image: asus },
 ];
 
 export default function Brands() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    scrollRef.current?.scrollBy({
+      left: -320,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current?.scrollBy({
+      left: 320,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <section className="max-w-7xl mx-auto px-6 py-20">
+    <section className="max-w-[1400px] mx-auto px-6 py-10">
+
       <div className="text-center mb-12">
         <h2 className="text-4xl font-black text-slate-900">
           Shop By Brand
@@ -47,52 +48,111 @@ export default function Brands() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {brands.map((brand) => (
-          <Link
-            key={brand.name}
-            to={`/products?brand=${brand.name}`}
-            className="
-              bg-[#491D76]
-              rounded-3xl
-              border
-              border-[#5A248F]
-              p-6
-              text-center
-              shadow-lg
-              hover:shadow-2xl
-              hover:-translate-y-2
-              transition-all
-              duration-300
-              flex
-              flex-col
-              items-center
-              justify-center
-              overflow-hidden
-            "
-          >
-            <img
-              src={brand.image}
-              alt={brand.name}
-              className={`
-                h-36
-                w-full
-                object-contain
-                mb-4
-                scale-150
+      <div className="relative">
+
+        {/* Left Arrow */}
+
+        <button
+          onClick={scrollLeft}
+          className="
+            absolute
+            left-[-20px]
+            top-1/2
+            -translate-y-1/2
+            z-20
+            w-12
+            h-12
+            rounded-full
+            bg-white
+            shadow-xl
+            hover:scale-110
+            transition-all
+            duration-300
+            flex
+            items-center
+            justify-center
+          "
+        >
+          <ChevronLeft size={22} />
+        </button>
+
+        {/* Right Arrow */}
+
+        <button
+          onClick={scrollRight}
+          className="
+            absolute
+            right-[-20px]
+            top-1/2
+            -translate-y-1/2
+            z-20
+            w-12
+            h-12
+            rounded-full
+            bg-white
+            shadow-xl
+            hover:scale-110
+            transition-all
+            duration-300
+            flex
+            items-center
+            justify-center
+          "
+        >
+          <ChevronRight size={22} />
+        </button>
+
+        {/* Brand Cards */}
+
+        <div
+          ref={scrollRef}
+          className="
+            flex
+            gap-5
+            overflow-x-auto
+            px-2
+            py-4
+            scrollbar-hide
+            scroll-smooth
+          "
+        >
+          {brands.map((brand) => (
+            <Link
+              key={brand.name}
+              to={`/products?brand=${encodeURIComponent(brand.name)}`}
+              className="
+                min-w-[260px]
+                h-[180px]
+                bg-gradient-to-br
+                from-[#4B1E78]
+                to-[#6F2DBD]
+                rounded-2xl
+                flex
+                items-center
+                justify-center
+                shadow-lg
+                hover:-translate-y-2
+                hover:shadow-2xl
                 transition-all
                 duration-300
-                hover:scale-[1.7]
-                ${brand.name === "Sony" ? "translate-x-4" : ""}
-              `}
-            />
+                flex-shrink-0
+              "
+            >
+              <img
+                src={brand.image}
+                alt={brand.name}
+                className="
+                  max-h-28
+                  max-w-[200px]
+                  object-contain
+                "
+              />
+            </Link>
+          ))}
+        </div>
 
-            <h3 className="font-bold text-white mt-4">
-              {brand.name}
-            </h3>
-          </Link>
-        ))}
       </div>
+
     </section>
   );
 }

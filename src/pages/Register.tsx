@@ -28,17 +28,14 @@ export default function Register() {
         phone: "",
         password: "",
     });
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-});
 
     // B2B
 
     const [businessName, setBusinessName] = useState("");
     const [contactPerson, setContactPerson] = useState("");
     const [gstNumber, setGstNumber] = useState("");
+    const [gstCertificate, setGstCertificate] =
+        useState<File | null>(null);
 
 
     const navigate = useNavigate();
@@ -72,9 +69,28 @@ export default function Register() {
 
         let valid = true;
 
-        if (!name.trim()) {
-            newErrors.name = "Full Name is required";
-            valid = false;
+        if (accountType === "personal") {
+
+            if (!name.trim()) {
+
+                newErrors.name =
+                    "Full Name is required";
+
+                valid = false;
+
+            }
+
+        } else {
+
+            if (!contactPerson.trim()) {
+
+                newErrors.name =
+                    "Contact Person is required";
+
+                valid = false;
+
+            }
+
         }
 
         if (!email.trim()) {
@@ -112,107 +128,81 @@ export default function Register() {
             return;
         }
         try {
-    if (password.length <= 3) {
-
-        setPasswordStrength("Weak");
-
-    }
-    else if (password.length >= 10 && /\d/.test(password)) {
-
-        setPasswordStrength("Strong");
-
-    }
-    else {
-
-        setPasswordStrength("Medium");
-
-    }
-
-};
-    const validateForm = () => {
-
-    const newErrors = {
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
-    };
-
-    let valid = true;
-
-    if (!name.trim()) {
-        newErrors.name = "Full Name is required";
-        valid = false;
-    }
-
-    if (!email.trim()) {
-    newErrors.email = "Email is required";
-    valid = false;
-} else if (
-    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
-) {
-    newErrors.email = "Please enter a valid email address";
-    valid = false;
-}
-
-    if (!phone.trim()) {
-        newErrors.phone = "Phone number is required";
-        valid = false;
-    }
-
-    if (!password.trim()) {
-        newErrors.password = "Password is required";
-        valid = false;
-    }
-
-    setErrors(newErrors);
-
-    return valid;
-};
-
-    const handleRegister = async () => {
-
-    if (!validateForm()) {
-        return;
-    }
-if (!acceptedTerms) {
-    alert("Please accept Terms & Conditions");
-    return;
-}
-    try {
 
             setLoading(true);
 
-            const payload =
-                accountType === "personal"
-                    ? {
-                        name,
-                        email,
-                        phone,
-                        password,
-                        customerType: "b2c"
-                    }
-                    : {
-                        name: contactPerson,
-                        email,
-                        phone,
-                        password,
+            const formData = new FormData();
 
-                        customerType: "b2b",
+            formData.append(
+                "email",
+                email
+            );
 
-                        businessName,
-                        contactPerson,
-                        gstNumber
-                    };
+            formData.append(
+                "phone",
+                phone
+            );
+
+            formData.append(
+                "password",
+                password
+            );
+
+            if (accountType === "personal") {
+
+                formData.append(
+                    "name",
+                    name
+                );
+
+                formData.append(
+                    "customerType",
+                    "b2c"
+                );
+
+            } else {
+
+                formData.append(
+                    "name",
+                    contactPerson
+                );
+
+                formData.append(
+                    "customerType",
+                    "b2b"
+                );
+
+                formData.append(
+                    "businessName",
+                    businessName
+                );
+
+                formData.append(
+                    "contactPerson",
+                    contactPerson
+                );
+
+                formData.append(
+                    "gstNumber",
+                    gstNumber
+                );
+
+                if (gstCertificate) {
+
+                    formData.append(
+                        "gstCertificate",
+                        gstCertificate
+                    );
+
+                }
+
+            }
 
             const response = await fetch(
                 "http://localhost:5000/api/customers/register",
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
+                    body: formData
                 }
             );
 
@@ -443,39 +433,8 @@ if (!acceptedTerms) {
                                                     </p>
                                                 )}
                                             </div>
-=======
-    <div>
-        <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Full Name"
-            className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${
-                errors.name
-                    ? "border border-red-500"
-                    : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-            }`}
-        />
 
-        {errors.name && (
-            <p className="text-red-500 text-xs mt-1">
-                {errors.name}
-            </p>
-        )}
-    </div>
-
-    <div>
-        <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone Number"
-            className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${
-                errors.phone
-                    ? "border border-red-500"
-                    : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-            }`}
-        />
+                                        </div>
 
                                         <div>
                                             <input
@@ -507,47 +466,6 @@ if (!acceptedTerms) {
                                                 placeholder="Password"
                                                 className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
-        {errors.phone && (
-            <p className="text-red-500 text-xs mt-1">
-                {errors.phone}
-            </p>
-        )}
-    </div>
-
-</div>
-
-<div>
-    <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${
-            errors.email
-                ? "border border-red-500"
-                : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
-        }`}
-    />
-
-    {errors.email && (
-        <p className="text-red-500 text-xs mt-1">
-            {errors.email}
-        </p>
-    )}
-</div>
-                                        <div className="relative">
-
-    <input
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(e) => {
-    setPassword(e.target.value);
-    checkPasswordStrength(e.target.value);
-}}
-        placeholder="Password"
-        className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-    />
->>>>>>> 8b4b33a (Register ui)
 
                                             <button
                                                 type="button"
@@ -593,44 +511,6 @@ if (!acceptedTerms) {
                                             </div>
 
                                         )}
-</div>
-{errors.password && (
-    <p className="text-red-500 text-xs mt-1">
-        {errors.password}
-    </p>
-)}
-    {password && (
-<div className="mt-2">
-
-        <div className="h-2 rounded-full bg-slate-200 overflow-hidden">
-
-            <div
-                className={`h-full transition-all duration-300 ${
-                    passwordStrength === "Weak"
-                        ? "w-1/3 bg-red-500"
-                        : passwordStrength === "Medium"
-                        ? "w-2/3 bg-yellow-500"
-                        : "w-full bg-green-500"
-                }`}
-            />
-
-        </div>
-
-        <p
-            className={`text-xs mt-1 font-medium ${
-                passwordStrength === "Weak"
-                    ? "text-red-500"
-                    : passwordStrength === "Medium"
-                    ? "text-yellow-600"
-                    : "text-green-600"
-            }`}
-        >
-            {passwordStrength} Password
-        </p>
-
-    </div>
-
-)}
 
                                     </motion.div>
 
@@ -695,6 +575,23 @@ if (!acceptedTerms) {
                                             className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                         />
 
+                                        <div>
+                                            <label className="block mb-2 text-sm font-medium">
+                                                GST Certificate (PDF)
+    </label>
+
+                                            <input
+                                                type="file"
+                                                accept=".pdf"
+                                                onChange={(e) =>
+                                                    setGstCertificate(
+                                                        e.target.files?.[0] || null
+                                                    )
+                                                }
+                                                className="w-full border rounded-lg p-3"
+                                            />
+                                        </div>
+
                                         <div className="relative">
 
                                             <input
@@ -707,16 +604,6 @@ if (!acceptedTerms) {
                                                 placeholder="Password"
                                                 className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
-    <input
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(e) => {
-    setPassword(e.target.value);
-    checkPasswordStrength(e.target.value);
-}}
-        placeholder="Password"
-        className="w-full border border-slate-200 p-3 pr-12 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-    />
 
                                             <button
                                                 type="button"
@@ -741,43 +628,6 @@ if (!acceptedTerms) {
                                     onChange={(e) => setAcceptedTerms(e.target.checked)}
                                     className="w-4 h-4 accent-[#4B1E78]"
                                 />
-
-<div className="flex items-center gap-3 mt-4">
-
-    <input
-        type="checkbox"
-        checked={acceptedTerms}
-        onChange={(e) => setAcceptedTerms(e.target.checked)}
-        className="w-4 h-4 accent-[#4B1E78]"
-    />
-
-    <p className="text-sm text-slate-600">
-        I agree to the
-        <span className="text-[#4B1E78] font-semibold cursor-pointer ml-1">
-            Terms & Conditions
-        </span>
-    </p>
-
-</div>
-<motion.button
-disabled={loading}
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={handleRegister}
-    className="w-full mt-4 bg-[#4B1E78] text-white py-3 rounded-xl font-semibold shadow-lg"
->
-    {loading ? (
-    <div className="flex items-center justify-center gap-2">
-
-        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-
-        <span>Creating Account...</span>
-
-    </div>
-) : (
-    "Create Account"
-)}
-</motion.button>
 
                                 <p className="text-sm text-slate-600">
                                     I agree to the

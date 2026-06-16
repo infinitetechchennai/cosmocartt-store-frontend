@@ -26,60 +26,7 @@ export default function Footer() {
     return (
         <footer className="bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD] text-white mt-20">
 
-            {/* Newsletter */}
-
-            <div className="border-b border-white/10">
-
-                <div className="max-w-7xl mx-auto px-6 py-6">
-
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-
-                        <div>
-
-                            <Link
-    to="/"
-    onClick={() =>
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        })
-    }
->
-    <img
-        src={logo}
-        alt="CosmoCartt"
-        className="h-24 md:h-32 w-auto object-contain brightness-0 invert cursor-pointer"
-    />
-</Link>
-
-                            <p className="text-purple-100 mt-1 text-sm">
-                                Get exclusive offers, product launches and special deals.
-                            </p>
-
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-
-                            <input
-    type="email"
-    placeholder="Enter your email"
-    className="px-4 py-3 rounded-xl text-black w-full lg:w-72 outline-none"
-/>
-
-                            <button className="bg-white text-[#4B1E78] px-6 py-3 rounded-xl font-bold">
-                                Subscribe
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            {/* Main Footer */}
-
+            
             <div className="max-w-7xl mx-auto px-6 py-10">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
@@ -311,27 +258,35 @@ export default function Footer() {
 
     <div className="flex flex-wrap gap-2">
 
-        {brands.map((brand) => (
+       {brands.map((brand) => (
 
-            <span
-                key={brand}
-                className="
-                    px-3
-                    py-1.5
-                    text-xs
-                    rounded-full
-                    bg-white/10
-                    hover:bg-white/20
-                    transition-all
-                    duration-300
-                    cursor-pointer
-                    hover:scale-105
-                "
-            >
-                {brand}
-            </span>
+    <Link
+        key={brand}
+        to={`/products?brand=${encodeURIComponent(brand)}`}
+        onClick={() =>
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            })
+        }
+        className="
+            px-3
+            py-1.5
+            text-xs
+            rounded-full
+            bg-white/10
+            hover:bg-white/20
+            transition-all
+            duration-300
+            cursor-pointer
+            hover:scale-105
+            inline-block
+        "
+    >
+        {brand}
+    </Link>
 
-        ))}
+))}
 
     </div>
 

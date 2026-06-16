@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function ProductDetails() {
 
@@ -207,13 +208,16 @@ export default function ProductDetails() {
                             <button
                                 onClick={() => {
 
-                                    if (product.stock <= 0) {
-                                        toast.error(
-                                            "Product is out of stock"
-                                        );
-                                        return;
-                                    }
-                                }}
+    if (product.stock <= 0) {
+        alert("Product is out of stock");
+        return;
+    }
+
+    addToCart({
+        ...product,
+        quantity
+    });
+}}
                                 disabled={product.stock <= 0}
                                 className="bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-xl font-semibold"
                             >

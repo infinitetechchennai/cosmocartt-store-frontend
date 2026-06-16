@@ -5,6 +5,8 @@ Route
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import BackcaseBrands from "./pages/BackcaseBrands";
+import BackcaseModels from "./pages/BackcaseModels";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -41,7 +43,15 @@ return (
       path="/products"
       element={<Products />}
     />
+<Route
+  path="/backcase-brands"
+  element={<BackcaseBrands />}
+/>
 
+<Route
+  path="/backcase-models/:brand"
+  element={<BackcaseModels />}
+/>
     <Route
       path="/product/:id"
       element={<ProductDetails />}
