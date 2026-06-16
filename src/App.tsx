@@ -7,6 +7,8 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import BackcaseBrands from "./pages/BackcaseBrands";
 import BackcaseModels from "./pages/BackcaseModels";
+import BackcaseProducts from "./pages/BackcaseProducts";
+import BrandModels from "./pages/BrandModels";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -42,14 +44,22 @@ return (
       path="/products"
       element={<Products />}
     />
+    <Route
+    path="/brand-models/:brand"
+    element={<BrandModels />}
+/>
 <Route
   path="/backcase-brands"
   element={<BackcaseBrands />}
 />
 
 <Route
-  path="/backcase-models/:brand"
+  path="/backcase-models/:brand/:model"
   element={<BackcaseModels />}
+/>
+<Route
+  path="/backcase-products/:brand/:model"
+  element={<BackcaseProducts />}
 />
     <Route
       path="/product/:id"
