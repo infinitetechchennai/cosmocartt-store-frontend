@@ -18,7 +18,7 @@ export default function Products() {
 
     const productsSectionRef = useRef<HTMLDivElement>(null);
 
-    const productsPerPage = 4;
+    const productsPerPage = 6;
 
     const [products, setProducts] = useState<any[]>([]);
     const [selectedSubcategory, setSelectedSubcategory] = useState("");
@@ -147,46 +147,45 @@ export default function Products() {
 
                 </div>
 
-               <div className="grid lg:grid-cols-4 gap-8 relative z-10">
+                <div className="grid lg:grid-cols-4 gap-8 relative z-10">
 
                     {/* Sidebar */}
 
                     <div className="space-y-5 sticky top-24 h-fit relative z-[9999]">
 
-                        
-{/* Categories */}
 
-<div
-    onMouseLeave={() => setHoveredCategory("")}
-    className="relative bg-white p-5 rounded-2xl shadow-sm border border-slate-200"
->
-    <h3 className="font-bold text-lg mb-4">
-        Categories
+                        {/* Categories */}
+
+                        <div
+                            onMouseLeave={() => setHoveredCategory("")}
+                            className="relative bg-white p-5 rounded-2xl shadow-sm border border-slate-200"
+                        >
+                            <h3 className="font-bold text-lg mb-4">
+                                Categories
     </h3>
 
-    {categories.map((cat) => (
-        <button
-            key={cat.name}
-            onMouseEnter={() => setHoveredCategory(cat.name)}
-            onClick={() => {
-                setSelectedCategory(cat.name);
-                setSelectedSubcategory("");
-                setCurrentPage(1);
-            }}
-            className={`w-full flex justify-between items-center text-left px-4 py-3 rounded-xl transition-all duration-300 ${
-                selectedCategory === cat.name || hoveredCategory === cat.name
-                    ? "bg-[#4B1E78] text-white shadow-lg"
-                    : "hover:bg-purple-50 text-slate-700"
-            }`}
-        >
-            <span>{cat.name}</span>
-            <span>›</span>
-        </button>
-    ))}
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat.name}
+                                    onMouseEnter={() => setHoveredCategory(cat.name)}
+                                    onClick={() => {
+                                        setSelectedCategory(cat.name);
+                                        setSelectedSubcategory("");
+                                        setCurrentPage(1);
+                                    }}
+                                    className={`w-full flex justify-between items-center text-left px-4 py-3 rounded-xl transition-all duration-300 ${selectedCategory === cat.name || hoveredCategory === cat.name
+                                        ? "bg-[#4B1E78] text-white shadow-lg"
+                                        : "hover:bg-purple-50 text-slate-700"
+                                        }`}
+                                >
+                                    <span>{cat.name}</span>
+                                    <span>›</span>
+                                </button>
+                            ))}
 
-    {hoveredCategory && (
-        <div
-            className="
+                            {hoveredCategory && (
+                                <div
+                                    className="
 absolute
 left-[calc(100%+12px)]
 top-0
@@ -201,43 +200,42 @@ p-5
 z-[99999]
 animate-fadeIn
 "
-        >
-            <h3 className="font-bold text-[#4B1E78] mb-4">
-                {hoveredCategory}
-            </h3>
+                                >
+                                    <h3 className="font-bold text-[#4B1E78] mb-4">
+                                        {hoveredCategory}
+                                    </h3>
 
-            <div className="space-y-2">
-                {categories
-                    .find((cat) => cat.name === hoveredCategory)
-                    ?.subcategories.map((sub) => (
-                        <button
-                            key={sub}
-                           onClick={() => {
+                                    <div className="space-y-2">
+                                        {categories
+                                            .find((cat) => cat.name === hoveredCategory)
+                                            ?.subcategories.map((sub) => (
+                                                <button
+                                                    key={sub}
+                                                    onClick={() => {
 
-    if (sub === "Cases & Covers") {
-        window.location.href = "/backcase-brands";
-        return;
-    }
+                                                        if (sub === "Cases & Covers") {
+                                                            window.location.href = "/backcase-brands";
+                                                            return;
+                                                        }
 
-    setSelectedCategory(hoveredCategory);
-    setSelectedSubcategory(sub);
-    setCurrentPage(1);
-}}
-                            className={`w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ${
-                                selectedSubcategory === sub
-                                    ? "bg-purple-600 text-white"
-                                    : "hover:bg-purple-50 hover:text-[#4B1E78]"
-                            }`}
-                        >
-                            {sub}
-                        </button>
-                    ))}
-            </div>
-        </div>
-    )}
-</div>
-                           
-                                {/* Brands */}      
+                                                        setSelectedCategory(hoveredCategory);
+                                                        setSelectedSubcategory(sub);
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    className={`w-full text-left px-4 py-2 rounded-lg transition-all duration-200 ${selectedSubcategory === sub
+                                                        ? "bg-purple-600 text-white"
+                                                        : "hover:bg-purple-50 hover:text-[#4B1E78]"
+                                                        }`}
+                                                >
+                                                    {sub}
+                                                </button>
+                                            ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Brands */}
 
                         <div className="bg-white p-5 rounded-xl">
                             <h3 className="font-semibold mb-3">
@@ -302,7 +300,7 @@ animate-fadeIn
 
                     <div
                         ref={productsSectionRef}
-                       className="lg:col-span-3 relative z-0"
+                        className="lg:col-span-3 relative z-0"
                     >
 
                         <div className="flex gap-4 mb-6 flex-wrap">
@@ -377,27 +375,31 @@ animate-fadeIn
                             )}
 
 
-                            {filteredProducts.length > 0 && (
 
-                                <div className="flex justify-center items-center gap-3 mt-10">
 
-                                    <button
-                                        onClick={() => {
+                        </div>
 
-                                            setCurrentPage((prev) =>
-                                                Math.max(prev - 1, 1)
-                                            );
+                        {filteredProducts.length > 0 && (
 
-                                            setTimeout(() => {
-                                                productsSectionRef.current?.scrollIntoView({
-                                                    behavior: "smooth",
-                                                    block: "start",
-                                                });
-                                            }, 50);
+                            <div className="flex justify-center items-center gap-3 mt-10">
 
-                                        }}
-                                        disabled={currentPage === 1}
-                                        className="
+                                <button
+                                    onClick={() => {
+
+                                        setCurrentPage((prev) =>
+                                            Math.max(prev - 1, 1)
+                                        );
+
+                                        setTimeout(() => {
+                                            productsSectionRef.current?.scrollIntoView({
+                                                behavior: "smooth",
+                                                block: "start",
+                                            });
+                                        }, 50);
+
+                                    }}
+                                    disabled={currentPage === 1}
+                                    className="
                 w-11 h-11
                 rounded-full
                 bg-white
@@ -409,50 +411,17 @@ animate-fadeIn
                 disabled:opacity-40
                 disabled:cursor-not-allowed
             "
-                                    >
-                                        ←
+                                >
+                                    ←
         </button>
 
-                                    {[...Array(totalPages)].map((_, index) => (
-
-                                        <button
-                                            key={index}
-                                            onClick={() => {
-
-                                                setCurrentPage(index + 1);
-
-                                                setTimeout(() => {
-                                                    productsSectionRef.current?.scrollIntoView({
-                                                        behavior: "smooth",
-                                                        block: "start",
-                                                    });
-                                                }, 50);
-
-                                            }}
-                                            className={`
-                    w-11 h-11
-                    rounded-full
-                    font-semibold
-                    transition-all
-                    duration-200
-                    ${currentPage === index + 1
-                                                    ? "bg-[#6F2DBD] text-white scale-110 shadow-lg"
-                                                    : "bg-white text-gray-700 hover:bg-purple-100"
-                                                }
-                `}
-                                        >
-                                            {index + 1}
-                                        </button>
-
-                                    ))}
+                                {[...Array(totalPages)].map((_, index) => (
 
                                     <button
-
+                                        key={index}
                                         onClick={() => {
 
-                                            setCurrentPage((prev) =>
-                                                Math.min(prev + 1, totalPages)
-                                            );
+                                            setCurrentPage(index + 1);
 
                                             setTimeout(() => {
                                                 productsSectionRef.current?.scrollIntoView({
@@ -462,8 +431,41 @@ animate-fadeIn
                                             }, 50);
 
                                         }}
-                                        disabled={currentPage === totalPages}
-                                        className="
+                                        className={`
+                    w-11 h-11
+                    rounded-full
+                    font-semibold
+                    transition-all
+                    duration-200
+                    ${currentPage === index + 1
+                                                ? "bg-[#6F2DBD] text-white scale-110 shadow-lg"
+                                                : "bg-white text-gray-700 hover:bg-purple-100"
+                                            }
+                `}
+                                    >
+                                        {index + 1}
+                                    </button>
+
+                                ))}
+
+                                <button
+
+                                    onClick={() => {
+
+                                        setCurrentPage((prev) =>
+                                            Math.min(prev + 1, totalPages)
+                                        );
+
+                                        setTimeout(() => {
+                                            productsSectionRef.current?.scrollIntoView({
+                                                behavior: "smooth",
+                                                block: "start",
+                                            });
+                                        }, 50);
+
+                                    }}
+                                    disabled={currentPage === totalPages}
+                                    className="
         w-11 h-11
         rounded-full
         bg-white
@@ -475,15 +477,13 @@ animate-fadeIn
         disabled:opacity-40
         disabled:cursor-not-allowed
     "
-                                    >
-                                        →
+                                >
+                                    →
 </button>
 
-                                </div>
+                            </div>
 
-                            )}
-
-                        </div>
+                        )}
 
                     </div>
 

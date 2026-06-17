@@ -37,6 +37,20 @@ const orderSchema = new mongoose.Schema(
                 quantity: Number,
 
                 price: Number,
+
+                brand: String,
+
+                sku: String,
+
+                hsnCode: String,
+
+                gstPercentage: Number,
+
+                sellerId: String,
+
+                sellerName: String,
+
+                sellerGSTIN: String,
             },
         ],
 

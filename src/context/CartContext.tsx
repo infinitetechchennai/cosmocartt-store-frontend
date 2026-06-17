@@ -8,6 +8,18 @@ import {
 
 const CartContext = createContext<any>(null);
 
+const getCartKey = () => {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user") || "null"
+        );
+
+    return user
+        ? `cart_${user._id}`
+        : "cart_guest";
+};
+
 export const CartProvider = ({
     children
 }: {
@@ -15,7 +27,10 @@ export const CartProvider = ({
 }) => {
 
     const [cartItems, setCartItems] = useState<any[]>(() => {
-        const savedCart = localStorage.getItem("cart");
+        const savedCart =
+            localStorage.getItem(
+                getCartKey()
+            );
 
         return savedCart
             ? JSON.parse(savedCart)
@@ -24,7 +39,7 @@ export const CartProvider = ({
 
     useEffect(() => {
         localStorage.setItem(
-            "cart",
+            getCartKey(),
             JSON.stringify(cartItems)
         );
     }, [cartItems]);
@@ -89,7 +104,9 @@ export const CartProvider = ({
 
     const clearCart = () => {
         setCartItems([]);
-        localStorage.removeItem("cart");
+        localStorage.removeItem(
+            getCartKey()
+        );
     };
 
     const buyNow = (
@@ -105,7 +122,7 @@ export const CartProvider = ({
         setCartItems([item]);
 
         localStorage.setItem(
-            "cart",
+            getCartKey(),
             JSON.stringify([item])
         );
 
