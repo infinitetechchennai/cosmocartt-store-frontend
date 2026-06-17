@@ -1,175 +1,178 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
-
-
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function FeaturedProducts() {
-    const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-    useEffect(() => {
+  const productsPerPage = 4;
 
-        fetch("http://localhost:5000/api/products")
-            .then((res) => res.json())
-            .then((data) => {
+  useEffect(() => {
+    fetch("http://localhost:5000/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
-                if (data.success) {
-                    setProducts(data.products);
-                }
+  const totalPages = Math.ceil(products.length / productsPerPage);
 
-            })
-            .catch((err) => console.error(err));
+  const startIndex = (currentPage - 1) * productsPerPage;
 
-    }, []);
-    const productsPerPage = 4;
+  const currentProducts = products.slice(
+    startIndex,
+    startIndex + productsPerPage
+  );
 
-    const [currentPage, setCurrentPage] = useState(1);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
-    const totalPages = Math.ceil(
-        products.length / productsPerPage
-    );
+  return (
+    <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
+      <div className="max-w-7xl mx-auto px-6">
 
-    const startIndex =
-        (currentPage - 1) * productsPerPage;
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
 
-    const currentProducts = products.slice(
-        startIndex,
-        startIndex + productsPerPage
-    );
+          <div>
+            <span className="inline-block px-5 py-2 rounded-full bg-purple-100 text-[#4B1E78] text-sm font-bold">
+              TRENDING COLLECTION
+            </span>
 
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
+            <h2 className="mt-5 text-4xl md:text-5xl font-black text-slate-900">
+              Handpicked For You
+            </h2>
 
-    return (
-        <section className="max-w-7xl mx-auto px-6 py-16">
+            <p className="text-slate-500 mt-4 max-w-2xl">
+              Discover our most-loved mobile cases, TV remotes and AC remotes selected for quality, style and everyday use.
+            </p>
+          </div>
 
-            <div className="flex items-center justify-between mb-10">
+          <Link
+            to="/products"
+            className="
+              inline-flex
+              items-center
+              gap-2
+              px-6
+              py-4
+              rounded-2xl
+              bg-[#4B1E78]
+              text-white
+              font-bold
+              hover:bg-[#6F2DBD]
+              hover:gap-4
+              transition-all
+              w-fit
+            "
+          >
+            View All Products
+            <ArrowRight size={18} />
+          </Link>
 
-                <div>
+        </div>
 
-                    <p className="text-sm uppercase tracking-wider text-purple-600 font-semibold">
-                        Trending Collection
-        </p>
+        <div
+          key={currentPage}
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-4
+            gap-8
+            animate-fadeIn
+          "
+        >
+          {currentProducts.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+            />
+          ))}
+        </div>
 
-                    <h2 className="text-4xl font-black text-zinc-900 mt-1">
-                        Featured Products
-        </h2>
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-3 mt-12">
 
-                    <p className="text-zinc-500 mt-2">
-                        Discover our best-selling electronics and latest arrivals.
-        </p>
-
-                </div>
-
-                <button
-                    className="
-            px-5
-            py-3
-            rounded-2xl
-            bg-[#4B1E78]
-            text-white
-            font-semibold
-            hover:scale-105
-            transition
-        "
-                >
-                    View All Products →
-    </button>
-
-            </div>
-
-            {/* Products Grid */}
-
-            <div
-                key={currentPage}
-                className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        xl:grid-cols-4
-        gap-8
-        animate-fadeIn
-    "
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="
+                w-11
+                h-11
+                rounded-full
+                bg-white
+                border
+                border-slate-200
+                shadow-md
+                flex
+                items-center
+                justify-center
+                hover:bg-purple-50
+                hover:text-[#4B1E78]
+                transition-all
+                disabled:opacity-40
+                disabled:cursor-not-allowed
+              "
             >
-                {currentProducts.map((product) => (
-                    <ProductCard
-                        key={product._id}
-                        product={product}
-                    />
-                ))}
-            </div>
+              <ChevronLeft size={20} />
+            </button>
 
-            {/* Pagination */}
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`
+                  w-11
+                  h-11
+                  rounded-full
+                  font-bold
+                  transition-all
+                  duration-300
+                  ${
+                    currentPage === index + 1
+                      ? "bg-[#4B1E78] text-white shadow-lg shadow-purple-500/40"
+                      : "bg-white text-slate-700 border border-slate-200 hover:bg-purple-100"
+                  }
+                `}
+              >
+                {index + 1}
+              </button>
+            ))}
 
-            <div className="flex justify-center items-center gap-3 mt-12">
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="
+                w-11
+                h-11
+                rounded-full
+                bg-white
+                border
+                border-slate-200
+                shadow-md
+                flex
+                items-center
+                justify-center
+                hover:bg-purple-50
+                hover:text-[#4B1E78]
+                transition-all
+                disabled:opacity-40
+                disabled:cursor-not-allowed
+              "
+            >
+              <ChevronRight size={20} />
+            </button>
 
-                <button
-                    onClick={() =>
-                        handlePageChange(currentPage - 1)
-                    }
-                    disabled={currentPage === 1}
-                    className="
-                        px-4 py-2
-                        rounded-xl
-                        bg-white
-                        shadow-md
-                        font-medium
-                        transition-all
-                        duration-300
-                        hover:scale-105
-                        disabled:opacity-40
-                        disabled:cursor-not-allowed
-                    "
-                >
-                    ←
-                </button>
+          </div>
+        )}
 
-                {[...Array(totalPages)].map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() =>
-                            handlePageChange(index + 1)
-                        }
-                        className={`
-                            w-11 h-11
-                            rounded-xl
-                            font-semibold
-                            transition-all
-                            duration-300
-                            hover:scale-110
-                            ${currentPage === index + 1
-                                ? "bg-purple-700 text-white shadow-lg shadow-purple-500/40"
-                                : "bg-white text-gray-700 hover:bg-purple-100"
-                            }
-                        `}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-
-                <button
-                    onClick={() =>
-                        handlePageChange(currentPage + 1)
-                    }
-                    disabled={currentPage === totalPages}
-                    className="
-                        px-4 py-2
-                        rounded-xl
-                        bg-white
-                        shadow-md
-                        font-medium
-                        transition-all
-                        duration-300
-                        hover:scale-105
-                        disabled:opacity-40
-                        disabled:cursor-not-allowed
-                    "
-                >
-                    →
-                </button>
-
-            </div>
-
-        </section>
-    );
+      </div>
+    </section>
+  );
 }

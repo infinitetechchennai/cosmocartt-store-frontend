@@ -4,6 +4,29 @@
 @tailwind components;
 @tailwind utilities;
 
+.trending-swiper .swiper-button-prev,
+.trending-swiper .swiper-button-next {
+  color: #4B1E78;
+}
+
+.trending-swiper .swiper-button-prev::after,
+.trending-swiper .swiper-button-next::after {
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.home-swiper .swiper-button-prev,
+.home-swiper .swiper-button-next {
+  color: white !important;
+  z-index: 9999 !important;
+}
+
+.home-swiper .swiper-button-prev::after,
+.home-swiper .swiper-button-next::after {
+  font-size: 60px !important;
+  text-shadow: 0 0 10px black;
+}
+
 html {
     scroll-behavior: smooth;
 }

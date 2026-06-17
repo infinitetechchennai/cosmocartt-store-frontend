@@ -226,7 +226,7 @@ export default function BackcaseBrands() {
 
 <Link
   to="/products"
-  className="absolute left-[5.5%] bottom-[24%] w-[190px] h-[60px] z-10"
+  className="absolute left-[7%] bottom-[28%] w-[190px] h-[60px] z-10"
 >
 </Link>
 </div>
