@@ -25,19 +25,23 @@ export const AuthProvider = ({
 
     const login = (userData: any) => {
 
-        setUser(userData);
-
         localStorage.setItem(
             "user",
             JSON.stringify(userData)
         );
+
+        setUser(userData);
+
+        window.location.reload();
     };
 
     const logout = () => {
 
+        localStorage.removeItem("user");
+
         setUser(null);
 
-        localStorage.removeItem("user");
+        window.location.reload();
     };
 
     return (

@@ -131,7 +131,9 @@ export default function Login() {
 
                                         setErrors({
                                             email: "",
-                                            password: "Incorrect email or password"
+                                            password:
+                                                data.message ||
+                                                "Incorrect email or password"
                                         });
 
                                         return;
@@ -141,9 +143,7 @@ export default function Login() {
 
                                     login(data.customer);
 
-                                    setTimeout(() => {
-                                        navigate("/");
-                                    }, 1500);
+                                    window.location.reload();
 
                                 } catch (error) {
 

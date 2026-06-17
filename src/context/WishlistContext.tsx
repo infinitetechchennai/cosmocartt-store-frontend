@@ -4,6 +4,7 @@ import {
     useState,
     ReactNode
 } from "react";
+import { useEffect } from "react";
 
 const WishlistContext = createContext<any>(null);
 
@@ -16,13 +17,50 @@ export const WishlistProvider = ({
     const [wishlistItems, setWishlistItems] =
         useState<any[]>(() => {
 
+            const user =
+                JSON.parse(
+                    localStorage.getItem("user") || "null"
+                );
+
+            const wishlistKey =
+                user
+                    ? `wishlist_${user._id}`
+                    : "wishlist_guest";
+
             const saved =
-                localStorage.getItem("wishlist");
+                localStorage.getItem(
+                    wishlistKey
+                );
 
             return saved
                 ? JSON.parse(saved)
                 : [];
         });
+
+    useEffect(() => {
+
+        const user =
+            JSON.parse(
+                localStorage.getItem("user") || "null"
+            );
+
+        const wishlistKey =
+            user
+                ? `wishlist_${user._id}`
+                : "wishlist_guest";
+
+        const saved =
+            localStorage.getItem(
+                wishlistKey
+            );
+
+        setWishlistItems(
+            saved
+                ? JSON.parse(saved)
+                : []
+        );
+
+    }, []);
 
     const addToWishlist = (product: any) => {
 
@@ -40,8 +78,22 @@ export const WishlistProvider = ({
 
         setWishlistItems(updated);
 
+        const user =
+            JSON.parse(
+                localStorage.getItem("user") || "null"
+            );
+
+        const wishlistKey =
+            user
+                ? `wishlist_${user._id}`
+                : "wishlist_guest";
+
+        console.log("ADD TO WISHLIST HIT");
+        console.log(user);
+        console.log(wishlistKey);
+
         localStorage.setItem(
-            "wishlist",
+            wishlistKey,
             JSON.stringify(updated)
         );
     };
@@ -57,8 +109,18 @@ export const WishlistProvider = ({
 
         setWishlistItems(updated);
 
+        const user =
+            JSON.parse(
+                localStorage.getItem("user") || "null"
+            );
+
+        const wishlistKey =
+            user
+                ? `wishlist_${user._id}`
+                : "wishlist_guest";
+
         localStorage.setItem(
-            "wishlist",
+            wishlistKey,
             JSON.stringify(updated)
         );
     };
