@@ -27,12 +27,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     description: "",
     subcategory: "",
     sku: "",
+    hsnCode: "",
+    gstPercentage: 18,
     costPrice: 0,
     wholesalePrice: 0,
     retailPrice: 0,
     stock: 0,
     images: [],
     status: "Active",
+
+    approvalStatus: "Approved",
   });
 
   const totalProducts = products.length;
@@ -130,12 +134,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
           description: "",
           subcategory: "",
           sku: "",
+          hsnCode: "",
+          gstPercentage: 18,
           costPrice: 0,
           wholesalePrice: 0,
           retailPrice: 0,
           stock: 0,
           images: [],
           status: "Active",
+
+          approvalStatus: "Approved",
         });
 
       } else {
@@ -734,7 +742,17 @@ Skipped: ${data.skipped}`
       {
         editProduct && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white w-full max-w-2xl rounded-2xl p-6">
+            <div
+              className="
+  bg-white
+  rounded-2xl
+  p-6
+  w-full
+  max-w-4xl
+  max-h-[90vh]
+  overflow-y-auto
+"
+            >
 
               <h2 className="text-xl font-bold mb-4">
                 Edit Product
@@ -831,6 +849,94 @@ Skipped: ${data.skipped}`
                       </option>
                     ))}
                 </select>
+
+                <div>
+                  <label className="text-xs text-zinc-500">
+                    SKU
+  </label>
+
+                  <input
+                    type="text"
+                    value={editProduct.sku}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        sku: e.target.value,
+                      })
+                    }
+                    className="border p-2 rounded w-full mt-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-zinc-500">
+                    HSN Code
+  </label>
+
+                  <input
+                    type="text"
+                    value={editProduct.hsnCode || ""}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        hsnCode: e.target.value,
+                      })
+                    }
+                    className="border p-2 rounded w-full mt-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-zinc-500">
+                    GST %
+  </label>
+
+                  <select
+                    value={editProduct.gstPercentage || 18}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        gstPercentage: Number(e.target.value),
+                      })
+                    }
+                    className="border p-2 rounded w-full mt-1"
+                  >
+                    <option value={0}>0%</option>
+                    <option value={5}>5%</option>
+                    <option value={12}>12%</option>
+                    <option value={18}>18%</option>
+                    <option value={28}>28%</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs text-zinc-500">
+                    Approval Status
+  </label>
+
+                  <select
+                    value={editProduct.approvalStatus || "Approved"}
+                    onChange={(e) =>
+                      setEditProduct({
+                        ...editProduct,
+                        approvalStatus: e.target.value,
+                      })
+                    }
+                    className="border p-2 rounded w-full mt-1"
+                  >
+                    <option value="Approved">
+                      Approved
+    </option>
+
+                    <option value="Pending">
+                      Pending
+    </option>
+
+                    <option value="Rejected">
+                      Rejected
+    </option>
+                  </select>
+                </div>
 
 
 
@@ -1092,6 +1198,48 @@ Skipped: ${data.skipped}`
                     Generate
     </button>
                 </div>
+              </div>
+
+              <div>
+                <label className="text-xs text-zinc-500">
+                  HSN Code
+  </label>
+
+                <input
+                  type="text"
+                  value={newProduct.hsnCode}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      hsnCode: e.target.value,
+                    })
+                  }
+                  placeholder="Ex: 4202"
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-zinc-500">
+                  GST %
+  </label>
+
+                <select
+                  value={newProduct.gstPercentage}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      gstPercentage: Number(e.target.value),
+                    })
+                  }
+                  className="border p-2 rounded w-full"
+                >
+                  <option value={0}>0%</option>
+                  <option value={5}>5%</option>
+                  <option value={12}>12%</option>
+                  <option value={18}>18%</option>
+                  <option value={28}>28%</option>
+                </select>
               </div>
 
               {/* STOCK */}

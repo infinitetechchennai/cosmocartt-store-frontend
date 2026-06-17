@@ -53,7 +53,7 @@ export default function B2BView({ b2bClients, setB2bClients }: B2BViewProps) {
             {b2bClients.filter(c => c.status === "Approved").length}
           </span>
         </div>
-        
+
         <div className="bg-white border border-zinc-200 rounded-2xl p-6">
           <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block">Pending Applications</span>
           <span className="text-3xl font-bold text-zinc-900 block mt-2">
@@ -144,15 +144,13 @@ export default function B2BView({ b2bClients, setB2bClients }: B2BViewProps) {
                     </td>
 
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                        client.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${client.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
                         client.status === "Suspended" ? "bg-red-50 text-red-700 border-red-200" :
-                        "bg-amber-50 text-amber-700 border-amber-200"
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${
-                          client.status === "Approved" ? "bg-emerald-500" :
+                          "bg-amber-50 text-amber-700 border-amber-200"
+                        }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${client.status === "Approved" ? "bg-emerald-500" :
                           client.status === "Suspended" ? "bg-red-500" : "bg-amber-500"
-                        }`}></span>
+                          }`}></span>
                         {client.status}
                       </span>
                     </td>
