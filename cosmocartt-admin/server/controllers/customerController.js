@@ -104,6 +104,32 @@ export const loginCustomer = async (req, res) => {
 
         }
 
+        if (
+            customer.customerType === "b2b" &&
+            customer.verificationStatus === "Rejected"
+        ) {
+
+            return res.status(403).json({
+                success: false,
+                message:
+                    "Your B2B application has been rejected. Please contact support."
+            });
+
+        }
+
+        if (
+            customer.customerType === "b2b" &&
+            customer.verificationStatus === "Pending"
+        ) {
+
+            return res.status(403).json({
+                success: false,
+                message:
+                    "Your B2B account is awaiting verification."
+            });
+
+        }
+
         const validPassword =
             await bcrypt.compare(
                 password,

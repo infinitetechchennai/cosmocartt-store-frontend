@@ -22,6 +22,7 @@ export default function Navbar() {
     const { cartItems } = useCart();
     const { wishlistItems } = useWishlist();
     const [search, setSearch] = useState("");
+    const [hoveredCategory, setHoveredCategory] = useState("");
 
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function Navbar() {
     };
 
     return (
-        <header className="sticky top-0 z-50 bg-white border-b border-purple-100 shadow-2xl">
+        <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
 
             <div className="max-w-[1600px] mx-auto px-8 h-24 flex items-center justify-between">
 
@@ -68,9 +69,9 @@ export default function Navbar() {
                         items-center
                         bg-white
                         rounded-2xl
-                        w-[620px]
+                       w-[560px]
                         h-12
-                        px-6
+                       pl-6
                         border-2
                         border-purple-400
                         shadow-[0_0_20px_rgba(168,85,247,0.6)]
@@ -92,15 +93,17 @@ export default function Navbar() {
         All Categories ▾
     </button>
 
-    <div
-    className="
+   
+         <div
+    onMouseLeave={() => setHoveredCategory("")}
+    className={`
         absolute
         top-full
         left-0
-        w-72
+        mt-2
         bg-white
-        shadow-xl
-        rounded-xl
+        rounded-2xl
+        shadow-2xl
         border
         opacity-0
         invisible
@@ -109,26 +112,80 @@ export default function Navbar() {
         transition-all
         duration-200
         z-50
-        max-h-[450px]
-        overflow-y-auto
-    "
+        flex
+        overflow-hidden
+       ${hoveredCategory ? "w-[590px]" : "w-72"}
+    `}
 >
-    {categories.map((cat) => (
-        <Link
-            key={cat.name}
-            to={`/products?category=${encodeURIComponent(cat.name)}`}
-            className="
-                block
-                px-4
-                py-3
-                hover:bg-purple-50
-                hover:text-purple-700
-                transition-all
-            "
-        >
-            {cat.name}
-        </Link>
-    ))}
+    {/* Categories */}
+   <div
+    className={`
+        w-72
+        bg-white
+        ${hoveredCategory ? "border-r" : ""}
+    `}
+>
+        {categories.map((cat) => (
+            <div
+                key={cat.name}
+                onMouseEnter={() =>
+                    setHoveredCategory(cat.name)
+                }
+                className="
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    py-3
+                    cursor-pointer
+                    hover:bg-purple-50
+                    hover:text-[#4B1E78]
+                    font-medium
+                "
+            >
+                <span>{cat.name}</span>
+                <span>›</span>
+            </div>
+        ))}
+    </div>
+
+   {hoveredCategory && (
+    <div className="w-[300px] p-4 bg-slate-50 border-l">
+        <h3 className="font-bold text-[#4B1E78] mb-3">
+            {hoveredCategory}
+        </h3>
+
+        <div className="space-y-2">
+            {categories
+                .find((cat) => cat.name === hoveredCategory)
+                ?.subcategories.map((sub) => (
+                    <Link
+                        key={sub}
+                        to={
+                            sub === "Cases & Covers"
+                                ? "/backcase-brands"
+                                : `/products?category=${encodeURIComponent(
+                                      hoveredCategory
+                                  )}&subcategory=${encodeURIComponent(sub)}`
+                        }
+                        className="
+                            block
+                            bg-white
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+                            hover:bg-purple-50
+                            hover:text-[#4B1E78]
+                            transition-all
+                        "
+                    >
+                        {sub}
+                    </Link>
+                ))}
+        </div>
+    </div>
+)}
 </div>
 </div>
                     
@@ -145,16 +202,34 @@ export default function Navbar() {
                         className="flex-1 text-base outline-none text-gray-700"
                     />
 
-                    <button
-                        onClick={handleSearch}
-                        className="text-purple-700"
-                    >
-                        <Search size={24} />
-                    </button>
+                   <div className="flex items-center h-12 -mr-6">
+    <div className="w-px h-8 bg-purple-200"></div>
+
+    <button
+        onClick={handleSearch}
+        className="
+            h-12
+           w-12
+            bg-[#4B1E78]
+            hover:bg-[#6F2DBD]
+            rounded-r-2xl
+            flex
+            items-center
+            justify-center
+            transition-all
+            duration-300
+        "
+    >
+        <Search
+            size={24}
+            className="text-white"
+        />
+    </button>
+</div>
                 </div>
 
 
-                <div className="hidden lg:flex items-center gap-2 text-[#4B1E78]">
+             <div className="hidden lg:flex items-center gap-2 text-[#4B1E78] ml-6">
                     <MapPin size={22} />
 
                     <div>

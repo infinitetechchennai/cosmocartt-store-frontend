@@ -62,6 +62,41 @@ const productSchema = new mongoose.Schema(
             type: String,
             default: "Active",
         },
+
+        hsnCode: {
+            type: String,
+            default: "",
+        },
+
+        gstPercentage: {
+            type: Number,
+            default: 18,
+        },
+
+        sellerId: {
+            type: String,
+            default: "ADMIN",
+        },
+
+        sellerName: {
+            type: String,
+            default: "CosmoCartt",
+        },
+
+        sellerGSTIN: {
+            type: String,
+            default: "",
+        },
+
+        approvalStatus: {
+            type: String,
+            enum: [
+                "Pending",
+                "Approved",
+                "Rejected"
+            ],
+            default: "Approved",
+        },
     },
     {
         timestamps: true,

@@ -20,14 +20,22 @@ export default function ProductDetails() {
 
     const [product, setProduct] = useState<any>(null);
     const [selectedImage, setSelectedImage] =
-        useState(product.images?.[0] || "");
+        useState("");
 
     useEffect(() => {
+
+        window.scrollTo(0, 0);
         fetch(`http://localhost:5000/api/products/${id}`)
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
+
                     setProduct(data.product);
+
+                    setSelectedImage(
+                        data.product.images?.[0] || ""
+                    );
+
                     setQuantity(1);
                 }
             })
@@ -57,40 +65,31 @@ export default function ProductDetails() {
                         <div className="bg-white rounded-3xl p-6 shadow-sm">
 
                             <img
-                                src={selectedImage}
+                                src={`http://localhost:5000${selectedImage}`}
                                 alt={product.name}
                                 className="w-full rounded-xl"
                             />
 
                         </div>
 
-                        <div className="grid grid-cols-4 gap-3 mt-4">
 
-                            {[1, 2, 3, 4].map((item) => (
 
-                                <div
-                                    key={item}
-                                    className="bg-white border rounded-xl p-2 cursor-pointer hover:border-[#4B1E78]"
-                                >
+                        <div className="flex gap-2 mt-4">
+                            {product.images?.map((img) => (
 
-                                    <div className="flex gap-2 mt-4">
-                                        {product.images?.map((img) => (
-                                            <img
-                                                key={img}
-                                                src={img}
-                                                onClick={() =>
-                                                    setSelectedImage(img)
-                                                }
-                                                className="w-20 h-20 object-cover cursor-pointer border"
-                                            />
-                                        ))}
-                                    </div>
+                                <img
+                                    src={`http://localhost:5000${img}`}
 
-                                </div>
 
+
+                                    onClick={() =>
+                                        setSelectedImage(img)
+                                    }
+                                    className="w-20 h-20 object-cover cursor-pointer border"
+                                />
                             ))}
-
                         </div>
+
 
                     </div>
 

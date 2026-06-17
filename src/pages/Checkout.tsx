@@ -125,9 +125,32 @@ export default function Checkout() {
 
             products: checkoutItems.map((item: any) => ({
                 productId: item._id,
+
                 name: item.name,
+
+                image: item.images?.[0] || "",
+
                 quantity: item.quantity,
+
                 price: item.retailPrice,
+
+                brand: item.brand || "",
+
+                sku: item.sku || "",
+
+                hsnCode: item.hsnCode || "",
+
+                gstPercentage:
+                    item.gstPercentage || 18,
+
+                sellerId:
+                    item.sellerId || "ADMIN",
+
+                sellerName:
+                    item.sellerName || "CosmoCartt",
+
+                sellerGSTIN:
+                    item.sellerGSTIN || "",
             })),
 
             subtotal: total,
@@ -693,7 +716,7 @@ export default function Checkout() {
 
                                     {/* IMAGE */}
                                     <img
-                                        src={`http://localhost:5000${product.images?.[0]}`}
+                                        src={`http://localhost:5000${item.images?.[0]}`}
                                         alt={item.name}
                                         className="w-14 h-14 object-cover rounded-lg border"
                                     />

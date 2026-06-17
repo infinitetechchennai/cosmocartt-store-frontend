@@ -107,11 +107,11 @@ export default function Cart() {
                     {/* PRODUCT */}
 
                     <div className="flex items-center gap-4">
-                      <div className="h-24 w-24 rounded-2xl bg-slate-100 flex items-center justify-center overflow-hidden">
+                      <div className="h-28 w-28 rounded-2xl bg-slate-100 flex items-center justify-center overflow-hidden border">
                         <img
-                          src={`http://localhost:5000${product.images?.[0]}`}
+                          src={`http://localhost:5000${item.images?.[0]}`}
                           alt={item.name}
-                          className="h-20 object-contain"
+                          className="w-full h-full object-contain"
                         />
                       </div>
 

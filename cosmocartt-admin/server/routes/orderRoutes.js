@@ -13,6 +13,9 @@ router.get("/test", (req, res) => {
 // CREATE ORDER
 router.post("/", async (req, res) => {
 
+    console.log("ORDER REQUEST RECEIVED");
+    console.log(JSON.stringify(req.body, null, 2));
+
     try {
 
         const {
@@ -134,6 +137,8 @@ router.post("/", async (req, res) => {
 
         });
         await order.save();
+
+        console.log("ORDER SAVED:", order._id);
 
         for (const item of order.products) {
 

@@ -41,6 +41,8 @@ export default function Login({ onLogin }: any) {
 
       onLogin(data.user);
 
+
+
     } catch (err) {
       setError("Server error. Try again.");
     }
