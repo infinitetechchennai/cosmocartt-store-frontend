@@ -23,7 +23,7 @@ export const createProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
     try {
         const products = await Product.find().sort({
-            createdAt: -1,
+            createdAt: -1
         });
 
         res.status(200).json({
@@ -192,6 +192,23 @@ export const importProductsCSV = async (req, res) => {
                                     .split("|")
                                     .map(img => img.trim())
                                 : [],
+                        hsnCode:
+                            item.hsnCode || "",
+
+                        gstPercentage:
+                            Number(item.gstPercentage || 18),
+
+                        sellerId:
+                            item.sellerId || "ADMIN",
+
+                        sellerName:
+                            item.sellerName || "CosmoCartt",
+
+                        sellerGSTIN:
+                            item.sellerGSTIN || "",
+
+                        approvalStatus:
+                            item.approvalStatus || "Approved",
                         status:
                             item.status || "Active",
                     });
