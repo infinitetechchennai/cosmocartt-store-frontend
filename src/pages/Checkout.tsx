@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import Footer from "../components/Footer";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getDisplayPrice } from "../utils/pricing";
 
 declare global {
     interface Window {
@@ -27,6 +28,11 @@ export default function Checkout() {
     >("COD");
 
     const { cartItems, clearCart } = useCart();
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user") || "null"
+        );
 
     const navigate = useNavigate();
 
@@ -65,9 +71,24 @@ export default function Checkout() {
     const total = checkoutItems.reduce(
         (sum, item) =>
             sum +
-            item.retailPrice * item.quantity,
+            getDisplayPrice(
+                item,
+                user
+            ) * item.quantity,
         0
     );
+
+    const shippingCharge =
+        total >= 499
+            ? 0
+            : 50;
+
+    const tax = 0;
+
+    const grandTotal =
+        total +
+        shippingCharge +
+        tax;
 
     const handlePlaceOrder = async () => {
 
@@ -132,7 +153,10 @@ export default function Checkout() {
 
                 quantity: item.quantity,
 
-                price: item.retailPrice,
+                price: getDisplayPrice(
+                    item,
+                    user
+                ),
 
                 brand: item.brand || "",
 
@@ -155,7 +179,11 @@ export default function Checkout() {
 
             subtotal: total,
 
-            totalAmount: total + 300,
+            shippingCharge,
+
+            tax,
+
+            totalAmount: grandTotal,
 
             paymentMethod,
 
@@ -240,7 +268,7 @@ export default function Checkout() {
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            amount: total + 300,
+                            amount: grandTotal,
                         }),
                     }
                 );
@@ -736,7 +764,10 @@ export default function Checkout() {
 
                                     {/* PRICE */}
                                     <p className="text-sm font-semibold min-w-[90px] text-right">
-                                        ₹{(item.retailPrice * item.quantity).toLocaleString()}
+                                        ₹{(getDisplayPrice(
+                                        item,
+                                        user
+                                    ) * item.quantity).toLocaleString()}
                                     </p>
 
                                 </div>
@@ -756,12 +787,12 @@ export default function Checkout() {
 
                             <div className="flex justify-between text-gray-500">
                                 <span>Delivery</span>
-                                <span>₹100</span>
+                                <span>₹{shippingCharge}</span>
                             </div>
 
                             <div className="flex justify-between text-gray-500">
                                 <span>Tax</span>
-                                <span>₹200</span>
+                                <span>₹{tax}</span>
                             </div>
 
                         </div>
@@ -771,7 +802,7 @@ export default function Checkout() {
                         {/* TOTAL */}
                         <div className="flex justify-between text-2xl font-bold text-[#4B1E78]">
                             <span>Total</span>
-                            <span>₹{(total + 300).toLocaleString()}</span>
+                            <span>₹{(grandTotal).toLocaleString()}</span>
                         </div>
 
                         {/* TRUST INFO */}

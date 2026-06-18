@@ -274,6 +274,9 @@ export default function Orders() {
 
                                 <div className="text-right">
                                     <p className="text-sm text-gray-500">Total</p>
+                                    <p className="text-xl font-bold">
+                                        ₹{order.totalAmount?.toLocaleString()}
+                                    </p>
                                     <button
                                         onClick={() => setSelectedOrder(order)}
                                         className="mt-3 px-4 py-2 text-sm bg-[#4B1E78] text-white rounded hover:opacity-90"
@@ -305,7 +308,7 @@ export default function Orders() {
 
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-                    <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
+                    <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl">
 
                         <div className="flex justify-between items-center mb-6">
 
@@ -315,10 +318,18 @@ export default function Orders() {
 
                             <button
                                 onClick={() => setSelectedOrder(null)}
-                                className="text-2xl"
+                                className="
+        w-10
+        h-10
+        rounded-full
+        bg-slate-100
+        hover:bg-slate-200
+        text-xl
+        transition
+    "
                             >
                                 ×
-                </button>
+</button>
 
                         </div>
 
@@ -440,56 +451,71 @@ export default function Orders() {
 
                         </div>
 
-                        {(
-                            selectedOrder.status ===
-                            "Order Placed" ||
-                            selectedOrder.status ===
-                            "Processing"
-                        ) && (
 
-                                <button
-                                    onClick={() =>
-                                        cancelOrder(
-                                            selectedOrder._id
-                                        )
-                                    }
-                                    className="mb-6 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-                                >
-                                    Cancel Order
-                                </button>
 
-                            )}
+                        <div className="border-t mt-8 pt-6">
 
-                        <div className="border-t mt-6 pt-4 space-y-2">
+                            <div className="space-y-3">
 
-                            <div className="flex justify-between">
-                                <span>Subtotal</span>
-                                <span>
-                                    ₹{selectedOrder.subtotal?.toLocaleString()}
-                                </span>
-                            </div>
+                                <div className="flex justify-between text-gray-600">
+                                    <span>Subtotal</span>
+                                    <span>
+                                        ₹{selectedOrder.subtotal?.toLocaleString() || 0}
+                                    </span>
+                                </div>
 
-                            <div className="flex justify-between">
-                                <span>Shipping</span>
-                                <span>
-                                    ₹{selectedOrder.shippingCharge?.toLocaleString()}
-                                </span>
-                            </div>
+                                <div className="flex justify-between text-gray-600">
+                                    <span>Shipping</span>
+                                    <span>
+                                        ₹{selectedOrder.shippingCharge?.toLocaleString() || 0}
+                                    </span>
+                                </div>
 
-                            <div className="flex justify-between">
-                                <span>Tax</span>
-                                <span>
-                                    ₹{selectedOrder.tax?.toLocaleString()}
-                                </span>
-                            </div>
+                                <div className="flex justify-between text-gray-600">
+                                    <span>Tax</span>
+                                    <span>
+                                        ₹{selectedOrder.tax?.toLocaleString() || 0}
+                                    </span>
+                                </div>
 
-                            <div className="flex justify-between text-lg font-bold pt-3 border-t">
-                                <span>Total</span>
-                                <span>
-                                    ₹{selectedOrder.totalAmount?.toLocaleString()}
-                                </span>
+                                <div className="flex justify-between border-t pt-4 mt-4">
+
+                                    <span className="text-xl font-bold">
+                                        Grand Total
+            </span>
+
+                                    <span className="text-2xl font-black text-[#4B1E78]">
+                                        ₹{selectedOrder.totalAmount?.toLocaleString()}
+                                    </span>
+
+                                </div>
 
                             </div>
+
+                            {(selectedOrder.status === "Order Placed" ||
+                                selectedOrder.status === "Processing") && (
+
+                                    <button
+                                        onClick={() =>
+                                            cancelOrder(selectedOrder._id)
+                                        }
+                                        className="
+                mt-6
+                w-full
+                py-3
+                rounded-xl
+                bg-red-600
+                hover:bg-red-700
+                text-white
+                font-semibold
+                transition
+            "
+                                    >
+                                        Cancel Order
+                                    </button>
+
+                                )}
+
 
                             {
                                 selectedOrder.status === "Delivered"
@@ -542,10 +568,11 @@ export default function Orders() {
 
 
 
-            )}
+            )
+            }
 
             <Footer />
 
-        </div>
+        </div >
     );
 }

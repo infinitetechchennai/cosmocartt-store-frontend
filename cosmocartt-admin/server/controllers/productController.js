@@ -4,20 +4,42 @@ import { Readable } from "stream";
 import { Parser } from "json2csv";
 import fs from "fs";
 
-export const createProduct = async (req, res) => {
+export const createProduct = async (
+    req,
+    res
+) => {
+
     try {
-        const product = await Product.create(req.body);
+
+        const imagePaths =
+            req.files?.map(
+                file =>
+                    `/uploads/products/${file.filename}`
+            ) || [];
+
+        const product =
+            await Product.create({
+
+                ...req.body,
+
+                images: imagePaths,
+
+            });
 
         res.status(201).json({
             success: true,
             product,
         });
+
     } catch (error) {
+
         res.status(500).json({
             success: false,
             message: error.message,
         });
+
     }
+
 };
 
 export const getProducts = async (req, res) => {

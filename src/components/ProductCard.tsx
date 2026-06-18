@@ -3,6 +3,9 @@ import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
 import { useWishlist } from "../context/WishlistContext";
 import toast from "react-hot-toast";
+import {
+    getDisplayPrice
+} from "../utils/pricing";
 
 interface ProductCardProps {
     product: any;
@@ -11,6 +14,10 @@ interface ProductCardProps {
 export default function ProductCard({
     product,
 }: ProductCardProps) {
+    const user =
+        JSON.parse(
+            localStorage.getItem("user") || "null"
+        );
     const { addToCart } = useCart();
 
     const {
@@ -19,7 +26,11 @@ export default function ProductCard({
         removeFromWishlist
     } = useWishlist();
 
-    const price = product.retailPrice || 0;
+    const price =
+        getDisplayPrice(
+            product,
+            user
+        ) || 0;
 
     const oldPrice =
         product.oldPrice || price + 5000;
@@ -167,6 +178,17 @@ export default function ProductCard({
                         </span>
 
                     </div>
+
+                    {
+                        user?.customerType === "b2b" &&
+                        user?.verificationStatus === "Verified" && (
+
+                            <div className="mt-2 text-xs text-green-600 font-semibold">
+                                B2B Wholesale Price
+                            </div>
+
+                        )
+                    }
 
                     <div className="mt-3 text-green-600 text-sm font-medium">
                         🚚 Free Delivery

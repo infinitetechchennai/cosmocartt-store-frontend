@@ -155,7 +155,9 @@ export const loginCustomer = async (req, res) => {
                 _id: customer._id,
                 name: customer.name,
                 email: customer.email,
-                customerType: customer.customerType
+                customerType: customer.customerType,
+                verificationStatus:
+                    customer.verificationStatus
             }
         });
 

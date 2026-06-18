@@ -5,8 +5,16 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+    getDisplayPrice
+} from "../utils/pricing";
 
 export default function ProductDetails() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user") || "null"
+        );
 
     const { id } = useParams();
 
@@ -19,6 +27,30 @@ export default function ProductDetails() {
     const [quantity, setQuantity] = useState(1);
 
     const [product, setProduct] = useState<any>(null);
+    const displayPrice =
+        product
+            ? getDisplayPrice(
+                product,
+                user
+            )
+            : 0;
+
+    const retailPrice =
+        product?.retailPrice || 0;
+
+    const discount =
+        retailPrice
+            ? Math.round(
+                (
+                    (
+                        retailPrice -
+                        displayPrice
+                    ) /
+                    retailPrice
+                ) * 100
+            )
+            : 0;
+
     const [selectedImage, setSelectedImage] =
         useState("");
 
@@ -120,18 +152,29 @@ export default function ProductDetails() {
                         <div className="mt-6 flex items-center gap-4">
 
                             <span className="text-4xl font-bold text-[#4B1E78]">
-                                ₹{product.retailPrice?.toLocaleString()}
+                                ₹{displayPrice?.toLocaleString()}
                             </span>
 
                             <span className="text-xl text-zinc-400 line-through">
-                                ₹{(product.retailPrice + 5000).toLocaleString()}
+                                ₹{product?.retailPrice?.toLocaleString() || 0}
                             </span>
 
                             <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
-                                10% OFF
+                                {discount}% OFF
               </span>
 
                         </div>
+
+                        {
+                            user?.customerType === "b2b" &&
+                            user?.verificationStatus === "Verified" && (
+
+                                <div className="text-green-600 text-sm font-semibold mt-2">
+                                    Wholesale Pricing Applied
+                                </div>
+
+                            )
+                        }
 
                         <div className="mt-6">
 

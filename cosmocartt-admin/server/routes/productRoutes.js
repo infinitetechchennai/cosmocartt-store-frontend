@@ -11,10 +11,18 @@ import { importProductsCSV } from "../controllers/productController.js";
 import {
     exportProductsCSV
 } from "../controllers/productController.js";
+import productUpload from "../middleware/productUploadMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", createProduct);
+router.post(
+    "/",
+    productUpload.array(
+        "images",
+        6
+    ),
+    createProduct
+);
 
 router.post(
     "/import",

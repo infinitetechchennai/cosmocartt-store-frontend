@@ -18,7 +18,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-
+  const [productFiles, setProductFiles] =
+    useState<File[]>([]);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -109,14 +110,90 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
     // 🔵 API CALL
     try {
+      const formData = new FormData();
+
+      formData.append(
+        "name",
+        newProduct.name
+      );
+
+      formData.append(
+        "brand",
+        newProduct.brand
+      );
+
+      formData.append(
+        "category",
+        newProduct.category
+      );
+
+      formData.append(
+        "subcategory",
+        newProduct.subcategory
+      );
+
+      formData.append(
+        "description",
+        newProduct.description
+      );
+
+      formData.append(
+        "sku",
+        newProduct.sku
+      );
+
+      formData.append(
+        "hsnCode",
+        newProduct.hsnCode
+      );
+
+      formData.append(
+        "gstPercentage",
+        String(newProduct.gstPercentage)
+      );
+
+      formData.append(
+        "costPrice",
+        String(newProduct.costPrice)
+      );
+
+      formData.append(
+        "wholesalePrice",
+        String(newProduct.wholesalePrice)
+      );
+
+      formData.append(
+        "retailPrice",
+        String(newProduct.retailPrice)
+      );
+
+      formData.append(
+        "stock",
+        String(newProduct.stock)
+      );
+
+      formData.append(
+        "status",
+        newProduct.status
+      );
+
+      formData.append(
+        "approvalStatus",
+        newProduct.approvalStatus
+      );
+
+      productFiles.forEach(file => {
+        formData.append(
+          "images",
+          file
+        );
+      });
+
       const res = await fetch(
         "http://localhost:5000/api/products",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newProduct),
+          body: formData,
         }
       );
 
@@ -1013,9 +1090,13 @@ Skipped: ${data.skipped}`
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     className="border p-2 rounded w-full mt-1"
                     onChange={(e) => {
-                      const file = e.target.files?.[0];
+                      const files =
+                        Array.from(
+                          e.target.files || []
+                        );
                       if (!file) return;
 
                       const reader = new FileReader();
@@ -1070,7 +1151,17 @@ Skipped: ${data.skipped}`
 
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-2xl rounded-2xl p-6">
+          <div
+            className="
+  bg-white
+  rounded-2xl
+  p-6
+  w-full
+  max-w-4xl
+  max-h-[90vh]
+  overflow-y-auto
+"
+          >
 
             <h2 className="text-xl font-bold mb-4">
               Add Product
@@ -1329,22 +1420,27 @@ Skipped: ${data.skipped}`
 
                 <input
                   type="file"
+                  multiple
                   accept="image/*"
                   className="border p-2 rounded w-full mt-1"
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
 
-                    const reader = new FileReader();
+                    const files =
+                      Array.from(
+                        e.target.files || []
+                      );
 
-                    reader.onloadend = () => {
-                      setNewProduct({
-                        ...newProduct,
-                        image: reader.result as string,
-                      });
-                    };
+                    if (!files.length) return;
 
-                    reader.readAsDataURL(file);
+                    setProductFiles(files);
+
+                    setNewProduct({
+                      ...newProduct,
+                      images: files.map(file =>
+                        URL.createObjectURL(file)
+                      ),
+                    });
+
                   }}
                 />
 

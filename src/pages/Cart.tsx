@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { products } from "../data/products";
 import { useState } from "react";
+import { getDisplayPrice } from "../utils/pricing";
 
 export default function Cart() {
   const {
@@ -14,9 +15,16 @@ export default function Cart() {
     addToCart,
   } = useCart();
 
+  const user =
+    JSON.parse(
+      localStorage.getItem("user") || "null"
+    );
+
   const subtotal = cartItems.reduce(
     (sum: number, item: any) =>
-      sum + item.retailPrice * item.quantity,
+      sum +
+      getDisplayPrice(item, user) *
+      item.quantity,
     0
   );
 
@@ -126,7 +134,10 @@ export default function Cart() {
 
                         <p className="font-semibold text-[#6F2DBD] mt-1">
                           ₹
-                          {item.retailPrice.toLocaleString()}
+{getDisplayPrice(
+                          item,
+                          user
+                        ).toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -163,8 +174,11 @@ export default function Cart() {
 
                     <div className="text-center font-bold text-xl">
                       ₹
-                      {(
-                        item.retailPrice *
+{(
+                        getDisplayPrice(
+                          item,
+                          user
+                        ) *
                         item.quantity
                       ).toLocaleString()}
                     </div>
@@ -358,7 +372,12 @@ export default function Cart() {
                     </h3>
 
                     <p className="mt-3 text-2xl font-bold text-[#6F2DBD]">
-                      ₹{product.retailPrice}
+                      ₹{
+                        getDisplayPrice(
+                          product,
+                          user
+                        )
+                      }
                     </p>
 
                     <button
