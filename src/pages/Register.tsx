@@ -83,13 +83,13 @@ export default function Register() {
         } else {
 
             if (!contactPerson.trim()) {
-
-                newErrors.name =
-                    "Contact Person is required";
-
-                valid = false;
-
-            }
+    newErrors.name = "Contact Person is required";
+    valid = false;
+} else if (!/^[A-Za-z\s]+$/.test(contactPerson)) {
+    newErrors.name =
+        "Contact Person should contain only letters";
+    valid = false;
+}
 
         }
 
@@ -104,9 +104,12 @@ export default function Register() {
         }
 
         if (!phone.trim()) {
-            newErrors.phone = "Phone number is required";
-            valid = false;
-        }
+    newErrors.phone = "Phone number is required";
+    valid = false;
+} else if (phone.length !== 10) {
+    newErrors.phone = "Phone number must be 10 digits";
+    valid = false;
+}
 
         if (!password.trim()) {
             newErrors.password = "Password is required";
@@ -417,10 +420,16 @@ export default function Register() {
 
                                             <div>
                                                 <input
-                                                    type="text"
-                                                    value={phone}
-                                                    onChange={(e) => setPhone(e.target.value)}
-                                                    placeholder="Phone Number"
+    type="tel"
+    value={phone}
+    onChange={(e) =>
+        setPhone(
+            e.target.value
+                .replace(/\D/g, "")
+                .slice(0, 10)
+        )
+    }
+    placeholder="Phone Number"
                                                     className={`w-full p-3 rounded-xl outline-none transition-all duration-300 ${errors.phone
                                                         ? "border border-red-500"
                                                         : "border border-slate-200 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100"
@@ -538,12 +547,16 @@ export default function Register() {
                                             />
 
                                             <input
-                                                type="text"
-                                                placeholder="Contact Person"
-                                                value={contactPerson}
-                                                onChange={(e) => setContactPerson(e.target.value)}
-                                                className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
-                                            />
+    type="text"
+    placeholder="Contact Person"
+    value={contactPerson}
+    onChange={(e) =>
+        setContactPerson(
+            e.target.value.replace(/[^a-zA-Z\s]/g, "")
+        )
+    }
+    className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
+/>
 
                                         </div>
 
@@ -558,10 +571,16 @@ export default function Register() {
                                             />
 
                                             <input
-                                                type="text"
-                                                placeholder="Phone Number"
-                                                value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
+    type="tel"
+    placeholder="Phone Number"
+    value={phone}
+    onChange={(e) =>
+        setPhone(
+            e.target.value
+                .replace(/\D/g, "")
+                .slice(0, 10)
+        )
+    }
                                                 className="w-full border border-slate-200 p-3 rounded-xl transition-all duration-300 focus:border-[#4B1E78] focus:ring-4 focus:ring-purple-100 outline-none"
                                             />
 

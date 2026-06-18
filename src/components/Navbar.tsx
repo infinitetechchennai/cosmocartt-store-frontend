@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { categories } from "../data/categories";
 
+
 import {
     Search,
     ShoppingCart,
@@ -22,7 +23,20 @@ export default function Navbar() {
     const { cartItems } = useCart();
     const { wishlistItems } = useWishlist();
     const [search, setSearch] = useState("");
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [hoveredCategory, setHoveredCategory] = useState("");
+    const searchSuggestions = [
+  "iPhone",
+  "iPhone Case",
+  "Samsung Case",
+  "OnePlus Case",
+  "TV Remote",
+  "AC Remote",
+  "Mobile Back Cover",
+  "Clear Case",
+  "Shockproof Case",
+  "Silicone Case",
+];
 
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -34,6 +48,17 @@ export default function Navbar() {
             `/products?search=${encodeURIComponent(search)}`
         );
     };
+    const filteredSuggestions = search.trim()
+  ? searchSuggestions.filter((item) =>
+      item.toLowerCase().startsWith(search.toLowerCase())
+    )
+  : searchSuggestions.slice(0, 6);
+
+const handleSuggestionClick = (suggestion: string) => {
+  setSearch(suggestion);
+  setShowSuggestions(false);
+  navigate(`/products?search=${encodeURIComponent(suggestion)}`);
+};
 
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -189,18 +214,71 @@ export default function Navbar() {
 </div>
 </div>
                     
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                handleSearch();
-                            }
-                        }}
-                        className="flex-1 text-base outline-none text-gray-700"
-                    />
+                    <div className="relative flex-1">
+  <input
+    type="text"
+    placeholder="Search products..."
+    value={search}
+    onFocus={() => setShowSuggestions(true)}
+    onBlur={() => {
+      setTimeout(() => {
+        setShowSuggestions(false);
+      }, 150);
+    }}
+    onChange={(e) => {
+      setSearch(e.target.value);
+      setShowSuggestions(true);
+    }}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        handleSearch();
+        setShowSuggestions(false);
+      }
+    }}
+    className="w-full text-base outline-none text-gray-700"
+  />
+
+  {showSuggestions && filteredSuggestions.length > 0 && (
+    <div
+      className="
+        absolute
+        top-full
+        left-0
+        mt-4
+        w-full
+        bg-white
+        rounded-2xl
+        shadow-2xl
+        border
+        border-purple-100
+        overflow-hidden
+        z-[99999]
+      "
+    >
+      {filteredSuggestions.map((item) => (
+        <button
+          key={item}
+          type="button"
+          onMouseDown={() => handleSuggestionClick(item)}
+          className="
+            w-full
+            text-left
+            px-5
+            py-3
+            text-sm
+            font-medium
+            text-slate-700
+            hover:bg-purple-50
+            hover:text-[#4B1E78]
+            transition-all
+          "
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
                    <div className="flex items-center h-12 -mr-6">
     <div className="w-px h-8 bg-purple-200"></div>
@@ -255,39 +333,94 @@ export default function Navbar() {
                     {!user ? (
                         <>
                             <Link
-                                to="/login"
-                                className="
-flex items-center gap-2
-font-medium
-text-[#4B1E78]
-hover:text-[#6F2DBD]
-transition-all duration-300
-"
-                            >
+  to="/login"
+  className="
+    group
+    relative
+    flex
+    items-center
+    gap-2
+    text-lg
+    font-medium
+    text-[#4B1E78]
+    hover:text-[#6F2DBD]
+    hover:scale-105
+    transition-all
+    duration-300
+  "
+>
+  <User
+    size={20}
+    className="
+      group-hover:-translate-y-1
+      transition-transform
+      duration-300
+    "
+  />
 
+  <span className="relative">
+    Login
 
-
-                                <User size={20} />
-                Login
-            </Link>
+    <span
+      className="
+        absolute
+        left-0
+        -bottom-1
+        h-[2px]
+        w-0
+        bg-[#6F2DBD]
+        group-hover:w-full
+        transition-all
+        duration-300
+      "
+    />
+  </span>
+</Link>
 
                             <Link
-                                to="/register"
-                                className="
-                    flex
-                    items-center
-                    gap-2
-                    text-lg
-                    font-medium
-                    hover:text-[#6F2DBD]
-                    hover:scale-105
-                    transition-all
-                    duration-300
-                "
-                            >
-                                <UserRoundPlus size={20} />
-                Register
-            </Link>
+  to="/register"
+  className="
+    group
+    relative
+    flex
+    items-center
+    gap-2
+    text-lg
+    font-medium
+    text-[#4B1E78]
+    hover:text-[#6F2DBD]
+    hover:scale-105
+    transition-all
+    duration-300
+  "
+>
+  <UserRoundPlus
+    size={20}
+    className="
+      group-hover:-translate-y-1
+      transition-transform
+      duration-300
+    "
+  />
+
+  <span className="relative">
+    Register
+
+    <span
+      className="
+        absolute
+        left-0
+        -bottom-1
+        h-[2px]
+        w-0
+        bg-[#6F2DBD]
+        group-hover:w-full
+        transition-all
+        duration-300
+      "
+    />
+  </span>
+</Link>
                         </>
                     ) : (
                         <>
@@ -408,32 +541,53 @@ transition-all duration-300
                         </>
                     )}
 
-                    <Link
-                        to="/products"
-                        className="
-            flex
-            items-center
-            gap-2
-            text-lg
-            font-medium
-            hover:text-[#6F2DBD]
-            hover:scale-105
-            transition-all
-            duration-300
+                   <Link
+  to="/products"
+  className="
+    group
+    relative
+    flex
+    items-center
+    gap-2
+    text-lg
+    font-medium
+    text-[#4B1E78]
+    hover:text-[#6F2DBD]
+    hover:scale-105
+    transition-all
+    duration-300
+  "
+>
+  <Package
+    size={20}
+    className="
+      group-hover:-translate-y-1
+      transition-transform
+      duration-300
+    "
+  />
+
+  <div>
+
+    <p className="relative font-semibold">
+      Products
+
+      <span
+        className="
+          absolute
+          left-0
+          -bottom-1
+          h-[2px]
+          w-0
+          bg-[#6F2DBD]
+          group-hover:w-full
+          transition-all
+          duration-300
         "
-                    >
-                        <Package size={20} />
-
-                        <div>
-                            <p className="text-xs text-slate-500">
-                                Browse
+      />
     </p>
-
-                            <p className="font-semibold">
-                                Products
-    </p>
-                        </div>
-                    </Link>
+  </div>
+</Link>
 
 
 
