@@ -34,12 +34,12 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="py-24 bg-gradient-to-b from-slate-50 via-white to-slate-100">
+    <section className="pt-20 pb-10 bg-gradient-to-b from-slate-50 via-white to-slate-100">
 
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Premium Heading */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
 
           <span
             className="

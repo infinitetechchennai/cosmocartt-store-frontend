@@ -1,9 +1,8 @@
 import { ShieldCheck, RotateCcw, Truck, Headphones } from "lucide-react";
 
 export default function PremiumBanner() {
-return ( <section className="max-w-7xl mx-auto px-6 py-10">
+return ( <section className="max-w-7xl mx-auto px-6 pt-2 pb-10">
 
-```
         <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#14052d] via-[#2B1055] to-[#6F2DBD] px-10 py-12 shadow-2xl">
 
             <div className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl"></div>

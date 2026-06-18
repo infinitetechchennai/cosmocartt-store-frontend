@@ -39,7 +39,39 @@ export default function CategoryNavbar() {
               <ChevronDown size={16} />
             </button>
 
-            <div className="absolute top-full left-0 mt-3 w-[1000px] bg-white rounded-3xl shadow-2xl border border-slate-200 p-8 hidden group-hover:grid grid-cols-4 gap-8 z-50">
+            <div
+  className="
+    absolute
+    top-full
+    left-0
+    mt-0
+    w-[1000px]
+    bg-white
+    rounded-3xl
+    shadow-2xl
+    border
+    border-slate-200
+    p-8
+    grid
+    grid-cols-4
+    gap-8
+    z-50
+
+    opacity-0
+    invisible
+    translate-y-2
+    pointer-events-none
+
+    group-hover:opacity-100
+    group-hover:visible
+    group-hover:translate-y-0
+    group-hover:pointer-events-auto
+
+    transition-all
+    duration-300
+    ease-out
+  "
+>
               {categories.map((category) => (
                 <div key={category.name}>
                   <h3 className="font-bold text-[#4B1E78] mb-4">
