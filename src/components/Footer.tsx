@@ -4,6 +4,12 @@ import googleIcon from "../assets/google.png";
 import githubIcon from "../assets/github.png";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import {
+  MapPinned,
+  PhoneCall,
+  Mail,
+  Headset,
+} from "lucide-react";
 
 
 const brands = [
@@ -308,28 +314,45 @@ export default function Footer() {
         overflow-x-auto
     "
 
-    ><span
-         className="hover:text-white transition-all duration-300">
-            📍 Chennai, India
-        </span>
+    ><div
+  className="
+    flex
+    justify-center
+    items-center
+    gap-6
+    text-lg
+    font-semibold
+    text-purple-100
+    whitespace-nowrap
+    overflow-x-auto
+  "
+>
+  <span className="flex items-center gap-2 hover:text-white transition-all duration-300">
+    <MapPinned size={20} className="text-white/80" />
+    Chennai, India
+  </span>
 
-        <span className="text-white/30 text-xl">•</span>
+  <span className="text-white/30 text-xl">•</span>
 
-        <span className="hover:text-white transition-all duration-300">
-            📞 +91 98765 43210
-        </span>
+  <span className="flex items-center gap-2 hover:text-white transition-all duration-300">
+    <PhoneCall size={20} className="text-white/80" />
+    +91 98765 43210
+  </span>
 
-        <span className="text-white/30 text-xl">•</span>
+  <span className="text-white/30 text-xl">•</span>
 
-        <span className="hover:text-white transition-all duration-300">
-            ✉️ support@cosmocartt.com
-        </span>
+  <span className="flex items-center gap-2 hover:text-white transition-all duration-300">
+    <Mail size={20} className="text-white/80" />
+    support@cosmocartt.com
+  </span>
 
-        <span className="text-white/30 text-xl">•</span>
+  <span className="text-white/30 text-xl">•</span>
 
-        <span className="hover:text-white transition-all duration-300">
-            🕒 24/7 Customer Support
-        </span>
+  <span className="flex items-center gap-2 hover:text-white transition-all duration-300">
+    <Headset size={20} className="text-white/80" />
+    24/7 Customer Support
+  </span>
+</div>
 
     </div>
 
