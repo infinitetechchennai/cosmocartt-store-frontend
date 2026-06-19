@@ -17,6 +17,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import OrderTracking from "./pages/OrderTracking";
 import ForgotPassword from "./pages/ForgotPassword";
+import BrandsPage from "./pages/BrandsPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -93,6 +94,12 @@ export default function App() {
           path="/wishlist"
           element={<Wishlist />}
         />
+
+        <Route
+          path="/brands"
+          element={<BrandsPage />}
+        />
+
       </Routes>
     </>
   );

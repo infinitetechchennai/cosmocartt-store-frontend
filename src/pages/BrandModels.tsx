@@ -1,7 +1,7 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function BrandModels() {
     const { brand } = useParams();
@@ -10,48 +10,32 @@ export default function BrandModels() {
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("All");
 
-    const models = {
-        Apple: [
-            "iPhone 17 Pro Max",
-            "iPhone 17 Pro",
-            "iPhone 17",
-            "iPhone 16 Pro Max",
-            "iPhone 16 Pro",
-            "iPhone 16 Plus",
-            "iPhone 16",
-            "iPhone 15 Pro Max",
-            "iPhone 15 Pro",
-            "iPhone 15 Plus",
-            "iPhone 15",
-            "iPhone 14 Pro Max",
-            "iPhone 14 Pro",
-            "iPhone 14 Plus",
-            "iPhone 14",
-            "iPhone 13 Pro",
-            "iPhone 13 Mini",
-            "iPhone 13",
-            "iPhone 12 Pro",
-            "iPhone 12 Mini",
-            "iPhone 11 Pro Max",
-            "iPhone 11 Pro",
-            "iPhone 11",
-        ],
+    const [modelsData, setModelsData] =
+        useState<string[]>([]);
 
-        Samsung: ["Galaxy S24", "Galaxy S23", "Galaxy A54", "Galaxy M35"],
-        Vivo: ["Vivo V40", "Vivo V30", "Vivo T3", "Vivo Y28"],
-        Oppo: ["Oppo Reno 12", "Oppo Reno 11", "Oppo A79"],
-        OnePlus: ["OnePlus 12", "OnePlus 11", "OnePlus Nord CE4"],
-        Realme: ["Realme GT 6", "Realme 12 Pro", "Realme Narzo 70"],
-        Xiaomi: ["Xiaomi 14", "Redmi Note 13", "Redmi 13C"],
-        Poco: ["Poco F6", "Poco X6", "Poco M6"],
-        Motorola: ["Moto Edge 50", "Moto G85", "Moto G64"],
-        Nothing: ["Nothing Phone 2a", "Nothing Phone 2", "Nothing Phone 1"],
-        iQOO: ["iQOO 12", "iQOO Neo 9", "iQOO Z9"],
-        Infinix: ["Infinix GT 20 Pro", "Infinix Note 40", "Infinix Smart 8"],
-        "Google Pixel": ["Pixel 8 Pro", "Pixel 8", "Pixel 7"],
-    };
+    useEffect(() => {
 
-    const selectedModels = models[brand as keyof typeof models] || [];
+        fetch(
+            `http://localhost:5000/api/products/models/${brand}`
+        )
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.success) {
+
+                    setModelsData(
+                        data.models
+                    );
+
+                }
+
+            })
+            .catch(console.error);
+
+    }, [brand]);
+
+    const selectedModels =
+        modelsData || [];
 
     const filteredModels = selectedModels.filter((model) => {
         const matchesSearch = model.toLowerCase().includes(search.toLowerCase());
@@ -128,11 +112,10 @@ export default function BrandModels() {
                         <button
                             key={item}
                             onClick={() => setFilter(item)}
-                            className={`px-5 py-2 rounded-full font-semibold transition-all ${
-                                filter === item
+                            className={`px-5 py-2 rounded-full font-semibold transition-all ${filter === item
                                     ? "bg-[#4B1E78] text-white shadow-lg"
                                     : "bg-white text-slate-600 hover:bg-purple-100"
-                            }`}
+                                }`}
                         >
                             {item} Models
                         </button>

@@ -111,6 +111,7 @@ for (const brandFolder of brandFolders) {
 const headers = [
     "name",
     "brand",
+    "model",
     "category",
     "subcategory",
     "description",

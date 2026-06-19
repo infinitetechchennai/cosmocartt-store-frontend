@@ -1,18 +1,50 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useParams, Link } from "react-router-dom";
+import {
+    useParams,
+    Link
+} from "react-router-dom";
+
+import {
+    useEffect,
+    useState
+} from "react";
+import ProductCard from "../components/ProductCard";
+
+
+
 
 export default function BackcaseModels() {
     const { brand, model } = useParams();
+    const [products, setProducts] =
+        useState<any[]>([]);
+    useEffect(() => {
 
-    const caseTypes = [
-        `Back Cover for ${model}`,
-        `Transparent Mobile Back Case for ${model}`,
-        `MagSafe Magnetic Phone Case for ${model}`,
-        `Nature TPU Pro Border Case for ${model}`,
-        `Nillkin Case for ${model}`,
-        `Clear Transparent Case for ${model}`,
-    ];
+        fetch(
+            "http://localhost:5000/api/products"
+        )
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.success) {
+
+                    const filtered =
+                        data.products.filter(
+                            (p: any) =>
+                                p.brand === brand &&
+                                p.model === model
+                        );
+
+                    setProducts(filtered);
+
+                }
+
+            })
+            .catch(console.error);
+
+    }, [brand, model]);
+
+
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -42,50 +74,16 @@ export default function BackcaseModels() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {caseTypes.map((type, index) => (
-                        <div
-                            key={index}
-                            className="bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 overflow-hidden"
-                        >
-                            <div className="h-48 bg-purple-50 flex items-center justify-center text-7xl">
-                                📱
-                            </div>
 
-                            <div className="p-5">
-                                <h2 className="font-black text-slate-900">
-                                    {type}
-                                </h2>
+                    {products.map((product) => (
 
-                                <p className="text-sm text-slate-500 mt-2">
-                                    Scratch resistant • Premium grip
-                                </p>
+                        <ProductCard
+                            key={product._id}
+                            product={product}
+                        />
 
-                                <div className="flex items-center gap-2 mt-3">
-                                    <span className="text-yellow-500">
-                                        ★★★★★
-                                    </span>
-                                    <span className="text-xs text-slate-400">
-                                        4.8
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center justify-between mt-4">
-                                    <div>
-                                        <p className="text-2xl font-black text-[#4B1E78]">
-                                            ₹499
-                                        </p>
-                                        <p className="text-xs text-green-600 font-semibold">
-                                            Free Delivery
-                                        </p>
-                                    </div>
-
-                                    <button className="bg-[#4B1E78] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#6F2DBD]">
-                                        View
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     ))}
+
                 </div>
 
             </div>

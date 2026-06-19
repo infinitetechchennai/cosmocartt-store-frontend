@@ -24,6 +24,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   const [newProduct, setNewProduct] = useState({
     name: "",
     brand: "",
+    model: "",
     category: "",
     description: "",
     subcategory: "",
@@ -123,6 +124,11 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       );
 
       formData.append(
+        "model",
+        newProduct.model
+      );
+
+      formData.append(
         "category",
         newProduct.category
       );
@@ -207,6 +213,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
         setNewProduct({
           name: "",
           brand: "",
+          model: "",
           category: "",
           description: "",
           subcategory: "",
@@ -377,6 +384,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     const headers = [
       "Name",
       "Brand",
+      "Model",
       "Category",
       "Subcategory",
       "SKU",
@@ -392,6 +400,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       product.name,
 
       product.brand,
+
+      product.model,
 
       product.category,
 
@@ -859,6 +869,18 @@ Skipped: ${data.skipped}`
                   }
                 />
 
+                <input
+                  placeholder="model"
+                  className="border p-2 rounded"
+                  value={editProduct.model}
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      model: e.target.value,
+                    })
+                  }
+                />
+
 
                 <div className="col-span-2">
                   <label className="text-xs text-zinc-500">
@@ -1191,6 +1213,19 @@ Skipped: ${data.skipped}`
                     brand: e.target.value,
                   })
                 }
+              />
+
+              <input
+                type="text"
+                placeholder="Model"
+                value={newProduct.model}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    model: e.target.value
+                  })
+                }
+                className="w-full border rounded-lg p-3"
               />
 
               <div className="col-span-2">

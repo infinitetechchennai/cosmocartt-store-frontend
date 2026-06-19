@@ -9,17 +9,22 @@ const productSchema = new mongoose.Schema(
 
         brand: {
             type: String,
-            required: true,
+            required: true
+        },
+
+        model: {
+            type: String,
+            default: ""
         },
 
         category: {
             type: String,
-            required: true,
+            required: true
         },
 
         subcategory: {
             type: String,
-            required: true,
+            required: true
         },
 
         description: {

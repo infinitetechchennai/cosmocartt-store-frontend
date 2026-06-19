@@ -195,6 +195,7 @@ export const importProductsCSV = async (req, res) => {
                     await Product.create({
                         name: item.name,
                         brand: item.brand,
+                        model: item.model || "",
                         category: item.category,
                         subcategory: item.subcategory,
                         description:
@@ -277,6 +278,7 @@ export const exportProductsCSV = async (req, res) => {
         const fields = [
             "name",
             "brand",
+            "model",
             "category",
             "subcategory",
             "description",

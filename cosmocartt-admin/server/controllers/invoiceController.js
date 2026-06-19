@@ -26,7 +26,7 @@ export const generateInvoice = async (req, res) => {
 
         // Currency Formatter utilizing standard text literal "₹"
         const formatCurrency = (val) =>
-            `₹${Number(val || 0).toFixed(2)}`;
+            `Rs.${Number(val || 0).toFixed(2)}`;
 
         // ==========================================
         // 1. BRANDING & PROFESSIONAL HEADER WITH LOGO

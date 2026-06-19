@@ -6,25 +6,24 @@ export const categories = [
             "Wired Headphones",
             "True Wireless Earbuds",
             "Bluetooth Speakers",
-            "Soundbars",
+            "Sound Bars",
             "Home Theatres",
             "TV Streaming Devices",
             "Remote Controls",
-            "DTH Set-Top Boxes",
-            "Headphone Cases & Covers"
+            "DTH Set Top Box",
+            "Headphone Cases"
         ]
     },
-
     {
-        name: "Cameras & Accessories",
+        name: "Cameras and Accessories",
         subcategories: [
-            "DSLR & Mirrorless Cameras",
-            "Action Cameras",
-            "Point & Shoot Cameras",
+            "DSLR & Mirrorless",
+            "Sports & Action",
+            "Point & Shoot",
             "Instant Cameras",
             "Camcorders",
-            "Camera Tripods",
-            "Camera Lenses",
+            "Tripods",
+            "Lenses",
             "Drones",
             "Flashes",
             "Gimbals",
@@ -32,7 +31,6 @@ export const categories = [
             "Other Camera Accessories"
         ]
     },
-
     {
         name: "Computer Peripherals",
         subcategories: [
@@ -49,23 +47,23 @@ export const categories = [
             "Currency Detectors"
         ]
     },
-
     {
         name: "Gaming",
         subcategories: [
             "Gaming Consoles",
             "Gaming Mouse",
             "Gaming Keyboards",
-            "Gamepads & Controllers",
+            "Gamepads",
             "Games",
-            "Gaming Accessories",
-            "Gaming Combos",
-            "Gaming Mousepads",
+            "Accessory Kits",
+            "Gaming Accessories Combo",
+            "Mousepads",
             "Membership Cards",
-            "Gaming Components"
+            "Controllers",
+            "Gaming Components",
+            "Other Gaming Accessories"
         ]
     },
-
     {
         name: "Health & Personal Care",
         subcategories: [
@@ -74,16 +72,15 @@ export const categories = [
             "Hair Straighteners",
             "Hair Dryers",
             "Epilators",
-            "Glucometers & Accessories",
-            "Blood Pressure Monitors",
-            "Digital Thermometers",
+            "Glucometers",
+            "BP Monitors",
+            "Thermometers",
             "Weighing Scales",
             "Massagers",
             "Nebulizers",
             "Vaporizers"
         ]
     },
-
     {
         name: "Laptop Accessories",
         subcategories: [
@@ -94,16 +91,15 @@ export const categories = [
             "UPS",
             "USB Gadgets",
             "Security Software",
-            "Laptop Batteries",
-            "Laptop Adapters",
+            "Laptop Battery",
+            "Adapters",
             "Wireless USB Adapters",
             "Processors",
             "Other Accessories"
         ]
     },
-
     {
-        name: "Laptops & Desktops",
+        name: "Laptop & Desktop",
         subcategories: [
             "Laptops",
             "Gaming Laptops",
@@ -113,26 +109,24 @@ export const categories = [
             "Tower PCs"
         ]
     },
-
     {
         name: "Mobile Accessories",
         subcategories: [
-            "Cases & Covers",
+            "Cases",
             "Designer Cases",
-            "Screen Protectors",
-            "Camera Lens Protectors",
+            "Screen Guards",
+            "Camera Protectors",
             "Tablet Accessories",
-            "Mobile Cables",
+            "Charging Cables",
             "Power Banks",
-            "Mobile Chargers",
-            "Mobile Pouches",
+            "Chargers",
+            "Pouches",
             "Mobile Flash",
-            "Mobile Holders",
-            "Mobile USB Gadgets",
+            "Holders",
+            "USB Gadgets",
             "Accessories Combo"
         ]
     },
-
     {
         name: "Smart Home Automation",
         subcategories: [
@@ -140,36 +134,34 @@ export const categories = [
             "Smart Lights",
             "Smart Cameras",
             "Smart Switches",
-            "Smart Door Locks",
+            "Smart Locks",
             "Sensors & Alarms"
         ]
     },
-
     {
-        name: "Wearables",
+        name: "Smart Wearables",
         subcategories: [
             "Smart Watches",
-            "Fitness Trackers",
+            "Smart Bands",
             "Smart Glasses",
+            "Smart Trackers",
             "Smart Rings"
         ]
     },
-
     {
         name: "Storage",
         subcategories: [
             "Memory Cards",
-            "USB Pen Drives",
-            "External Hard Drives",
-            "Internal Hard Drives"
+            "Pendrives",
+            "External HDD",
+            "Internal HDD"
         ]
     },
-
     {
-        name: "Tablets",
+        name: "Tablet",
         subcategories: [
-            "Tablets with Calling",
-            "Tablets without Calling"
+            "With Calling",
+            "Without Calling"
         ]
     }
 ];

@@ -23,14 +23,38 @@ export default function Products() {
     const productsPerPage = 6;
 
     const [products, setProducts] = useState<any[]>([]);
+    const [availableBrands, setAvailableBrands] =
+        useState<string[]>([]);
     const [selectedSubcategory, setSelectedSubcategory] = useState("");
     const [hoveredCategory, setHoveredCategory] = useState("");
 
     useEffect(() => {
-        const query = searchParams.get("search");
+        const query =
+            searchParams.get("search");
+
+        const brand =
+            searchParams.get("brand");
+
+        const category =
+            searchParams.get("category");
+
+        const subcategory =
+            searchParams.get("subcategory");
 
         if (query) {
             setSearch(query);
+        }
+
+        if (brand) {
+            setSelectedBrands([brand]);
+        }
+
+        if (category) {
+            setSelectedCategory(category);
+        }
+
+        if (subcategory) {
+            setSelectedSubcategory(subcategory);
         }
 
         fetch("http://localhost:5000/api/products")
@@ -40,6 +64,19 @@ export default function Products() {
 
                 if (data.success) {
                     setProducts(data.products);
+                    const brands = [
+                        ...new Set(
+                            data.products
+                                .map(
+                                    (p: any) => p.brand
+                                )
+                                .filter(Boolean)
+                        )
+                    ];
+
+                    console.log("BRANDS:", brands);
+
+                    setAvailableBrands(brands);
                 }
             })
             .catch((err) => console.error(err));
@@ -158,9 +195,9 @@ export default function Products() {
 
                         {/* Categories */}
 
-<div
-  onMouseLeave={() => setHoveredCategory("")}
-  className="
+                        <div
+                            onMouseLeave={() => setHoveredCategory("")}
+                            className="
     relative
     bg-white
     rounded-3xl
@@ -170,31 +207,31 @@ export default function Products() {
     overflow-visible
     z-[9999]
   "
->
-  <div className="p-5 border-b border-slate-100">
-    <h3 className="font-black text-xl text-slate-900">
-      Categories
+                        >
+                            <div className="p-5 border-b border-slate-100">
+                                <h3 className="font-black text-xl text-slate-900">
+                                    Categories
     </h3>
 
-    <p className="text-sm text-slate-500 mt-1">
-      Hover to explore collections
+                                <p className="text-sm text-slate-500 mt-1">
+                                    Hover to explore collections
     </p>
-  </div>
+                            </div>
 
-  <div className="p-3">
-    {categories.map((cat) => (
-  <button
-    key={cat.name}
-    onMouseEnter={(e) => {
-      setHoveredCategory(cat.name);
-      setPopupTop(e.currentTarget.offsetTop);
-    }}
-    onClick={() => {
-      setSelectedCategory(cat.name);
-      setSelectedSubcategory("");
-      setCurrentPage(1);
-    }}
-    className={`
+                            <div className="p-3">
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat.name}
+                                        onMouseEnter={(e) => {
+                                            setHoveredCategory(cat.name);
+                                            setPopupTop(e.currentTarget.offsetTop);
+                                        }}
+                                        onClick={() => {
+                                            setSelectedCategory(cat.name);
+                                            setSelectedSubcategory("");
+                                            setCurrentPage(1);
+                                        }}
+                                        className={`
       group
       w-full
       flex
@@ -207,36 +244,34 @@ export default function Products() {
       font-semibold
       transition-all
       duration-300
-      ${
-        selectedCategory === cat.name || hoveredCategory === cat.name
-          ? "bg-[#4B1E78] text-white shadow-lg shadow-purple-400/30"
-          : "text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
-      }
+      ${selectedCategory === cat.name || hoveredCategory === cat.name
+                                                ? "bg-[#4B1E78] text-white shadow-lg shadow-purple-400/30"
+                                                : "text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
+                                            }
     `}
-  >
-    <span>{cat.name}</span>
+                                    >
+                                        <span>{cat.name}</span>
 
-    <span
-      className={`
+                                        <span
+                                            className={`
         transition-transform
         duration-300
-        ${
-          selectedCategory === cat.name || hoveredCategory === cat.name
-            ? "translate-x-1"
-            : "group-hover:translate-x-1"
-        }
+        ${selectedCategory === cat.name || hoveredCategory === cat.name
+                                                    ? "translate-x-1"
+                                                    : "group-hover:translate-x-1"
+                                                }
       `}
-    >
-      ›
+                                        >
+                                            ›
     </span>
-  </button>
-))}
-  </div>
+                                    </button>
+                                ))}
+                            </div>
 
-  {hoveredCategory && (
-    <div
-  style={{ top: `${popupTop}px` }}
-  className="
+                            {hoveredCategory && (
+                                <div
+                                    style={{ top: `${popupTop}px` }}
+                                    className="
     absolute
     left-[calc(100%+8px)]
     w-[320px]
@@ -252,34 +287,34 @@ export default function Products() {
         transition-all
         duration-300
       "
-    >
-      <div className="mb-4">
-        <p className="text-xs font-bold text-purple-500 tracking-wider">
-          SUBCATEGORIES
+                                >
+                                    <div className="mb-4">
+                                        <p className="text-xs font-bold text-purple-500 tracking-wider">
+                                            SUBCATEGORIES
         </p>
 
-        <h3 className="font-black text-xl text-[#4B1E78] mt-1">
-          {hoveredCategory}
-        </h3>
-      </div>
+                                        <h3 className="font-black text-xl text-[#4B1E78] mt-1">
+                                            {hoveredCategory}
+                                        </h3>
+                                    </div>
 
-      <div className="space-y-2">
-        {categories
-          .find((cat) => cat.name === hoveredCategory)
-          ?.subcategories.map((sub) => (
-            <button
-              key={sub}
-              onClick={() => {
-                if (sub === "Cases & Covers") {
-                  window.location.href = "/backcase-brands";
-                  return;
-                }
+                                    <div className="space-y-2">
+                                        {categories
+                                            .find((cat) => cat.name === hoveredCategory)
+                                            ?.subcategories.map((sub) => (
+                                                <button
+                                                    key={sub}
+                                                    onClick={() => {
+                                                        if (sub === "Cases & Covers") {
+                                                            window.location.href = "/backcase-brands";
+                                                            return;
+                                                        }
 
-                setSelectedCategory(hoveredCategory);
-                setSelectedSubcategory(sub);
-                setCurrentPage(1);
-              }}
-              className={`
+                                                        setSelectedCategory(hoveredCategory);
+                                                        setSelectedSubcategory(sub);
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    className={`
                 group
                 w-full
                 flex
@@ -293,23 +328,22 @@ export default function Products() {
                 font-semibold
                 transition-all
                 duration-300
-                ${
-                  selectedSubcategory === sub
-                    ? "bg-[#4B1E78] text-white shadow-md"
-                    : "bg-slate-50 text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
-                }
+                ${selectedSubcategory === sub
+                                                            ? "bg-[#4B1E78] text-white shadow-md"
+                                                            : "bg-slate-50 text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
+                                                        }
               `}
-            >
-              <span>{sub}</span>
-              <span className="group-hover:translate-x-1 transition-transform">
-                →
+                                                >
+                                                    <span>{sub}</span>
+                                                    <span className="group-hover:translate-x-1 transition-transform">
+                                                        →
               </span>
-            </button>
-          ))}
-      </div>
-    </div>
-  )}
-</div>
+                                                </button>
+                                            ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Brands */}
 
@@ -318,43 +352,56 @@ export default function Products() {
                                 Brands
                             </h3>
 
-                            {["Apple", "Samsung", "Sony", "Dell"].map(
-                                (brand) => (
+                            <div className="mt-4 space-y-2">
+
+                                {availableBrands.map((brand) => (
+
                                     <label
                                         key={brand}
-                                        className="block mb-2"
+                                        className="flex items-center gap-2 cursor-pointer"
                                     >
+
                                         <input
                                             type="checkbox"
                                             checked={selectedBrands.includes(
                                                 brand
                                             )}
-                                            onChange={(e) => {
+                                            onChange={() => {
+
                                                 if (
-                                                    e.target.checked
+                                                    selectedBrands.includes(
+                                                        brand
+                                                    )
                                                 ) {
+
+                                                    setSelectedBrands(
+                                                        selectedBrands.filter(
+                                                            b =>
+                                                                b !== brand
+                                                        )
+                                                    );
+
+                                                } else {
+
                                                     setSelectedBrands([
                                                         ...selectedBrands,
                                                         brand,
                                                     ]);
-                                                } else {
-                                                    setSelectedBrands(
-                                                        selectedBrands.filter(
-                                                            (b) =>
-                                                                b !==
-                                                                brand
-                                                        )
-                                                    );
+
                                                 }
+
                                             }}
                                         />
 
-                                        <span className="ml-2">
+                                        <span>
                                             {brand}
                                         </span>
+
                                     </label>
-                                )
-                            )}
+
+                                ))}
+
+                            </div>
                         </div>
 
                         {/* Clear Filters */}

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Sparkles, ArrowRight } from "lucide-react";
+
 
 import apple from "../assets/apple.png";
 import samsung from "../assets/samsung.png";
@@ -8,16 +10,44 @@ import dell from "../assets/dell.png";
 import hp from "../assets/hp.png";
 import asus from "../assets/asus.png";
 
-const brands = [
-  { name: "Apple", image: apple },
-  { name: "Samsung", image: samsung },
-  { name: "Sony", image: sony },
-  { name: "Dell", image: dell },
-  { name: "HP", image: hp },
-  { name: "Asus", image: asus },
-];
+
 
 export default function Brands() {
+  const [brands, setBrands] =
+    useState<any[]>([]);
+
+  useEffect(() => {
+
+    fetch(
+      "http://localhost:5000/api/products"
+    )
+      .then(res => res.json())
+      .then(data => {
+
+        if (!data.success) return;
+
+        const uniqueBrands =
+          [...new Set(
+            data.products
+              .map((p: any) => p.brand)
+              .filter(Boolean)
+          )];
+
+        setBrands(
+          uniqueBrands.map(
+            (brand: string) => ({
+              name: brand,
+              image: apple
+            })
+          )
+        );
+
+      })
+      .catch(console.error);
+
+  }, []);
+
+
   return (
     <section className="pt-4 pb-20 bg-gradient-to-b from-white via-[#faf7ff] to-white">
       <div className="max-w-7xl mx-auto px-6">
@@ -39,7 +69,7 @@ export default function Brands() {
           </div>
 
           <Link
-            to="/products"
+            to="/brands"
             className="
               hidden md:inline-flex
               items-center

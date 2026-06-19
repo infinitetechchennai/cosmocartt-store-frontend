@@ -59,7 +59,21 @@ export default function App() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
+
           setProducts(data.products);
+
+          const brands = [
+            ...new Set(
+              data.products
+                .map(
+                  (p: any) => p.brand
+                )
+                .filter(Boolean)
+            )
+          ] as string[];
+
+
+
         }
       });
   }, []);

@@ -35,6 +35,8 @@ export interface Product {
   name: string;
   brand: string;
 
+  model: string;
+
   category: string;
   subcategory: string;
   description?: string;
