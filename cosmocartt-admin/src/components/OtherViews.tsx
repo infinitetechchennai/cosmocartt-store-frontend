@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { 
-  TrendingUp, 
-  MapPin, 
-  Truck, 
-  RefreshCw, 
-  Shuffle, 
-  Megaphone, 
-  FileText,  
-  CheckCircle2, 
-  User, 
-  Eye, 
-  Bookmark, 
-  Mail, 
+import { useState, useEffect } from "react";
+import {
+  TrendingUp,
+  MapPin,
+  Truck,
+  RefreshCw,
+  Shuffle,
+  Megaphone,
+  FileText,
+  CheckCircle2,
+  User,
+  Eye,
+  Bookmark,
+  Mail,
   Search,
   ExternalLink,
   ChevronRight,
@@ -24,6 +24,76 @@ interface OtherViewsProps {
 
 export default function OtherViews({ tab }: OtherViewsProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [refundOrders, setRefundOrders] = useState<any[]>([]);
+  const [refundLoading, setRefundLoading] = useState(false);
+
+  useEffect(() => {
+    if (tab !== "refunds") return;
+
+    const loadRefunds = async () => {
+      setRefundLoading(true);
+      try {
+        const res = await fetch("http://localhost:5000/api/orders");
+        const data = await res.json();
+
+        const ordersArray = Array.isArray(data)
+          ? data
+          : data.orders || data.data || [];
+
+        const withRefundActivity = ordersArray.filter(
+          (order: any) =>
+            order.refundStatus && order.refundStatus !== "Not Requested"
+        );
+
+        setRefundOrders(withRefundActivity);
+      } catch (error) {
+        console.error("Refunds loading error:", error);
+      } finally {
+        setRefundLoading(false);
+      }
+    };
+
+    loadRefunds();
+  }, [tab]);
+
+  const decideRefund = async (
+    orderId: string,
+    decision: "Approved" | "Rejected"
+  ) => {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/orders/${orderId}/refund-decision`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            decision,
+            note:
+              decision === "Approved"
+                ? "Approved by admin"
+                : "Rejected by admin"
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) {
+        alert(data.message || "Could not update refund status");
+        return;
+      }
+
+      setRefundOrders(
+        refundOrders.map((order) =>
+          order._id === orderId ? data.order : order
+        )
+      );
+    } catch (error) {
+      console.error("Refund decision failed:", error);
+    }
+  };
 
   if (tab === "reports") {
     return (
@@ -34,7 +104,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-zinc-900 flex items-center gap-2"><TrendingUp className="text-[#e31e24] w-5 h-5"/> GTV Velocity Reports</h3>
+            <h3 className="font-bold text-zinc-900 flex items-center gap-2"><TrendingUp className="text-[#e31e24] w-5 h-5" /> GTV Velocity Reports</h3>
             <p className="text-sm text-zinc-500">Includes wholesale versus retail split margins, quarterly estimates, and live order conversion rates.</p>
             <button className="bg-black text-white py-2 px-4 rounded-xl text-xs font-semibold hover:bg-zinc-800 transition-colors">Generate PDF Statement</button>
           </div>
@@ -77,7 +147,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
               <div key={d.id} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 bg-zinc-100 rounded-xl flex items-center justify-center border border-zinc-200/50">
-                    {isOutstation ? <Truck className="w-5 h-5 text-zinc-600"/> : <MapPin className="w-5 h-5 text-[#e31e24]"/>}
+                    {isOutstation ? <Truck className="w-5 h-5 text-zinc-600" /> : <MapPin className="w-5 h-5 text-[#e31e24]" />}
                   </div>
                   <div className="flex flex-col">
                     <span className="font-semibold text-zinc-900">{d.destination}</span>
@@ -89,11 +159,10 @@ export default function OtherViews({ tab }: OtherViewsProps) {
                     <span className="text-xs font-semibold text-zinc-400 block uppercase">Estimated ETA</span>
                     <span className="text-xs font-bold text-zinc-800">{d.eta}</span>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                    d.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                    d.status === "In Transit" ? "bg-blue-50 text-blue-700 border-blue-200" :
-                    "bg-amber-50 text-amber-700 border-amber-200"
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${d.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                      d.status === "In Transit" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                        "bg-amber-50 text-amber-700 border-amber-200"
+                    }`}>
                     {d.status}
                   </span>
                 </div>
@@ -105,8 +174,85 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     );
   }
 
-  if (tab === "refunds" || tab === "exchanges") {
-    const isRefund = tab === "refunds";
+  if (tab === "refunds") {
+    return (
+      <div className="space-y-6 text-left">
+        <div>
+          <h1 className="text-2xl font-bold text-zinc-950">Refund Requests</h1>
+          <p className="text-sm text-zinc-500 mt-1">
+            Review customer refund requests and approve or reject them.
+          </p>
+        </div>
+
+        <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
+          <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 text-zinc-500" />
+            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">Refund Requests</span>
+          </div>
+
+          <div className="divide-y divide-zinc-100">
+            {refundLoading && (
+              <div className="p-8 text-center text-zinc-400 text-sm">Loading refund requests...</div>
+            )}
+
+            {!refundLoading && refundOrders.length === 0 && (
+              <div className="p-8 text-center text-zinc-400 text-sm">No refund requests yet.</div>
+            )}
+
+            {!refundLoading && refundOrders.map((order) => (
+              <div key={order._id} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-zinc-900">{order.customerName}</span>
+                    <span className="text-xs text-zinc-400 font-mono">({order.orderNumber})</span>
+                  </div>
+                  <p className="text-xs text-zinc-500 mt-0.5">Reason: {order.refundReason || "-"}</p>
+                  {order.refundDecisionNote && (
+                    <p className="text-xs text-zinc-400 mt-0.5">Admin note: {order.refundDecisionNote}</p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <span className="text-xs font-semibold text-zinc-400 block uppercase">Order Total</span>
+                    <span className="text-sm font-bold text-zinc-900 font-mono">
+                      {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(order.totalAmount || 0)}
+                    </span>
+                  </div>
+
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${order.refundStatus === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                    order.refundStatus === "Rejected" ? "bg-red-50 text-red-700 border-red-200" :
+                      "bg-amber-50 text-amber-700 border-amber-200"
+                    }`}>
+                    {order.refundStatus}
+                  </span>
+
+                  {order.refundStatus === "Requested" && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => decideRefund(order._id, "Approved")}
+                        className="p-1 px-2.5 rounded-lg border border-emerald-100 hover:bg-emerald-50 text-emerald-700 text-xs font-semibold transition-all"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => decideRefund(order._id, "Rejected")}
+                        className="p-1 px-2.5 rounded-lg border border-red-100 hover:bg-red-50 text-red-600 text-xs font-semibold transition-all"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tab === "exchanges") {
     const transactions = [
       { id: "RET-401", orderId: "ORD-2026-005", customer: "Anjali Gupta", reason: "Wrong Size Dispatched", amount: "₹4,500", status: "Approved" },
       { id: "RET-402", orderId: "ORD-2026-002", customer: "Vikram Singh", reason: "Item Defect", amount: "₹2,499", status: "Initiated" }
@@ -115,16 +261,16 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     return (
       <div className="space-y-6 text-left">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-950">{isRefund ? "Refund Requests" : "Exchanges Console"}</h1>
+          <h1 className="text-2xl font-bold text-zinc-950">Exchanges Console</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            {isRefund ? "Issue money back to banking partners, check credit memos, and handle dispute audits." : "Log reverse pickups, process garment size swaps, and coordinate warehouse reissue batches."}
+            Log reverse pickups, process garment size swaps, and coordinate warehouse reissue batches.
           </p>
         </div>
 
         <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center gap-2">
-            {isRefund ? <RefreshCw className="w-4 h-4 text-zinc-500"/> : <Shuffle className="w-4 h-4 text-zinc-500"/>}
-            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">{isRefund ? "Settled Return Clearances" : "Swap Queue"}</span>
+            <Shuffle className="w-4 h-4 text-zinc-500" />
+            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">Swap Queue</span>
           </div>
           <div className="divide-y divide-zinc-100">
             {transactions.map((t) => (
@@ -138,12 +284,11 @@ export default function OtherViews({ tab }: OtherViewsProps) {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <span className="text-xs font-semibold text-zinc-400 block uppercase">{isRefund ? "GTV Retracted" : "Item Value"}</span>
+                    <span className="text-xs font-semibold text-zinc-400 block uppercase">Item Value</span>
                     <span className="text-sm font-bold text-zinc-900 font-mono">{t.amount}</span>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                    t.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${t.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"
+                    }`}>
                     {t.status}
                   </span>
                 </div>
@@ -171,9 +316,8 @@ export default function OtherViews({ tab }: OtherViewsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {campaigns.map((c) => (
             <div key={c.id} className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs relative overflow-hidden flex flex-col justify-between">
-              <span className={`absolute top-4 right-4 text-[10px] font-bold uppercase border rounded px-2 py-0.5 ${
-                c.status === "Active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-zinc-50 text-zinc-500 border-zinc-200"
-              }`}>
+              <span className={`absolute top-4 right-4 text-[10px] font-bold uppercase border rounded px-2 py-0.5 ${c.status === "Active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-zinc-50 text-zinc-500 border-zinc-200"
+                }`}>
                 {c.status}
               </span>
 
@@ -213,7 +357,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
           <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">Active CMS Blobs</span>
             <button className="bg-black hover:bg-zinc-900 text-white rounded-lg p-1.5 px-3 text-xs font-bold inline-flex items-center gap-1.5">
-              <Plus className="w-3.5 h-3.5"/> Create Entry
+              <Plus className="w-3.5 h-3.5" /> Create Entry
             </button>
           </div>
           <div className="divide-y divide-zinc-100">

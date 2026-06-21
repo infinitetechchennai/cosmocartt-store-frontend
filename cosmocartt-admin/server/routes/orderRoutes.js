@@ -379,6 +379,91 @@ router.put(
     requestRefund
 );
 
+export const decideRefund = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            decision,
+            note
+        } = req.body;
+
+        if (
+            decision !== "Approved" &&
+            decision !== "Rejected"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Decision must be Approved or Rejected"
+            });
+
+        }
+
+        const order =
+            await Order.findById(
+                req.params.id
+            );
+
+        if (!order) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+
+        if (
+            order.refundStatus !== "Requested"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    `Cannot decide refund — current status is "${order.refundStatus}"`
+            });
+
+        }
+
+        order.refundStatus =
+            decision;
+
+        order.refundDecisionNote =
+            note || "";
+
+        order.refundProcessedAt =
+            new Date();
+
+        await order.save();
+
+        res.json({
+            success: true,
+            order
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message:
+                error.message
+        });
+
+    }
+
+};
+
+
+router.put(
+    "/:id/refund-decision",
+    decideRefund
+);
+
 router.get(
     "/test-refund/:id",
     async (req, res) => {

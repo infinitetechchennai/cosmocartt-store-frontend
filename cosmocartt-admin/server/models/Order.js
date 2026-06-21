@@ -118,6 +118,11 @@ const orderSchema = new mongoose.Schema(
 
         refundProcessedAt: Date,
 
+        refundDecisionNote: {
+            type: String,
+            default: ""
+        },
+
         trackingTimeline: [
             {
                 status: String,
