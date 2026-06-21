@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
     getDisplayPrice
@@ -27,6 +26,18 @@ export default function ProductDetails() {
     const [quantity, setQuantity] = useState(1);
 
     const [product, setProduct] = useState<any>(null);
+
+    const [selectedImage, setSelectedImage] =
+        useState("");
+
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [reviewLoading, setReviewLoading] = useState(false);
+    const [averageRating, setAverageRating] = useState(0);
+    const [reviewCount, setReviewCount] = useState(0);
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState("");
+    const [submittingReview, setSubmittingReview] = useState(false);
+
     const displayPrice =
         product
             ? getDisplayPrice(
@@ -51,8 +62,9 @@ export default function ProductDetails() {
             )
             : 0;
 
-    const [selectedImage, setSelectedImage] =
-        useState("");
+    const userHasReviewed = user
+        ? reviews.some((r) => r.userId === user._id)
+        : false;
 
     useEffect(() => {
 
@@ -74,6 +86,172 @@ export default function ProductDetails() {
             .catch((err) => console.error(err));
     }, [id]);
 
+    useEffect(() => {
+
+        const loadReviews = async () => {
+
+            setReviewLoading(true);
+
+            try {
+
+                const res = await fetch(
+                    `http://localhost:5000/api/reviews/product/${id}`
+                );
+
+                const data = await res.json();
+
+                if (data.success) {
+                    setReviews(data.reviews);
+                    setAverageRating(data.averageRating);
+                    setReviewCount(data.reviewCount);
+                }
+
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setReviewLoading(false);
+            }
+
+        };
+
+        loadReviews();
+
+    }, [id]);
+
+    useEffect(() => {
+
+        if (!product) return;
+
+        document.title = `${product.name} | CosmoCartt`;
+
+        let metaDescription =
+            document.querySelector('meta[name="description"]');
+
+        if (!metaDescription) {
+            metaDescription = document.createElement("meta");
+            metaDescription.setAttribute("name", "description");
+            document.head.appendChild(metaDescription);
+        }
+
+        metaDescription.setAttribute(
+            "content",
+            product.description
+                ? product.description.slice(0, 160)
+                : `Buy ${product.name} by ${product.brand} online at CosmoCartt.`
+        );
+
+        let structuredData =
+            document.getElementById("product-structured-data");
+
+        if (!structuredData) {
+            structuredData = document.createElement("script");
+            structuredData.id = "product-structured-data";
+            (structuredData as HTMLScriptElement).type = "application/ld+json";
+            document.head.appendChild(structuredData);
+        }
+
+        structuredData.textContent = JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            name: product.name,
+            image: product.images?.map(
+                (img: string) => `http://localhost:5000${img}`
+            ),
+            description: product.description || product.name,
+            brand: {
+                "@type": "Brand",
+                name: product.brand
+            },
+            offers: {
+                "@type": "Offer",
+                url: window.location.href,
+                priceCurrency: "INR",
+                price: displayPrice,
+                availability:
+                    product.stock > 0
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock"
+            },
+            ...(reviewCount > 0
+                ? {
+                    aggregateRating: {
+                        "@type": "AggregateRating",
+                        ratingValue: averageRating,
+                        reviewCount: reviewCount
+                    }
+                }
+                : {})
+        });
+
+    }, [product, averageRating, reviewCount, displayPrice]);
+
+    const submitReview = async () => {
+
+        if (!user) {
+            toast.error("Please login to write a review");
+            return;
+        }
+
+        setSubmittingReview(true);
+
+        try {
+
+            const res = await fetch(
+                "http://localhost:5000/api/reviews",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        productId: id,
+                        userId: user._id,
+                        customerName:
+                            user.name ||
+                            user.contactPerson ||
+                            user.businessName ||
+                            "Customer",
+                        rating: reviewRating,
+                        comment: reviewComment
+                    })
+                }
+            );
+
+            const data = await res.json();
+
+            if (!data.success) {
+                toast.error(data.message || "Could not submit review");
+                return;
+            }
+
+            const newAverage =
+                Math.round(
+                    (
+                        (
+                            (averageRating * reviewCount) +
+                            reviewRating
+                        ) /
+                        (reviewCount + 1)
+                    ) * 10
+                ) / 10;
+
+            setReviews([data.review, ...reviews]);
+            setReviewCount(reviewCount + 1);
+            setAverageRating(newAverage);
+            setReviewComment("");
+            setReviewRating(5);
+
+            toast.success("Review submitted!");
+
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong");
+        } finally {
+            setSubmittingReview(false);
+        }
+
+    };
+
     if (!product) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -87,6 +265,40 @@ export default function ProductDetails() {
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-6 py-10">
+
+                {/* BREADCRUMBS */}
+
+                <nav className="text-sm text-zinc-500 mb-6" aria-label="Breadcrumb">
+                    <ol className="flex items-center gap-2 flex-wrap">
+                        <li>
+                            <Link to="/" className="hover:text-[#4B1E78]">
+                                Home
+                            </Link>
+                        </li>
+                        <li>/</li>
+                        <li>
+                            <Link
+                                to={`/products?category=${encodeURIComponent(product.category)}`}
+                                className="hover:text-[#4B1E78]"
+                            >
+                                {product.category}
+                            </Link>
+                        </li>
+                        <li>/</li>
+                        <li>
+                            <Link
+                                to={`/products?category=${encodeURIComponent(product.category)}&subcategory=${encodeURIComponent(product.subcategory)}`}
+                                className="hover:text-[#4B1E78]"
+                            >
+                                {product.subcategory}
+                            </Link>
+                        </li>
+                        <li>/</li>
+                        <li className="text-zinc-900 font-medium truncate max-w-xs">
+                            {product.name}
+                        </li>
+                    </ol>
+                </nav>
 
                 <div className="grid lg:grid-cols-2 gap-12">
 
@@ -104,24 +316,23 @@ export default function ProductDetails() {
 
                         </div>
 
-
-
                         <div className="flex gap-2 mt-4">
-                            {product.images?.map((img) => (
+                            {product.images?.map((img: string, index: number) => (
 
                                 <img
+                                    key={index}
                                     src={`http://localhost:5000${img}`}
-
-
-
+                                    alt={`${product.name} view ${index + 1}`}
                                     onClick={() =>
                                         setSelectedImage(img)
                                     }
-                                    className="w-20 h-20 object-cover cursor-pointer border"
+                                    className={`w-20 h-20 object-cover cursor-pointer border rounded-lg ${selectedImage === img
+                                        ? "border-[#4B1E78] border-2"
+                                        : "border-zinc-200"
+                                        }`}
                                 />
                             ))}
                         </div>
-
 
                     </div>
 
@@ -140,12 +351,12 @@ export default function ProductDetails() {
                         <div className="flex items-center gap-3 mt-4">
 
                             <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                                ★ 4.8
-              </span>
+                                ★ {reviewCount > 0 ? averageRating : "New"}
+                            </span>
 
                             <span className="text-zinc-500">
-                                326 Reviews
-              </span>
+                                {reviewCount} {reviewCount === 1 ? "Review" : "Reviews"}
+                            </span>
 
                         </div>
 
@@ -161,7 +372,7 @@ export default function ProductDetails() {
 
                             <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
                                 {discount}% OFF
-              </span>
+                            </span>
 
                         </div>
 
@@ -194,15 +405,13 @@ export default function ProductDetails() {
                         <div className="mt-8">
 
                             <h3 className="font-semibold text-lg mb-3">
-                                {product.description}
+                                Product Description
                             </h3>
 
                             <p className="text-zinc-600 leading-7">
-                                Product ID: {id}.</p>
-                            <p >Premium flagship smartphone
-                            with advanced camera system, titanium build,
-                            powerful processor and all-day battery life.
-              </p>
+                                {product.description ||
+                                    "No description available for this product yet."}
+                            </p>
 
                         </div>
 
@@ -212,7 +421,7 @@ export default function ProductDetails() {
 
                             <h3 className="font-semibold mb-3">
                                 Quantity
-              </h3>
+                            </h3>
 
                             <div className="flex items-center gap-3">
 
@@ -225,7 +434,7 @@ export default function ProductDetails() {
                                     className="w-10 h-10 border rounded-lg"
                                 >
                                     -
-</button>
+                                </button>
 
                                 <span className="font-semibold">
                                     {quantity}
@@ -246,7 +455,7 @@ export default function ProductDetails() {
                                     className="w-10 h-10 border rounded-lg"
                                 >
                                     +
-</button>
+                                </button>
 
                             </div>
 
@@ -273,7 +482,7 @@ export default function ProductDetails() {
                                 className="bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-xl font-semibold"
                             >
                                 Add To Cart
-</button>
+                            </button>
 
                             <button
                                 disabled={product.stock <= 0}
@@ -292,7 +501,7 @@ export default function ProductDetails() {
                                 className="bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold disabled:bg-gray-300"
                             >
                                 Buy Now
-</button>
+                            </button>
 
                         </div>
 
@@ -300,41 +509,138 @@ export default function ProductDetails() {
 
                 </div>
 
-                {/* SPECIFICATIONS */}
+                {/* SPECIFICATIONS — only shows if real data exists */}
+
+                {product.specifications && product.specifications.length > 0 && (
+                    <div className="bg-white rounded-3xl p-8 shadow-sm mt-12">
+
+                        <h2 className="text-2xl font-bold mb-6">
+                            Specifications
+                        </h2>
+
+                        <div className="grid md:grid-cols-2 gap-5">
+                            {product.specifications.map((spec: any, index: number) => (
+                                <div key={index}>
+                                    <strong>{spec.key}:</strong> {spec.value}
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
+                )}
+
+                {/* REVIEWS */}
 
                 <div className="bg-white rounded-3xl p-8 shadow-sm mt-12">
 
                     <h2 className="text-2xl font-bold mb-6">
-                        Specifications
-          </h2>
+                        Customer Reviews {reviewCount > 0 && `(${reviewCount})`}
+                    </h2>
 
-                    <div className="grid md:grid-cols-2 gap-5">
+                    {user ? (
+                        !userHasReviewed ? (
+                            <div className="border border-zinc-200 rounded-2xl p-6 mb-8">
 
-                        <div>
-                            <strong>Display:</strong> 6.9" OLED
-            </div>
+                                <h3 className="font-semibold mb-3">
+                                    Write a Review
+                                </h3>
 
-                        <div>
-                            <strong>Processor:</strong> A18 Pro
-            </div>
+                                <div className="flex items-center gap-2 mb-3">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            onClick={() => setReviewRating(star)}
+                                            className={`text-2xl ${star <= reviewRating
+                                                ? "text-yellow-400"
+                                                : "text-zinc-300"
+                                                }`}
+                                        >
+                                            ★
+                                        </button>
+                                    ))}
+                                </div>
 
-                        <div>
-                            <strong>Storage:</strong> 256GB
-            </div>
+                                <textarea
+                                    value={reviewComment}
+                                    onChange={(e) => setReviewComment(e.target.value)}
+                                    placeholder="Share your experience with this product..."
+                                    className="w-full border rounded-xl p-3 text-sm"
+                                    rows={3}
+                                />
 
-                        <div>
-                            <strong>RAM:</strong> 8GB
-            </div>
+                                <button
+                                    onClick={submitReview}
+                                    disabled={submittingReview}
+                                    className="mt-3 bg-[#4B1E78] hover:bg-[#39155d] text-white py-2 px-6 rounded-xl font-semibold disabled:opacity-50"
+                                >
+                                    {submittingReview ? "Submitting..." : "Submit Review"}
+                                </button>
 
-                        <div>
-                            <strong>Camera:</strong> 48MP Triple Camera
-            </div>
+                                <p className="text-xs text-zinc-400 mt-2">
+                                    Only customers who have purchased this product can leave a review.
+                                </p>
 
-                        <div>
-                            <strong>Battery:</strong> 5000mAh
-            </div>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-zinc-500 mb-8">
+                                You've already reviewed this product.
+                            </p>
+                        )
+                    ) : (
+                        <p className="text-sm text-zinc-500 mb-8">
+                            <Link to="/login" className="text-[#4B1E78] font-semibold hover:underline">
+                                Login
+                            </Link>{" "}
+                            to write a review.
+                        </p>
+                    )}
 
-                    </div>
+                    {reviewLoading && (
+                        <p className="text-sm text-zinc-400">Loading reviews...</p>
+                    )}
+
+                    {!reviewLoading && reviews.length === 0 && (
+                        <p className="text-sm text-zinc-400">
+                            No reviews yet. Be the first to review this product.
+                        </p>
+                    )}
+
+                    {!reviewLoading && reviews.length > 0 && (
+                        <div className="space-y-6 divide-y divide-zinc-100">
+                            {reviews.map((review) => (
+                                <div key={review._id} className="pt-6 first:pt-0">
+
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-yellow-400">
+                                            {"★".repeat(review.rating)}
+                                            <span className="text-zinc-200">
+                                                {"★".repeat(5 - review.rating)}
+                                            </span>
+                                        </span>
+                                        <span className="font-semibold text-zinc-900">
+                                            {review.customerName}
+                                        </span>
+                                    </div>
+
+                                    {review.comment && (
+                                        <p className="text-zinc-600 mt-2 leading-6">
+                                            {review.comment}
+                                        </p>
+                                    )}
+
+                                    <p className="text-xs text-zinc-400 mt-2">
+                                        {new Date(review.createdAt).toLocaleDateString("en-IN", {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric"
+                                        })}
+                                    </p>
+
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                 </div>
 

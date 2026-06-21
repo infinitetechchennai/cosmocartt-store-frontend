@@ -13,6 +13,8 @@ import shiprocketRoutes
   from "./routes/shiprocketRoutes.js";
 import invoiceRoutes
   from "./routes/invoiceRoutes.js";
+import reviewRoutes
+  from "./routes/reviewRoutes.js";
 
 dotenv.config();
 
@@ -47,6 +49,11 @@ app.use("/api/customers", customerRoutes);
 app.use(
   "/api/invoice",
   invoiceRoutes
+);
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
 );
 
 console.log("MONGO_URI =", process.env.MONGO_URI);

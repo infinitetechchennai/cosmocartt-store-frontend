@@ -102,6 +102,16 @@ const productSchema = new mongoose.Schema(
             ],
             default: "Approved",
         },
+
+        specifications: {
+            type: [
+                {
+                    key: String,
+                    value: String
+                }
+            ],
+            default: []
+        },
     },
     {
         timestamps: true,
