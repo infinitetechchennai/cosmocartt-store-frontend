@@ -4,6 +4,53 @@ import { Readable } from "stream";
 import { Parser } from "json2csv";
 import fs from "fs";
 
+const generateSlug = (text) => {
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+};
+
+const generateUniqueSlug = async (
+    name,
+    existingId = null
+) => {
+
+    let baseSlug =
+        generateSlug(name);
+
+    let slug =
+        baseSlug;
+
+    let count =
+        1;
+
+    while (
+        await Product.findOne({
+            slug,
+            ...(existingId
+                ? {
+                    _id: {
+                        $ne: existingId
+                    }
+                }
+                : {})
+        })
+    ) {
+
+        slug =
+            `${baseSlug}-${count}`;
+
+        count++;
+
+    }
+
+    return slug;
+
+};
+
 export const createProduct = async (
     req,
     res
@@ -17,10 +64,17 @@ export const createProduct = async (
                     `/uploads/products/${file.filename}`
             ) || [];
 
+        const slug =
+            await generateUniqueSlug(
+                req.body.name
+            );
+
         const product =
             await Product.create({
 
                 ...req.body,
+
+                slug,
 
                 images: imagePaths,
 
@@ -84,6 +138,43 @@ export const getProductById = async (req, res) => {
     }
 };
 
+export const getProductBySlug = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const product =
+            await Product.findOne({
+                slug: req.params.slug
+            });
+
+        if (!product) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+
+        }
+
+        res.status(200).json({
+            success: true,
+            product,
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+
+};
+
 export const deleteProduct = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -111,9 +202,24 @@ export const deleteProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
+
+        const updateData = {
+            ...req.body
+        };
+
+        if (req.body.name) {
+
+            updateData.slug =
+                await generateUniqueSlug(
+                    req.body.name,
+                    req.params.id
+                );
+
+        }
+
         const product = await Product.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updateData,
             {
                 new: true,
             }
@@ -192,8 +298,14 @@ export const importProductsCSV = async (req, res) => {
                         continue;
                     }
 
+                    const slug =
+                        await generateUniqueSlug(
+                            item.name
+                        );
+
                     await Product.create({
                         name: item.name,
+                        slug,
                         brand: item.brand,
                         model: item.model || "",
                         category: item.category,

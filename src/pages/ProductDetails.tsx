@@ -18,17 +18,15 @@ export default function ProductDetails() {
     const { id } = useParams();
 
     const {
-        addToCart,
-        buyNow
+        addToCart
     } = useCart();
+
     const navigate = useNavigate();
 
     const [quantity, setQuantity] = useState(1);
-
     const [product, setProduct] = useState<any>(null);
-
-    const [selectedImage, setSelectedImage] =
-        useState("");
+    const [selectedImage, setSelectedImage] = useState("");
+    const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
     const [reviews, setReviews] = useState<any[]>([]);
     const [reviewLoading, setReviewLoading] = useState(false);
@@ -50,7 +48,7 @@ export default function ProductDetails() {
         product?.retailPrice || 0;
 
     const discount =
-        retailPrice
+        retailPrice && displayPrice < retailPrice
             ? Math.round(
                 (
                     (
@@ -66,12 +64,43 @@ export default function ProductDetails() {
         ? reviews.some((r) => r.userId === user._id)
         : false;
 
+    const ratingCounts =
+        [5, 4, 3, 2, 1].map((rating) => {
+
+            const count =
+                reviews.filter((review) => review.rating === rating).length;
+
+            const percentage =
+                reviewCount > 0
+                    ? Math.round((count / reviewCount) * 100)
+                    : 0;
+
+            return {
+                rating,
+                count,
+                percentage
+            };
+
+        });
+
     useEffect(() => {
 
         window.scrollTo(0, 0);
-        fetch(`http://localhost:5000/api/products/${id}`)
+
+        const isMongoId =
+            /^[0-9a-fA-F]{24}$/.test(
+                id || ""
+            );
+
+        const productUrl =
+            isMongoId
+                ? `http://localhost:5000/api/products/${id}`
+                : `http://localhost:5000/api/products/slug/${id}`;
+
+        fetch(productUrl)
             .then((res) => res.json())
             .then((data) => {
+
                 if (data.success) {
 
                     setProduct(data.product);
@@ -81,9 +110,12 @@ export default function ProductDetails() {
                     );
 
                     setQuantity(1);
+
                 }
+
             })
             .catch((err) => console.error(err));
+
     }, [id]);
 
     useEffect(() => {
@@ -94,22 +126,30 @@ export default function ProductDetails() {
 
             try {
 
-                const res = await fetch(
-                    `http://localhost:5000/api/reviews/product/${id}`
-                );
+                const res =
+                    await fetch(
+                        `http://localhost:5000/api/reviews/product/${id}`
+                    );
 
-                const data = await res.json();
+                const data =
+                    await res.json();
 
                 if (data.success) {
+
                     setReviews(data.reviews);
                     setAverageRating(data.averageRating);
                     setReviewCount(data.reviewCount);
+
                 }
 
             } catch (err) {
+
                 console.error(err);
+
             } finally {
+
                 setReviewLoading(false);
+
             }
 
         };
@@ -120,122 +160,250 @@ export default function ProductDetails() {
 
     useEffect(() => {
 
+        const loadRelatedProducts = async () => {
+
+            try {
+
+                const res =
+                    await fetch(
+                        `http://localhost:5000/api/products/related/${product?._id || id}`
+                    );
+
+                const data =
+                    await res.json();
+
+                if (data.success) {
+
+                    setRelatedProducts(data.products || []);
+
+                }
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
+
+        };
+
+        loadRelatedProducts();
+
+    }, [id]);
+
+    useEffect(() => {
+
+        const loadSeo = async () => {
+
+            if (!product) return;
+
+            try {
+
+                const res =
+                    await fetch(
+                        `http://localhost:5000/api/products/seo/${product?._id || id}`
+                    );
+
+                const data =
+                    await res.json();
+
+                if (!data.success) return;
+
+                document.title =
+                    data.seo.title;
+
+                let metaDescription =
+                    document.querySelector('meta[name="description"]');
+
+                if (!metaDescription) {
+
+                    metaDescription =
+                        document.createElement("meta");
+
+                    metaDescription.setAttribute(
+                        "name",
+                        "description"
+                    );
+
+                    document.head.appendChild(metaDescription);
+
+                }
+
+                metaDescription.setAttribute(
+                    "content",
+                    data.seo.description.slice(0, 160)
+                );
+
+                let canonical =
+                    document.querySelector('link[rel="canonical"]');
+
+                if (!canonical) {
+
+                    canonical =
+                        document.createElement("link");
+
+                    canonical.setAttribute(
+                        "rel",
+                        "canonical"
+                    );
+
+                    document.head.appendChild(canonical);
+
+                }
+
+                canonical.setAttribute(
+                    "href",
+                    data.seo.canonicalUrl
+                );
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
+
+        };
+
+        loadSeo();
+
+    }, [product, id]);
+
+    useEffect(() => {
+
         if (!product) return;
-
-        document.title = `${product.name} | CosmoCartt`;
-
-        let metaDescription =
-            document.querySelector('meta[name="description"]');
-
-        if (!metaDescription) {
-            metaDescription = document.createElement("meta");
-            metaDescription.setAttribute("name", "description");
-            document.head.appendChild(metaDescription);
-        }
-
-        metaDescription.setAttribute(
-            "content",
-            product.description
-                ? product.description.slice(0, 160)
-                : `Buy ${product.name} by ${product.brand} online at CosmoCartt.`
-        );
 
         let structuredData =
             document.getElementById("product-structured-data");
 
         if (!structuredData) {
-            structuredData = document.createElement("script");
-            structuredData.id = "product-structured-data";
-            (structuredData as HTMLScriptElement).type = "application/ld+json";
+
+            structuredData =
+                document.createElement("script");
+
+            structuredData.id =
+                "product-structured-data";
+
+            (structuredData as HTMLScriptElement).type =
+                "application/ld+json";
+
             document.head.appendChild(structuredData);
+
         }
 
-        structuredData.textContent = JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            name: product.name,
-            image: product.images?.map(
-                (img: string) => `http://localhost:5000${img}`
-            ),
-            description: product.description || product.name,
-            brand: {
-                "@type": "Brand",
-                name: product.brand
-            },
-            offers: {
-                "@type": "Offer",
-                url: window.location.href,
-                priceCurrency: "INR",
-                price: displayPrice,
-                availability:
-                    product.stock > 0
-                        ? "https://schema.org/InStock"
-                        : "https://schema.org/OutOfStock"
-            },
-            ...(reviewCount > 0
-                ? {
-                    aggregateRating: {
-                        "@type": "AggregateRating",
-                        ratingValue: averageRating,
-                        reviewCount: reviewCount
+        structuredData.textContent =
+            JSON.stringify({
+                "@context": "https://schema.org/",
+                "@type": "Product",
+                name: product.name,
+                sku: product.sku,
+                image: product.images?.map(
+                    (img: string) =>
+                        `http://localhost:5000${img}`
+                ),
+                description:
+                    product.description || product.name,
+                brand: {
+                    "@type": "Brand",
+                    name: product.brand
+                },
+                offers: {
+                    "@type": "Offer",
+                    url: window.location.href,
+                    priceCurrency: "INR",
+                    price: displayPrice,
+                    availability:
+                        product.stock > 0
+                            ? "https://schema.org/InStock"
+                            : "https://schema.org/OutOfStock"
+                },
+                ...(reviewCount > 0
+                    ? {
+                        aggregateRating: {
+                            "@type": "AggregateRating",
+                            ratingValue: averageRating,
+                            reviewCount: reviewCount
+                        },
+                        review: reviews.slice(0, 5).map((review) => ({
+                            "@type": "Review",
+                            author: {
+                                "@type": "Person",
+                                name: review.customerName
+                            },
+                            reviewRating: {
+                                "@type": "Rating",
+                                ratingValue: review.rating,
+                                bestRating: 5
+                            },
+                            reviewBody: review.comment
+                        }))
                     }
-                }
-                : {})
-        });
+                    : {})
+            });
 
-    }, [product, averageRating, reviewCount, displayPrice]);
+    }, [product, averageRating, reviewCount, reviews, displayPrice]);
 
     const submitReview = async () => {
 
         if (!user) {
+
             toast.error("Please login to write a review");
             return;
+
         }
 
         setSubmittingReview(true);
 
         try {
 
-            const res = await fetch(
-                "http://localhost:5000/api/reviews",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        productId: id,
-                        userId: user._id,
-                        customerName:
-                            user.name ||
-                            user.contactPerson ||
-                            user.businessName ||
-                            "Customer",
-                        rating: reviewRating,
-                        comment: reviewComment
-                    })
-                }
-            );
+            const res =
+                await fetch(
+                    "http://localhost:5000/api/reviews",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            productId: id,
+                            userId: user._id,
+                            customerName:
+                                user.name ||
+                                user.contactPerson ||
+                                user.businessName ||
+                                "Customer",
+                            rating: reviewRating,
+                            comment: reviewComment
+                        })
+                    }
+                );
 
-            const data = await res.json();
+            const data =
+                await res.json();
 
             if (!data.success) {
-                toast.error(data.message || "Could not submit review");
+
+                toast.error(
+                    data.message || "Could not submit review"
+                );
+
                 return;
+
             }
 
             const newAverage =
                 Math.round(
                     (
                         (
-                            (averageRating * reviewCount) +
-                            reviewRating
-                        ) /
-                        (reviewCount + 1)
-                    ) * 10
+                            averageRating * reviewCount
+                        ) + reviewRating
+                    ) /
+                    (reviewCount + 1) * 10
                 ) / 10;
 
-            setReviews([data.review, ...reviews]);
+            setReviews([
+                data.review,
+                ...reviews
+            ]);
+
             setReviewCount(reviewCount + 1);
             setAverageRating(newAverage);
             setReviewComment("");
@@ -244,38 +412,50 @@ export default function ProductDetails() {
             toast.success("Review submitted!");
 
         } catch (err) {
+
             console.error(err);
             toast.error("Something went wrong");
+
         } finally {
+
             setSubmittingReview(false);
+
         }
 
     };
 
     if (!product) {
+
         return (
             <div className="min-h-screen flex items-center justify-center">
                 Loading Product...
             </div>
         );
+
     }
 
     return (
         <div className="min-h-screen bg-slate-50">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-6 py-10">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
 
-                {/* BREADCRUMBS */}
-
-                <nav className="text-sm text-zinc-500 mb-6" aria-label="Breadcrumb">
+                <nav
+                    className="text-sm text-zinc-500 mb-6"
+                    aria-label="Breadcrumb"
+                >
                     <ol className="flex items-center gap-2 flex-wrap">
                         <li>
-                            <Link to="/" className="hover:text-[#4B1E78]">
+                            <Link
+                                to="/"
+                                className="hover:text-[#4B1E78]"
+                            >
                                 Home
                             </Link>
                         </li>
+
                         <li>/</li>
+
                         <li>
                             <Link
                                 to={`/products?category=${encodeURIComponent(product.category)}`}
@@ -284,7 +464,9 @@ export default function ProductDetails() {
                                 {product.category}
                             </Link>
                         </li>
+
                         <li>/</li>
+
                         <li>
                             <Link
                                 to={`/products?category=${encodeURIComponent(product.category)}&subcategory=${encodeURIComponent(product.subcategory)}`}
@@ -293,137 +475,221 @@ export default function ProductDetails() {
                                 {product.subcategory}
                             </Link>
                         </li>
+
                         <li>/</li>
+
                         <li className="text-zinc-900 font-medium truncate max-w-xs">
                             {product.name}
                         </li>
                     </ol>
                 </nav>
 
-                <div className="grid lg:grid-cols-2 gap-12">
+                <div className="grid lg:grid-cols-[0.95fr_1.1fr_0.75fr] gap-7 items-start">
 
-                    {/* LEFT */}
+                    <div className="bg-white rounded-3xl p-5 shadow-sm border border-zinc-100">
 
-                    <div>
-
-                        <div className="bg-white rounded-3xl p-6 shadow-sm">
+                        <div className="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden">
 
                             <img
                                 src={`http://localhost:5000${selectedImage}`}
                                 alt={product.name}
-                                className="w-full rounded-xl"
+                                className="w-full h-full object-contain"
                             />
 
                         </div>
 
-                        <div className="flex gap-2 mt-4">
+                        <div className="grid grid-cols-6 gap-2 mt-4">
+
                             {product.images?.map((img: string, index: number) => (
 
-                                <img
+                                <button
                                     key={index}
-                                    src={`http://localhost:5000${img}`}
-                                    alt={`${product.name} view ${index + 1}`}
                                     onClick={() =>
                                         setSelectedImage(img)
                                     }
-                                    className={`w-20 h-20 object-cover cursor-pointer border rounded-lg ${selectedImage === img
-                                        ? "border-[#4B1E78] border-2"
+                                    className={`aspect-square rounded-xl border bg-white overflow-hidden ${selectedImage === img
+                                        ? "border-[#4B1E78] ring-2 ring-[#4B1E78]/20"
                                         : "border-zinc-200"
                                         }`}
-                                />
+                                >
+                                    <img
+                                        src={`http://localhost:5000${img}`}
+                                        alt={`${product.name} view ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </button>
+
                             ))}
+
                         </div>
 
                     </div>
 
-                    {/* RIGHT */}
+                    <div className="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-zinc-100 min-h-[560px]">
 
-                    <div>
+                        <div className="flex items-center gap-3 flex-wrap mb-4">
 
-                        <p className="text-[#4B1E78] font-semibold">
-                            {product.brand}
-                        </p>
+                            <span className="bg-[#4B1E78]/10 text-[#4B1E78] px-3 py-1 rounded-full text-sm font-bold">
+                                {product.brand}
+                            </span>
 
-                        <h1 className="text-4xl font-bold mt-2">
+                            {product.model && (
+                                <span className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm font-semibold">
+                                    {product.model}
+                                </span>
+                            )}
+
+                            {product.stock > 0 ? (
+                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    In Stock
+                                </span>
+                            ) : (
+                                <span className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Out Of Stock
+                                </span>
+                            )}
+
+                        </div>
+
+                        <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-950 leading-tight">
                             {product.name}
                         </h1>
 
-                        <div className="flex items-center gap-3 mt-4">
+                        <div className="flex items-center gap-3 mt-5 flex-wrap">
 
-                            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                            <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold">
                                 ★ {reviewCount > 0 ? averageRating : "New"}
                             </span>
 
-                            <span className="text-zinc-500">
-                                {reviewCount} {reviewCount === 1 ? "Review" : "Reviews"}
-                            </span>
-
-                        </div>
-
-                        <div className="mt-6 flex items-center gap-4">
-
-                            <span className="text-4xl font-bold text-[#4B1E78]">
-                                ₹{displayPrice?.toLocaleString()}
-                            </span>
-
-                            <span className="text-xl text-zinc-400 line-through">
-                                ₹{product?.retailPrice?.toLocaleString() || 0}
-                            </span>
-
-                            <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
-                                {discount}% OFF
-                            </span>
-
-                        </div>
-
-                        {
-                            user?.customerType === "b2b" &&
-                            user?.verificationStatus === "Verified" && (
-
-                                <div className="text-green-600 text-sm font-semibold mt-2">
-                                    Wholesale Pricing Applied
-                                </div>
-
-                            )
-                        }
-
-                        <div className="mt-6">
-
-                            <span
-                                className={`font-semibold ${product.stock > 0
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                    }`}
+                            <a
+                                href="#reviews"
+                                className="text-[#4B1E78] font-semibold hover:underline text-sm"
                             >
-                                {product.stock > 0
-                                    ? `${product.stock} In Stock`
-                                    : "Out Of Stock"}
+                                {reviewCount} {reviewCount === 1 ? "Review" : "Reviews"}
+                            </a>
+
+                            <span className="text-zinc-300">|</span>
+
+                            <span className="text-sm text-zinc-500">
+                                SKU: {product.sku}
                             </span>
 
                         </div>
 
-                        <div className="mt-8">
+                        <div className="mt-7 border-y border-zinc-100 py-7">
 
-                            <h3 className="font-semibold text-lg mb-3">
-                                Product Description
-                            </h3>
+                            <div className="flex items-end gap-4 flex-wrap">
 
-                            <p className="text-zinc-600 leading-7">
-                                {product.description ||
-                                    "No description available for this product yet."}
+                                <span className="text-4xl md:text-5xl font-extrabold text-[#4B1E78]">
+                                    ₹{displayPrice?.toLocaleString()}
+                                </span>
+
+                                {discount > 0 && (
+                                    <>
+                                        <span className="text-xl text-zinc-400 line-through">
+                                            ₹{retailPrice.toLocaleString()}
+                                        </span>
+
+                                        <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-bold">
+                                            {discount}% OFF
+                                        </span>
+                                    </>
+                                )}
+
+                            </div>
+
+                            <p className="text-sm text-zinc-500 mt-3">
+                                Inclusive of GST. Shipping calculated at checkout.
+                            </p>
+
+                            {user?.customerType === "b2b" &&
+                                user?.verificationStatus === "Verified" && (
+
+                                    <div className="text-green-700 bg-green-50 rounded-2xl px-4 py-4 text-sm font-semibold mt-5">
+                                        Wholesale pricing applied for your verified B2B account.
+                                    </div>
+
+                                )}
+
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-4 mt-7">
+
+                            <div className="bg-slate-50 rounded-2xl p-5">
+                                <p className="font-bold text-zinc-900">
+                                    GST Invoice
+                                </p>
+                                <p className="text-sm text-zinc-500 mt-1 leading-6">
+                                    Business-ready invoice available.
+                                </p>
+                            </div>
+
+                            <div className="bg-slate-50 rounded-2xl p-5">
+                                <p className="font-bold text-zinc-900">
+                                    Secure Payment
+                                </p>
+                                <p className="text-sm text-zinc-500 mt-1 leading-6">
+                                    COD and online payment support.
+                                </p>
+                            </div>
+
+                            <div className="bg-slate-50 rounded-2xl p-5">
+                                <p className="font-bold text-zinc-900">
+                                    Fast Dispatch
+                                </p>
+                                <p className="text-sm text-zinc-500 mt-1 leading-6">
+                                    Delivery tracking after shipment.
+                                </p>
+                            </div>
+
+                            <div className="bg-slate-50 rounded-2xl p-5">
+                                <p className="font-bold text-zinc-900">
+                                    Verified Reviews
+                                </p>
+                                <p className="text-sm text-zinc-500 mt-1 leading-6">
+                                    Reviews only from real buyers.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-5 shadow-sm border border-zinc-100 lg:sticky lg:top-24">
+
+                        <p className="text-sm text-zinc-500">
+                            Current price
+                        </p>
+
+                        <p className="text-3xl font-extrabold text-[#4B1E78] mt-1">
+                            ₹{displayPrice?.toLocaleString()}
+                        </p>
+
+                        <div className="mt-4 rounded-2xl bg-slate-50 p-4 space-y-2 text-sm">
+
+                            <p className="font-semibold text-zinc-900">
+                                Delivery options
+                            </p>
+
+                            <p className="text-zinc-600 leading-6">
+                                Check delivery details during checkout.
+                            </p>
+
+                            <p className="text-green-700 font-semibold">
+                                {product.stock > 0
+                                    ? `${product.stock} units available`
+                                    : "Currently unavailable"}
                             </p>
 
                         </div>
 
-                        {/* QUANTITY */}
+                        <div className="mt-5">
 
-                        <div className="mt-8">
-
-                            <h3 className="font-semibold mb-3">
+                            <label className="text-sm font-bold text-zinc-900">
                                 Quantity
-                            </h3>
+                            </label>
 
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 mt-3">
 
                                 <button
                                     onClick={() =>
@@ -431,12 +697,12 @@ export default function ProductDetails() {
                                             prev > 1 ? prev - 1 : 1
                                         )
                                     }
-                                    className="w-10 h-10 border rounded-lg"
+                                    className="w-10 h-10 border rounded-xl font-bold"
                                 >
                                     -
                                 </button>
 
-                                <span className="font-semibold">
+                                <span className="font-bold min-w-6 text-center">
                                     {quantity}
                                 </span>
 
@@ -452,7 +718,7 @@ export default function ProductDetails() {
                                         product.stock <= 0 ||
                                         quantity >= product.stock
                                     }
-                                    className="w-10 h-10 border rounded-lg"
+                                    className="w-10 h-10 border rounded-xl font-bold disabled:opacity-40"
                                 >
                                     +
                                 </button>
@@ -461,47 +727,55 @@ export default function ProductDetails() {
 
                         </div>
 
-                        {/* BUTTONS */}
+                        <button
+                            onClick={() => {
 
-                        <div className="grid grid-cols-2 gap-4 mt-10">
+                                if (product.stock <= 0) {
 
-                            <button
-                                onClick={() => {
+                                    toast.error("Product is out of stock");
+                                    return;
 
-                                    if (product.stock <= 0) {
-                                        alert("Product is out of stock");
-                                        return;
-                                    }
+                                }
 
-                                    addToCart({
-                                        ...product,
-                                        quantity
-                                    });
-                                }}
-                                disabled={product.stock <= 0}
-                                className="bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-xl font-semibold"
-                            >
-                                Add To Cart
-                            </button>
+                                addToCart({
+                                    ...product,
+                                    quantity
+                                });
 
-                            <button
-                                disabled={product.stock <= 0}
-                                onClick={() => {
+                                toast.success("Added to cart");
 
-                                    navigate("/checkout", {
-                                        state: {
-                                            buyNowProduct: {
-                                                ...product,
-                                                quantity
-                                            }
+                            }}
+                            disabled={product.stock <= 0}
+                            className="w-full bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-2xl font-bold mt-6 disabled:bg-gray-300"
+                        >
+                            Add To Cart
+                        </button>
+
+                        <button
+                            disabled={product.stock <= 0}
+                            onClick={() => {
+
+                                navigate("/checkout", {
+                                    state: {
+                                        buyNowProduct: {
+                                            ...product,
+                                            quantity
                                         }
-                                    });
+                                    }
+                                });
 
-                                }}
-                                className="bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold disabled:bg-gray-300"
-                            >
-                                Buy Now
-                            </button>
+                            }}
+                            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-bold mt-3 disabled:bg-gray-300"
+                        >
+                            Buy Now
+                        </button>
+
+                        <div className="mt-5 text-xs text-zinc-500 space-y-2">
+
+                            <p>✓ Secure checkout</p>
+                            <p>✓ GST invoice supported</p>
+                            <p>✓ Order tracking available</p>
+                            <p>✓ Verified purchase review system</p>
 
                         </div>
 
@@ -509,140 +783,362 @@ export default function ProductDetails() {
 
                 </div>
 
-                {/* SPECIFICATIONS — only shows if real data exists */}
+                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-10">
 
-                {product.specifications && product.specifications.length > 0 && (
-                    <div className="bg-white rounded-3xl p-8 shadow-sm mt-12">
-
-                        <h2 className="text-2xl font-bold mb-6">
-                            Specifications
-                        </h2>
-
-                        <div className="grid md:grid-cols-2 gap-5">
-                            {product.specifications.map((spec: any, index: number) => (
-                                <div key={index}>
-                                    <strong>{spec.key}:</strong> {spec.value}
-                                </div>
-                            ))}
-                        </div>
-
-                    </div>
-                )}
-
-                {/* REVIEWS */}
-
-                <div className="bg-white rounded-3xl p-8 shadow-sm mt-12">
-
-                    <h2 className="text-2xl font-bold mb-6">
-                        Customer Reviews {reviewCount > 0 && `(${reviewCount})`}
+                    <h2 className="text-2xl font-extrabold mb-4">
+                        About this item
                     </h2>
 
-                    {user ? (
-                        !userHasReviewed ? (
-                            <div className="border border-zinc-200 rounded-2xl p-6 mb-8">
+                    <p className="text-zinc-600 leading-8 max-w-5xl">
+                        {product.description ||
+                            "No description available for this product yet."}
+                    </p>
 
-                                <h3 className="font-semibold mb-3">
-                                    Write a Review
-                                </h3>
+                </div>
 
-                                <div className="flex items-center gap-2 mb-3">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <button
-                                            key={star}
-                                            type="button"
-                                            onClick={() => setReviewRating(star)}
-                                            className={`text-2xl ${star <= reviewRating
-                                                ? "text-yellow-400"
-                                                : "text-zinc-300"
-                                                }`}
-                                        >
-                                            ★
-                                        </button>
-                                    ))}
-                                </div>
+                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-6">
 
-                                <textarea
-                                    value={reviewComment}
-                                    onChange={(e) => setReviewComment(e.target.value)}
-                                    placeholder="Share your experience with this product..."
-                                    className="w-full border rounded-xl p-3 text-sm"
-                                    rows={3}
-                                />
+                    <h2 className="text-2xl font-extrabold mb-6">
+                        Product Information
+                    </h2>
 
-                                <button
-                                    onClick={submitReview}
-                                    disabled={submittingReview}
-                                    className="mt-3 bg-[#4B1E78] hover:bg-[#39155d] text-white py-2 px-6 rounded-xl font-semibold disabled:opacity-50"
-                                >
-                                    {submittingReview ? "Submitting..." : "Submit Review"}
-                                </button>
+                    <div className="grid md:grid-cols-2 gap-x-10 gap-y-4 text-sm">
 
-                                <p className="text-xs text-zinc-400 mt-2">
-                                    Only customers who have purchased this product can leave a review.
-                                </p>
+                        {[
+                            ["Brand", product.brand],
+                            ["Model", product.model || "Not specified"],
+                            ["Category", product.category],
+                            ["Subcategory", product.subcategory],
+                            ["SKU", product.sku],
+                            ["HSN Code", product.hsnCode || "Not specified"],
+                            ["GST", `${product.gstPercentage || 0}%`],
+                            ["Seller", product.sellerName || "CosmoCartt"]
+                        ].map(([label, value]) => (
 
+                            <div
+                                key={label}
+                                className="flex justify-between gap-6 border-b border-zinc-100 py-4"
+                            >
+                                <span className="text-zinc-500">
+                                    {label}
+                                </span>
+
+                                <span className="font-semibold text-zinc-900 text-right">
+                                    {value}
+                                </span>
                             </div>
-                        ) : (
-                            <p className="text-sm text-zinc-500 mb-8">
-                                You've already reviewed this product.
-                            </p>
-                        )
-                    ) : (
-                        <p className="text-sm text-zinc-500 mb-8">
-                            <Link to="/login" className="text-[#4B1E78] font-semibold hover:underline">
-                                Login
-                            </Link>{" "}
-                            to write a review.
-                        </p>
-                    )}
 
-                    {reviewLoading && (
-                        <p className="text-sm text-zinc-400">Loading reviews...</p>
-                    )}
+                        ))}
 
-                    {!reviewLoading && reviews.length === 0 && (
-                        <p className="text-sm text-zinc-400">
-                            No reviews yet. Be the first to review this product.
-                        </p>
-                    )}
+                    </div>
 
-                    {!reviewLoading && reviews.length > 0 && (
-                        <div className="space-y-6 divide-y divide-zinc-100">
-                            {reviews.map((review) => (
-                                <div key={review._id} className="pt-6 first:pt-0">
+                </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-yellow-400">
-                                            {"★".repeat(review.rating)}
-                                            <span className="text-zinc-200">
-                                                {"★".repeat(5 - review.rating)}
-                                            </span>
+                {product.specifications &&
+                    product.specifications.length > 0 && (
+
+                        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-6">
+
+                            <h2 className="text-2xl font-extrabold mb-6">
+                                Specifications
+                            </h2>
+
+                            <div className="grid md:grid-cols-2 gap-x-10 gap-y-4 text-sm">
+
+                                {product.specifications.map((spec: any, index: number) => (
+
+                                    <div
+                                        key={index}
+                                        className="flex justify-between gap-6 border-b border-zinc-100 py-4"
+                                    >
+                                        <span className="text-zinc-500">
+                                            {spec.key}
                                         </span>
-                                        <span className="font-semibold text-zinc-900">
-                                            {review.customerName}
+
+                                        <span className="font-semibold text-zinc-900 text-right">
+                                            {spec.value}
                                         </span>
                                     </div>
 
-                                    {review.comment && (
-                                        <p className="text-zinc-600 mt-2 leading-6">
-                                            {review.comment}
-                                        </p>
-                                    )}
+                                ))}
 
-                                    <p className="text-xs text-zinc-400 mt-2">
-                                        {new Date(review.createdAt).toLocaleDateString("en-IN", {
-                                            day: "numeric",
-                                            month: "short",
-                                            year: "numeric"
-                                        })}
-                                    </p>
+                            </div>
 
-                                </div>
-                            ))}
                         </div>
+
                     )}
 
+                <div
+                    id="reviews"
+                    className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-10"
+                >
+
+                    <h2 className="text-2xl font-extrabold mb-6">
+                        Customer Reviews
+                    </h2>
+
+                    <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-8">
+
+                        <div>
+
+                            <div className="bg-slate-50 rounded-3xl p-6">
+
+                                <p className="text-5xl font-extrabold text-[#4B1E78]">
+                                    {reviewCount > 0 ? averageRating : "New"}
+                                </p>
+
+                                <p className="text-yellow-400 text-xl mt-2">
+                                    {reviewCount > 0
+                                        ? "★".repeat(Math.round(averageRating))
+                                        : "★★★★★"}
+                                    <span className="text-zinc-300">
+                                        {reviewCount > 0
+                                            ? "★".repeat(5 - Math.round(averageRating))
+                                            : ""}
+                                    </span>
+                                </p>
+
+                                <p className="text-sm text-zinc-500 mt-2">
+                                    Based on {reviewCount} verified {reviewCount === 1 ? "review" : "reviews"}
+                                </p>
+
+                                <div className="space-y-3 mt-6">
+
+                                    {ratingCounts.map((item) => (
+
+                                        <div
+                                            key={item.rating}
+                                            className="grid grid-cols-[45px_1fr_40px] items-center gap-3 text-sm"
+                                        >
+                                            <span className="text-zinc-600">
+                                                {item.rating} ★
+                                            </span>
+
+                                            <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-orange-400"
+                                                    style={{
+                                                        width: `${item.percentage}%`
+                                                    }}
+                                                />
+                                            </div>
+
+                                            <span className="text-zinc-500 text-right">
+                                                {item.percentage}%
+                                            </span>
+                                        </div>
+
+                                    ))}
+
+                                </div>
+
+                            </div>
+
+                            <div className="mt-6">
+
+                                {user ? (
+                                    !userHasReviewed ? (
+
+                                        <div className="border border-zinc-200 rounded-3xl p-5">
+
+                                            <h3 className="font-bold mb-3">
+                                                Write a Review
+                                            </h3>
+
+                                            <div className="flex items-center gap-2 mb-3">
+
+                                                {[1, 2, 3, 4, 5].map((star) => (
+
+                                                    <button
+                                                        key={star}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setReviewRating(star)
+                                                        }
+                                                        className={`text-2xl ${star <= reviewRating
+                                                            ? "text-yellow-400"
+                                                            : "text-zinc-300"
+                                                            }`}
+                                                    >
+                                                        ★
+                                                    </button>
+
+                                                ))}
+
+                                            </div>
+
+                                            <textarea
+                                                value={reviewComment}
+                                                onChange={(e) =>
+                                                    setReviewComment(e.target.value)
+                                                }
+                                                placeholder="Share your experience with this product..."
+                                                className="w-full border rounded-2xl p-3 text-sm"
+                                                rows={4}
+                                            />
+
+                                            <button
+                                                onClick={submitReview}
+                                                disabled={submittingReview}
+                                                className="mt-3 bg-[#4B1E78] hover:bg-[#39155d] text-white py-3 px-6 rounded-2xl font-bold disabled:opacity-50"
+                                            >
+                                                {submittingReview
+                                                    ? "Submitting..."
+                                                    : "Submit Review"}
+                                            </button>
+
+                                            <p className="text-xs text-zinc-400 mt-2">
+                                                Only customers who purchased this product can review it.
+                                            </p>
+
+                                        </div>
+
+                                    ) : (
+
+                                        <p className="text-sm text-zinc-500">
+                                            You've already reviewed this product.
+                                        </p>
+
+                                    )
+                                ) : (
+
+                                    <p className="text-sm text-zinc-500">
+                                        <Link
+                                            to="/login"
+                                            className="text-[#4B1E78] font-bold hover:underline"
+                                        >
+                                            Login
+                                        </Link>{" "}
+                                        to write a review.
+                                    </p>
+
+                                )}
+
+                            </div>
+
+                        </div>
+
+                        <div>
+
+                            {reviewLoading && (
+                                <p className="text-sm text-zinc-400">
+                                    Loading reviews...
+                                </p>
+                            )}
+
+                            {!reviewLoading && reviews.length === 0 && (
+                                <p className="text-sm text-zinc-400">
+                                    No reviews yet. Be the first to review this product.
+                                </p>
+                            )}
+
+                            {!reviewLoading && reviews.length > 0 && (
+
+                                <div className="space-y-4">
+
+                                    {reviews.map((review) => (
+
+                                        <div
+                                            key={review._id}
+                                            className="border border-zinc-100 rounded-3xl p-5"
+                                        >
+
+                                            <div className="flex items-center justify-between gap-4">
+
+                                                <div>
+
+                                                    <p className="font-bold text-zinc-900">
+                                                        {review.customerName}
+                                                    </p>
+
+                                                    <p className="text-yellow-400 mt-1">
+                                                        {"★".repeat(review.rating)}
+                                                        <span className="text-zinc-200">
+                                                            {"★".repeat(5 - review.rating)}
+                                                        </span>
+                                                    </p>
+
+                                                </div>
+
+                                                <p className="text-xs text-zinc-400">
+                                                    {new Date(review.createdAt).toLocaleDateString("en-IN", {
+                                                        day: "numeric",
+                                                        month: "short",
+                                                        year: "numeric"
+                                                    })}
+                                                </p>
+
+                                            </div>
+
+                                            {review.comment && (
+                                                <p className="text-zinc-600 mt-4 leading-7">
+                                                    {review.comment}
+                                                </p>
+                                            )}
+
+                                        </div>
+
+                                    ))}
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    </div>
+
                 </div>
+
+                {relatedProducts.length > 0 && (
+
+                    <div className="mt-10">
+
+                        <h2 className="text-2xl font-extrabold mb-5">
+                            Related Products
+                        </h2>
+
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+                            {relatedProducts.map((item) => (
+
+                                <Link
+                                    key={item._id}
+                                    to={`/product/${item._id}`}
+                                    className="bg-white rounded-3xl p-4 shadow-sm border border-zinc-100 hover:shadow-md transition block"
+                                >
+
+                                    <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
+
+                                        <img
+                                            src={`http://localhost:5000${item.images?.[0]}`}
+                                            alt={item.name}
+                                            className="w-full h-full object-contain"
+                                        />
+
+                                    </div>
+
+                                    <p className="text-xs text-[#4B1E78] font-bold mt-4">
+                                        {item.brand}
+                                    </p>
+
+                                    <h3 className="font-bold text-zinc-900 mt-1 line-clamp-2">
+                                        {item.name}
+                                    </h3>
+
+                                    <p className="font-extrabold text-[#4B1E78] mt-2">
+                                        ₹{getDisplayPrice(item, user).toLocaleString()}
+                                    </p>
+
+                                </Link>
+
+                            ))}
+
+                        </div>
+
+                    </div>
+
+                )}
 
             </div>
 

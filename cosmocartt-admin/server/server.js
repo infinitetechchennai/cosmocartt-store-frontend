@@ -15,6 +15,7 @@ import invoiceRoutes
   from "./routes/invoiceRoutes.js";
 import reviewRoutes
   from "./routes/reviewRoutes.js";
+import seoRoutes from "./routes/seoRoutes.js";
 
 dotenv.config();
 
@@ -41,6 +42,8 @@ app.use(
   "/api/shiprocket",
   shiprocketRoutes
 );
+
+app.use("/", seoRoutes);
 
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);

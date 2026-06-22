@@ -123,6 +123,32 @@ const orderSchema = new mongoose.Schema(
             default: ""
         },
 
+        exchangeStatus: {
+            type: String,
+            enum: [
+                "Not Requested",
+                "Requested",
+                "Approved",
+                "Rejected",
+                "Completed"
+            ],
+            default: "Not Requested"
+        },
+
+        exchangeReason: {
+            type: String,
+            default: ""
+        },
+
+        exchangeRequestedAt: Date,
+
+        exchangeProcessedAt: Date,
+
+        exchangeDecisionNote: {
+            type: String,
+            default: ""
+        },
+
         trackingTimeline: [
             {
                 status: String,
@@ -130,6 +156,7 @@ const orderSchema = new mongoose.Schema(
             },
         ],
     },
+
     {
         timestamps: true,
     }

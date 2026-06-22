@@ -492,4 +492,212 @@ router.get(
     }
 );
 
+
+export const requestExchange = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            reason
+        } = req.body;
+
+        const order =
+            await Order.findById(
+                req.params.id
+            );
+
+        if (!order) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+
+        if (
+            order.status === "Cancelled"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Cancelled orders cannot be exchanged"
+            });
+
+        }
+
+        if (
+            order.exchangeStatus !== "Not Requested"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    `Exchange already exists with status "${order.exchangeStatus}"`
+            });
+
+        }
+
+        order.exchangeStatus =
+            "Requested";
+
+        order.exchangeReason =
+            reason || "";
+
+        order.exchangeRequestedAt =
+            new Date();
+
+        await order.save();
+
+        res.json({
+            success: true,
+            order
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message:
+                error.message
+        });
+
+    }
+
+};
+
+
+router.put(
+    "/:id/request-exchange",
+    requestExchange
+);
+
+
+export const decideExchange = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const {
+            decision,
+            note
+        } = req.body;
+
+        if (
+            decision !== "Approved" &&
+            decision !== "Rejected"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Decision must be Approved or Rejected"
+            });
+
+        }
+
+        const order =
+            await Order.findById(
+                req.params.id
+            );
+
+        if (!order) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+
+        if (
+            order.exchangeStatus !== "Requested"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    `Cannot decide exchange — current status is "${order.exchangeStatus}"`
+            });
+
+        }
+
+        order.exchangeStatus =
+            decision;
+
+        order.exchangeDecisionNote =
+            note || "";
+
+        order.exchangeProcessedAt =
+            new Date();
+
+        await order.save();
+
+        res.json({
+            success: true,
+            order
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            success: false,
+            message:
+                error.message
+        });
+
+    }
+
+};
+
+
+router.put(
+    "/:id/exchange-decision",
+    decideExchange
+);
+
+
+router.get(
+    "/test-exchange/:id",
+    async (req, res) => {
+
+        const order =
+            await Order.findById(
+                req.params.id
+            );
+
+        if (!order) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Order not found"
+            });
+
+        }
+
+        order.exchangeStatus =
+            "Requested";
+
+        order.exchangeReason =
+            "Test Exchange";
+
+        order.exchangeRequestedAt =
+            new Date();
+
+        await order.save();
+
+        res.json({
+            success: true,
+            order
+        });
+
+    }
+);
+
 export default router;
