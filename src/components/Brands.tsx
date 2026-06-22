@@ -26,12 +26,13 @@ export default function Brands() {
 
         if (!data.success) return;
 
-        const uniqueBrands =
-          [...new Set(
-            data.products
-              .map((p: any) => p.brand)
-              .filter(Boolean)
-          )];
+       const uniqueBrands: string[] = Array.from(
+  new Set(
+    data.products
+      .map((p: any) => p.brand)
+      .filter(Boolean)
+  )
+);
 
         setBrands(
           uniqueBrands.map(

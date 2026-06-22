@@ -237,7 +237,7 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]">
+       <div className="min-h-screen bg-[#EEE8FF]">
 
 
             <Navbar />
@@ -271,7 +271,7 @@ export default function Register() {
             <div className="max-w-6xl mx-auto py-2 px-6">
 
 
-                <div className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-white shadow-2xl">
+                <div className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-[#FCFAFF] shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
 
                     {/* LEFT SIDE */}
 
@@ -280,7 +280,7 @@ export default function Register() {
                         initial={{ opacity: 0, x: -40 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-[#2B1055] to-[#6F2DBD] text-white p-10"
+                      className="hidden lg:flex flex-col justify-center bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD] text-white p-10"
                     >
 
                         {accountType === "personal" ? (
