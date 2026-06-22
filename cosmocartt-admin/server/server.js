@@ -16,6 +16,7 @@ import invoiceRoutes
 import reviewRoutes
   from "./routes/reviewRoutes.js";
 import seoRoutes from "./routes/seoRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 dotenv.config();
 
@@ -68,6 +69,11 @@ mongoose.connect(process.env.MONGO_URI)
     console.log(err);
   });
 
+
+app.use(
+  "/api/reports",
+  reportRoutes
+);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/products", productRoutes);

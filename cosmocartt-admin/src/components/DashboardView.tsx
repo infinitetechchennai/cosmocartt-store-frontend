@@ -25,6 +25,7 @@ import {
   StockAlert,
   BestSeller
 } from "../types";
+import { useState, useEffect } from "react";
 
 interface DashboardViewProps {
   orders: Order[];
@@ -64,6 +65,9 @@ export default function DashboardView({
         0
       );
 
+  const [reportSummary, setReportSummary] =
+    useState<any>(null);
+
   const totalOrdersVal =
     orders.length;
 
@@ -96,56 +100,22 @@ export default function DashboardView({
     );
 
   const b2bRevenue =
-    activeOrders
-      .filter(
-        (o: any) =>
-          o.customerType === "b2b" ||
-          o.customerType === "B2B" ||
-          o.orderType === "b2b" ||
-          o.orderType === "B2B"
-      )
-      .reduce(
-        (sum: number, o: any) =>
-          sum + (o.totalAmount || 0),
-        0
-      );
+    reportSummary?.b2bRevenue || 0;
 
   const b2cRevenue =
-    activeOrders
-      .filter(
-        (o: any) =>
-          !(
-            o.customerType === "b2b" ||
-            o.customerType === "B2B" ||
-            o.orderType === "b2b" ||
-            o.orderType === "B2B"
-          )
-      )
-      .reduce(
-        (sum: number, o: any) =>
-          sum + (o.totalAmount || 0),
-        0
-      );
+    reportSummary?.b2cRevenue || 0;
+
+  const b2bOrders =
+    reportSummary?.b2bOrders || 0;
+
+  const b2cOrders =
+    reportSummary?.b2cOrders || 0;
 
   const analyticsData = [
     {
       name: "Orders",
-      B2B: activeOrders.filter(
-        (o: any) =>
-          o.customerType === "b2b" ||
-          o.customerType === "B2B" ||
-          o.orderType === "b2b" ||
-          o.orderType === "B2B"
-      ).length,
-      B2C: activeOrders.filter(
-        (o: any) =>
-          !(
-            o.customerType === "b2b" ||
-            o.customerType === "B2B" ||
-            o.orderType === "b2b" ||
-            o.orderType === "B2B"
-          )
-      ).length
+      B2B: b2bOrders,
+      B2C: b2cOrders
     },
     {
       name: "Revenue",
@@ -199,6 +169,39 @@ export default function DashboardView({
 
   const recentOrders =
     [...orders].slice(0, 5);
+  useEffect(() => {
+
+    const loadReportSummary = async () => {
+
+      try {
+
+        const res =
+          await fetch(
+            "http://localhost:5000/api/reports/summary"
+          );
+
+        const data =
+          await res.json();
+
+        if (data.success) {
+
+          setReportSummary(
+            data.summary
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+    loadReportSummary();
+
+  }, []);
 
   return (
     <div id="dashboard-view-container" className="space-y-6">

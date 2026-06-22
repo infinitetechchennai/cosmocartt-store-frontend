@@ -7,15 +7,7 @@ import {
   Shuffle,
   Megaphone,
   FileText,
-  CheckCircle2,
-  User,
-  Eye,
-  Bookmark,
-  Mail,
-  Search,
-  ExternalLink,
-  ChevronRight,
-  Plus
+  ExternalLink
 } from "lucide-react";
 
 interface OtherViewsProps {
@@ -23,30 +15,61 @@ interface OtherViewsProps {
 }
 
 export default function OtherViews({ tab }: OtherViewsProps) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [refundOrders, setRefundOrders] = useState<any[]>([]);
-  const [refundLoading, setRefundLoading] = useState(false);
+  const [refundOrders, setRefundOrders] =
+    useState<any[]>([]);
 
-  const [exchangeOrders, setExchangeOrders] = useState<any[]>([]);
-  const [exchangeLoading, setExchangeLoading] = useState(false);
+  const [refundLoading, setRefundLoading] =
+    useState(false);
+
+  const [exchangeOrders, setExchangeOrders] =
+    useState<any[]>([]);
+
+  const [exchangeLoading, setExchangeLoading] =
+    useState(false);
+
+  const [deliveryOrders, setDeliveryOrders] =
+    useState<any[]>([]);
+
+  const [deliveryLoading, setDeliveryLoading] =
+    useState(false);
+
+  const [reportStats, setReportStats] =
+    useState<any>({
+      revenue: 0,
+      orders: 0,
+      delivered: 0,
+      cancelled: 0,
+      refunds: 0,
+      exchanges: 0
+    });
 
   useEffect(() => {
     if (tab !== "refunds") return;
 
     const loadRefunds = async () => {
       setRefundLoading(true);
+
       try {
-        const res = await fetch("http://localhost:5000/api/orders");
-        const data = await res.json();
+        const res =
+          await fetch(
+            "http://localhost:5000/api/orders"
+          );
 
-        const ordersArray = Array.isArray(data)
-          ? data
-          : data.orders || data.data || [];
+        const data =
+          await res.json();
 
-        const withRefundActivity = ordersArray.filter(
-          (order: any) =>
-            order.refundStatus && order.refundStatus !== "Not Requested"
-        );
+        const ordersArray =
+          Array.isArray(data)
+            ? data
+            : data.orders || data.data || [];
+
+        const withRefundActivity =
+          ordersArray.filter(
+            (order: any) =>
+              order.refundStatus &&
+              order.refundStatus !==
+              "Not Requested"
+          );
 
         setRefundOrders(withRefundActivity);
       } catch (error) {
@@ -66,18 +89,26 @@ export default function OtherViews({ tab }: OtherViewsProps) {
       setExchangeLoading(true);
 
       try {
-        const res = await fetch("http://localhost:5000/api/orders");
-        const data = await res.json();
+        const res =
+          await fetch(
+            "http://localhost:5000/api/orders"
+          );
 
-        const ordersArray = Array.isArray(data)
-          ? data
-          : data.orders || data.data || [];
+        const data =
+          await res.json();
 
-        const withExchangeActivity = ordersArray.filter(
-          (order: any) =>
-            order.exchangeStatus &&
-            order.exchangeStatus !== "Not Requested"
-        );
+        const ordersArray =
+          Array.isArray(data)
+            ? data
+            : data.orders || data.data || [];
+
+        const withExchangeActivity =
+          ordersArray.filter(
+            (order: any) =>
+              order.exchangeStatus &&
+              order.exchangeStatus !==
+              "Not Requested"
+          );
 
         setExchangeOrders(withExchangeActivity);
       } catch (error) {
@@ -90,29 +121,119 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     loadExchanges();
   }, [tab]);
 
+  useEffect(() => {
+    if (
+      tab !== "delivery" &&
+      tab !== "local-delivery"
+    ) return;
+
+    const isOutstation =
+      tab === "delivery";
+
+    const loadDeliveries = async () => {
+      setDeliveryLoading(true);
+
+      try {
+        const res =
+          await fetch(
+            "http://localhost:5000/api/orders"
+          );
+
+        const data =
+          await res.json();
+
+        const ordersArray =
+          Array.isArray(data)
+            ? data
+            : data.orders || data.data || [];
+
+        const filteredOrders =
+          ordersArray.filter((order: any) => {
+            const city =
+              (order.city || "")
+                .toLowerCase()
+                .trim();
+
+            if (isOutstation) {
+              return (
+                city !== "chennai" &&
+                order.status !== "Cancelled"
+              );
+            }
+
+            return (
+              city === "chennai" &&
+              order.status !== "Cancelled"
+            );
+          });
+
+        setDeliveryOrders(filteredOrders);
+      } catch (error) {
+        console.error("Delivery loading error:", error);
+      } finally {
+        setDeliveryLoading(false);
+      }
+    };
+
+    loadDeliveries();
+  }, [tab]);
+
+  useEffect(() => {
+    if (tab !== "reports") return;
+
+    const loadReports = async () => {
+      try {
+        const res =
+          await fetch(
+            "http://localhost:5000/api/reports/summary"
+          );
+
+        const data =
+          await res.json();
+
+        if (data.success) {
+          setReportStats({
+            revenue: data.summary.totalRevenue || 0,
+            orders: data.summary.totalOrders || 0,
+            delivered: data.summary.delivered || 0,
+            cancelled: data.summary.cancelled || 0,
+            refunds: data.summary.refunds || 0,
+            exchanges: data.summary.exchanges || 0
+          });
+        }
+      } catch (error) {
+        console.error("Reports loading error:", error);
+      }
+    };
+
+    loadReports();
+  }, [tab]);
+
   const decideRefund = async (
     orderId: string,
     decision: "Approved" | "Rejected"
   ) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/orders/${orderId}/refund-decision`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            decision,
-            note:
-              decision === "Approved"
-                ? "Approved by admin"
-                : "Rejected by admin"
-          })
-        }
-      );
+      const res =
+        await fetch(
+          `http://localhost:5000/api/orders/${orderId}/refund-decision`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              decision,
+              note:
+                decision === "Approved"
+                  ? "Approved by admin"
+                  : "Rejected by admin"
+            })
+          }
+        );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
       if (!data.success) {
         alert(data.message || "Could not update refund status");
@@ -121,7 +242,9 @@ export default function OtherViews({ tab }: OtherViewsProps) {
 
       setRefundOrders(
         refundOrders.map((order) =>
-          order._id === orderId ? data.order : order
+          order._id === orderId
+            ? data.order
+            : order
         )
       );
     } catch (error) {
@@ -134,24 +257,26 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     decision: "Approved" | "Rejected"
   ) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/orders/${orderId}/exchange-decision`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            decision,
-            note:
-              decision === "Approved"
-                ? "Approved by admin"
-                : "Rejected by admin"
-          })
-        }
-      );
+      const res =
+        await fetch(
+          `http://localhost:5000/api/orders/${orderId}/exchange-decision`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              decision,
+              note:
+                decision === "Approved"
+                  ? "Approved by admin"
+                  : "Rejected by admin"
+            })
+          }
+        );
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
       if (!data.success) {
         alert(data.message || "Could not update exchange status");
@@ -160,7 +285,9 @@ export default function OtherViews({ tab }: OtherViewsProps) {
 
       setExchangeOrders(
         exchangeOrders.map((order) =>
-          order._id === orderId ? data.order : order
+          order._id === orderId
+            ? data.order
+            : order
         )
       );
     } catch (error) {
@@ -172,107 +299,85 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     return (
       <div className="space-y-6 text-left">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-950">Analytics & Reports</h1>
-          <p className="text-sm text-zinc-500 mt-1">Download operational metrics, compute GTV logs, and analyze sales performance.</p>
+          <h1 className="text-2xl font-bold text-zinc-950">
+            Analytics & Reports
+          </h1>
+
+          <p className="text-sm text-zinc-500 mt-1">
+            Download operational metrics, compute GTV logs, and analyze sales performance.
+          </p>
         </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+          <ReportCard label="Revenue" value={`₹${reportStats.revenue.toLocaleString()}`} />
+          <ReportCard label="Orders" value={reportStats.orders} />
+          <ReportCard label="Delivered" value={reportStats.delivered} color="text-green-600" />
+          <ReportCard label="Cancelled" value={reportStats.cancelled} color="text-red-600" />
+          <ReportCard label="Refunds" value={reportStats.refunds} color="text-orange-600" />
+          <ReportCard label="Exchanges" value={reportStats.exchanges} color="text-amber-600" />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-zinc-900 flex items-center gap-2"><TrendingUp className="text-[#e31e24] w-5 h-5" /> GTV Velocity Reports</h3>
-            <p className="text-sm text-zinc-500">Includes wholesale versus retail split margins, quarterly estimates, and live order conversion rates.</p>
-            <button className="bg-black text-white py-2 px-4 rounded-xl text-xs font-semibold hover:bg-zinc-800 transition-colors">Generate PDF Statement</button>
+            <h3 className="font-bold text-zinc-900 flex items-center gap-2">
+              <TrendingUp className="text-[#e31e24] w-5 h-5" />
+              Sales Reports
+            </h3>
+
+            <p className="text-sm text-zinc-500">
+              Export full order, revenue, payment and delivery reports.
+            </p>
+
+            <button
+              onClick={() => {
+                window.location.href =
+                  "http://localhost:5000/api/reports/orders.csv";
+              }}
+              className="bg-black text-white py-2 px-4 rounded-xl text-xs font-semibold hover:bg-zinc-800 transition-colors"
+            >
+              Export Orders CSV
+            </button>
           </div>
+
           <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs space-y-4">
-            <h3 className="font-bold text-zinc-900 flex items-center gap-2">🔄 Retention Reports</h3>
-            <p className="text-sm text-zinc-500">Evaluate customer returning frequencies, refund velocities, and support tick rates metrics.</p>
-            <button className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 py-2 px-4 rounded-xl text-xs font-semibold transition-colors">Export CSV Data</button>
+            <h3 className="font-bold text-zinc-900 flex items-center gap-2">
+              <RefreshCw className="text-[#e31e24] w-5 h-5" />
+              Refund & Exchange Reports
+            </h3>
+
+            <p className="text-sm text-zinc-500">
+              Export refund requests, exchange requests and support activity.
+            </p>
+
+            <button
+              onClick={() => {
+                window.location.href =
+                  "http://localhost:5000/api/reports/refunds-exchanges.csv";
+              }}
+              className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 py-2 px-4 rounded-xl text-xs font-semibold transition-colors"
+            >
+              Export Refunds & Exchanges CSV
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  if (tab === "delivery" || tab === "local-delivery") {
-
+  if (
+    tab === "delivery" ||
+    tab === "local-delivery"
+  ) {
     const isOutstation =
       tab === "delivery";
-
-    const [deliveryOrders, setDeliveryOrders] =
-      useState<any[]>([]);
-
-    const [deliveryLoading, setDeliveryLoading] =
-      useState(false);
-
-    useEffect(() => {
-
-      const loadDeliveries = async () => {
-
-        setDeliveryLoading(true);
-
-        try {
-
-          const res =
-            await fetch(
-              "http://localhost:5000/api/orders"
-            );
-
-          const data =
-            await res.json();
-
-          const ordersArray =
-            Array.isArray(data)
-              ? data
-              : data.orders || data.data || [];
-
-          const filteredOrders =
-            ordersArray.filter((order: any) => {
-
-              const city =
-                (order.city || "")
-                  .toLowerCase()
-                  .trim();
-
-              if (isOutstation) {
-
-                return (
-                  city !== "chennai" &&
-                  order.status !== "Cancelled"
-                );
-
-              }
-
-              return (
-                city === "chennai" &&
-                order.status !== "Cancelled"
-              );
-
-            });
-
-          setDeliveryOrders(filteredOrders);
-
-        } catch (error) {
-
-          console.error(
-            "Delivery loading error:",
-            error
-          );
-
-        } finally {
-
-          setDeliveryLoading(false);
-
-        }
-
-      };
-
-      loadDeliveries();
-
-    }, [tab]);
 
     return (
       <div className="space-y-6 text-left">
         <div>
           <h1 className="text-2xl font-bold text-zinc-950">
-            {isOutstation ? "Outstation Deliveries" : "Local Chennai Deliveries"}
+            {isOutstation
+              ? "Outstation Deliveries"
+              : "Local Chennai Deliveries"}
           </h1>
 
           <p className="text-sm text-zinc-500 mt-1">
@@ -292,7 +397,6 @@ export default function OtherViews({ tab }: OtherViewsProps) {
           </div>
 
           <div className="divide-y divide-zinc-100">
-
             {deliveryLoading && (
               <div className="p-8 text-center text-zinc-400 text-sm">
                 Loading delivery orders...
@@ -308,7 +412,6 @@ export default function OtherViews({ tab }: OtherViewsProps) {
 
             {!deliveryLoading &&
               deliveryOrders.map((order) => {
-
                 const trackingId =
                   order.awbCode ||
                   order.shipmentId ||
@@ -344,7 +447,8 @@ export default function OtherViews({ tab }: OtherViewsProps) {
 
                       <div className="flex flex-col">
                         <span className="font-semibold text-zinc-900">
-                          {order.city || "Unknown City"} {order.pincode ? `(${order.pincode})` : ""}
+                          {order.city || "Unknown City"}{" "}
+                          {order.pincode ? `(${order.pincode})` : ""}
                         </span>
 
                         <span className="text-xs text-zinc-400 font-mono mt-0.5">
@@ -381,9 +485,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
                     </div>
                   </div>
                 );
-
               })}
-
           </div>
         </div>
       </div>
@@ -394,7 +496,10 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     return (
       <div className="space-y-6 text-left">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-950">Refund Requests</h1>
+          <h1 className="text-2xl font-bold text-zinc-950">
+            Refund Requests
+          </h1>
+
           <p className="text-sm text-zinc-500 mt-1">
             Review customer refund requests and approve or reject them.
           </p>
@@ -403,65 +508,95 @@ export default function OtherViews({ tab }: OtherViewsProps) {
         <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center gap-2">
             <RefreshCw className="w-4 h-4 text-zinc-500" />
-            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">Refund Requests</span>
+
+            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">
+              Refund Requests
+            </span>
           </div>
 
           <div className="divide-y divide-zinc-100">
             {refundLoading && (
-              <div className="p-8 text-center text-zinc-400 text-sm">Loading refund requests...</div>
-            )}
-
-            {!refundLoading && refundOrders.length === 0 && (
-              <div className="p-8 text-center text-zinc-400 text-sm">No refund requests yet.</div>
-            )}
-
-            {!refundLoading && refundOrders.map((order) => (
-              <div key={order._id} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-zinc-900">{order.customerName}</span>
-                    <span className="text-xs text-zinc-400 font-mono">({order.orderNumber})</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 mt-0.5">Reason: {order.refundReason || "-"}</p>
-                  {order.refundDecisionNote && (
-                    <p className="text-xs text-zinc-400 mt-0.5">Admin note: {order.refundDecisionNote}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <span className="text-xs font-semibold text-zinc-400 block uppercase">Order Total</span>
-                    <span className="text-sm font-bold text-zinc-900 font-mono">
-                      {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(order.totalAmount || 0)}
-                    </span>
-                  </div>
-
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${order.refundStatus === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                    order.refundStatus === "Rejected" ? "bg-red-50 text-red-700 border-red-200" :
-                      "bg-amber-50 text-amber-700 border-amber-200"
-                    }`}>
-                    {order.refundStatus}
-                  </span>
-
-                  {order.refundStatus === "Requested" && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => decideRefund(order._id, "Approved")}
-                        className="p-1 px-2.5 rounded-lg border border-emerald-100 hover:bg-emerald-50 text-emerald-700 text-xs font-semibold transition-all"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => decideRefund(order._id, "Rejected")}
-                        className="p-1 px-2.5 rounded-lg border border-red-100 hover:bg-red-50 text-red-600 text-xs font-semibold transition-all"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
-                </div>
+              <div className="p-8 text-center text-zinc-400 text-sm">
+                Loading refund requests...
               </div>
-            ))}
+            )}
+
+            {!refundLoading &&
+              refundOrders.length === 0 && (
+                <div className="p-8 text-center text-zinc-400 text-sm">
+                  No refund requests yet.
+                </div>
+              )}
+
+            {!refundLoading &&
+              refundOrders.map((order) => (
+                <div
+                  key={order._id}
+                  className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-zinc-900">
+                        {order.customerName}
+                      </span>
+
+                      <span className="text-xs text-zinc-400 font-mono">
+                        ({order.orderNumber})
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      Reason: {order.refundReason || "-"}
+                    </p>
+
+                    {order.refundDecisionNote && (
+                      <p className="text-xs text-zinc-400 mt-0.5">
+                        Admin note: {order.refundDecisionNote}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <span className="text-xs font-semibold text-zinc-400 block uppercase">
+                        Order Total
+                      </span>
+
+                      <span className="text-sm font-bold text-zinc-900 font-mono">
+                        {new Intl.NumberFormat("en-IN", {
+                          style: "currency",
+                          currency: "INR",
+                          maximumFractionDigits: 0
+                        }).format(order.totalAmount || 0)}
+                      </span>
+                    </div>
+
+                    <StatusBadge status={order.refundStatus} />
+
+                    {order.refundStatus === "Requested" && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            decideRefund(order._id, "Approved")
+                          }
+                          className="p-1 px-2.5 rounded-lg border border-emerald-100 hover:bg-emerald-50 text-emerald-700 text-xs font-semibold transition-all"
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            decideRefund(order._id, "Rejected")
+                          }
+                          className="p-1 px-2.5 rounded-lg border border-red-100 hover:bg-red-50 text-red-600 text-xs font-semibold transition-all"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>
@@ -469,256 +604,200 @@ export default function OtherViews({ tab }: OtherViewsProps) {
   }
 
   if (tab === "exchanges") {
-
-
     return (
       <div className="space-y-6 text-left">
-
         <div>
           <h1 className="text-2xl font-bold text-zinc-950">
             Exchange Requests
-        </h1>
+          </h1>
 
           <p className="text-sm text-zinc-500 mt-1">
-            Review customer exchange
-            requests and approve
-            or reject them.
-        </p>
+            Review customer exchange requests and approve or reject them.
+          </p>
         </div>
 
         <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
-
           <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center gap-2">
-
             <Shuffle className="w-4 h-4 text-zinc-500" />
 
-            <span className="text-xs font-bold uppercase tracking-widest">
+            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">
               Exchange Requests
-          </span>
-
+            </span>
           </div>
 
           <div className="divide-y divide-zinc-100">
-
             {exchangeLoading && (
-
               <div className="p-8 text-center text-zinc-400 text-sm">
-                Loading exchange
-                requests...
+                Loading exchange requests...
               </div>
-
             )}
 
             {!exchangeLoading &&
-              exchangeOrders.length ===
-              0 && (
-
+              exchangeOrders.length === 0 && (
                 <div className="p-8 text-center text-zinc-400 text-sm">
-                  No exchange requests
-                  yet.
+                  No exchange requests yet.
                 </div>
-
               )}
 
             {!exchangeLoading &&
-              exchangeOrders.map(
-                (order) => (
-
-                  <div
-                    key={order._id}
-                    className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-                  >
-
-                    <div>
-
-                      <div className="flex items-center gap-2">
-
-                        <span className="font-semibold">
-                          {
-                            order.customerName
-                          }
-                        </span>
-
-                        <span className="text-xs text-zinc-400 font-mono">
-                          (
-                        {
-                            order.orderNumber
-                          }
-                        )
+              exchangeOrders.map((order) => (
+                <div
+                  key={order._id}
+                  className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-zinc-900">
+                        {order.customerName}
                       </span>
 
-                      </div>
+                      <span className="text-xs text-zinc-400 font-mono">
+                        ({order.orderNumber})
+                      </span>
+                    </div>
 
-                      <p className="text-xs text-zinc-500">
-                        Reason:
-                      {" "}
-                        {
-                          order.exchangeReason
-                        }
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      Reason: {order.exchangeReason || "-"}
+                    </p>
+
+                    {order.exchangeDecisionNote && (
+                      <p className="text-xs text-zinc-400 mt-0.5">
+                        Admin note: {order.exchangeDecisionNote}
                       </p>
-
-                      {order.exchangeDecisionNote && (
-
-                        <p className="text-xs text-zinc-400">
-                          Admin note:
-                          {" "}
-                          {
-                            order.exchangeDecisionNote
-                          }
-                        </p>
-
-                      )}
-
-                    </div>
-
-                    <div className="flex items-center gap-4">
-
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-bold ${order.exchangeStatus ===
-                          "Approved"
-                          ? "bg-green-50 text-green-700"
-                          : order.exchangeStatus ===
-                            "Rejected"
-                            ? "bg-red-50 text-red-700"
-                            : "bg-yellow-50 text-yellow-700"
-                          }`}
-                      >
-                        {
-                          order.exchangeStatus
-                        }
-                      </span>
-
-                      {order.exchangeStatus ===
-                        "Requested" && (
-
-                          <div className="flex gap-2">
-
-                            <button
-                              onClick={() =>
-                                decideExchange(
-                                  order._id,
-                                  "Approved"
-                                )
-                              }
-                              className="px-3 py-1 border border-green-200 rounded-lg text-green-700"
-                            >
-                              Approve
-                        </button>
-
-                            <button
-                              onClick={() =>
-                                decideExchange(
-                                  order._id,
-                                  "Rejected"
-                                )
-                              }
-                              className="px-3 py-1 border border-red-200 rounded-lg text-red-700"
-                            >
-                              Reject
-                        </button>
-
-                          </div>
-
-                        )}
-
-                    </div>
-
+                    )}
                   </div>
 
-                )
-              )}
+                  <div className="flex items-center gap-4">
+                    <StatusBadge status={order.exchangeStatus} />
 
+                    {order.exchangeStatus === "Requested" && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            decideExchange(order._id, "Approved")
+                          }
+                          className="p-1 px-2.5 rounded-lg border border-emerald-100 hover:bg-emerald-50 text-emerald-700 text-xs font-semibold transition-all"
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            decideExchange(order._id, "Rejected")
+                          }
+                          className="p-1 px-2.5 rounded-lg border border-red-100 hover:bg-red-50 text-red-600 text-xs font-semibold transition-all"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
           </div>
-
         </div>
-
       </div>
     );
-
   }
 
   if (tab === "campaigns") {
-    const campaigns = [
-      { id: "C-01", name: "Seven Summer Splash Outstation Mega Promo", channel: "WhatsApp Marketing", conversions: 48, status: "Active" },
-      { id: "C-02", name: "B2B First Cargo Delivery 10% Credit line boost", channel: "Direct Account Managers", conversions: 12, status: "Planned" }
-    ];
-
     return (
-      <div className="space-y-6 text-left">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-950">Marketing Campaigns</h1>
-          <p className="text-sm text-zinc-500 mt-1">Design discount banners, run push notification schedules, and watch conversion velocity metrics.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {campaigns.map((c) => (
-            <div key={c.id} className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs relative overflow-hidden flex flex-col justify-between">
-              <span className={`absolute top-4 right-4 text-[10px] font-bold uppercase border rounded px-2 py-0.5 ${c.status === "Active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-zinc-50 text-zinc-500 border-zinc-200"
-                }`}>
-                {c.status}
-              </span>
-
-              <div className="space-y-2 text-left pr-16">
-                <span className="text-xs text-[#e31e24] font-bold font-mono tracking-widest uppercase">{c.channel}</span>
-                <h3 className="font-bold text-zinc-900 text-sm leading-tight">{c.name}</h3>
-                <p className="text-xs font-medium text-zinc-400">Total Acquisitions: <span className="text-zinc-900 font-bold">{c.conversions} Orders</span></p>
-              </div>
-
-              <div className="pt-4 mt-6 border-t border-zinc-100 flex items-center justify-between">
-                <button className="text-xs font-bold text-zinc-900 hover:underline flex items-center gap-1">
-                  Optimize Campaign <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <PlaceholderView
+        title="Campaigns"
+        description="Manage promotional campaigns, seasonal offers and homepage marketing sections."
+        icon={<Megaphone className="w-5 h-5 text-zinc-500" />}
+      />
     );
   }
 
   if (tab === "cms") {
-    const pagesList = [
-      { title: "Summer Catalog Header Banner", lastEdited: "2026-05-24", author: "Sneha Nair", size: "12kb" },
-      { title: "B2B Wholesaler Terms of Service", lastEdited: "2026-05-18", author: "Abhishek Sharma", size: "22kb" },
-      { title: "Chennai local cash on delivery rules", lastEdited: "2026-05-28", author: "Logesh", size: "8kb" }
-    ];
-
     return (
-      <div className="space-y-6 text-left">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-950">Content Management (CMS)</h1>
-          <p className="text-sm text-zinc-500 mt-1">Alter mobile app banners, update policy documents, and adjust Chennai delivery messages.</p>
-        </div>
-
-        <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
-          <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center justify-between">
-            <span className="text-xs font-bold text-zinc-650 uppercase tracking-widest">Active CMS Blobs</span>
-            <button className="bg-black hover:bg-zinc-900 text-white rounded-lg p-1.5 px-3 text-xs font-bold inline-flex items-center gap-1.5">
-              <Plus className="w-3.5 h-3.5" /> Create Entry
-            </button>
-          </div>
-          <div className="divide-y divide-zinc-100">
-            {pagesList.map((p) => (
-              <div key={p.title} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-zinc-900">{p.title}</span>
-                  <span className="text-xs text-zinc-400 mt-0.5">Author Representative: {p.author} • Size: {p.size}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono text-zinc-400 mt-2">Edited {p.lastEdited}</span>
-                  <button className="p-1 text-zinc-400 hover:text-zinc-900"><ExternalLink className="w-4 h-4" /></button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <PlaceholderView
+        title="CMS"
+        description="Manage About, Contact, Terms, Privacy Policy and FAQ content."
+        icon={<FileText className="w-5 h-5 text-zinc-500" />}
+      />
     );
   }
 
   return (
     <div className="p-12 text-center text-zinc-400">
       Select an Active Console Management Tab.
+    </div>
+  );
+}
+
+function ReportCard({
+  label,
+  value,
+  color = "text-zinc-950"
+}: {
+  label: string;
+  value: any;
+  color?: string;
+}) {
+  return (
+    <div className="bg-white border border-zinc-200 rounded-2xl p-4">
+      <p className="text-xs text-zinc-400 uppercase">
+        {label}
+      </p>
+
+      <p className={`text-xl font-bold mt-2 ${color}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function StatusBadge({
+  status
+}: {
+  status: string;
+}) {
+  return (
+    <span
+      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${status === "Approved"
+        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+        : status === "Rejected"
+          ? "bg-red-50 text-red-700 border-red-200"
+          : "bg-amber-50 text-amber-700 border-amber-200"
+        }`}
+    >
+      {status}
+    </span>
+  );
+}
+
+function PlaceholderView({
+  title,
+  description,
+  icon
+}: {
+  title: string;
+  description: string;
+  icon: any;
+}) {
+  return (
+    <div className="space-y-6 text-left">
+      <div>
+        <h1 className="text-2xl font-bold text-zinc-950">
+          {title}
+        </h1>
+
+        <p className="text-sm text-zinc-500 mt-1">
+          {description}
+        </p>
+      </div>
+
+      <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-xs flex items-center gap-3">
+        {icon}
+
+        <span className="text-sm text-zinc-500">
+          This module is ready for final backend wiring.
+        </span>
+
+        <ExternalLink className="w-4 h-4 text-zinc-300 ml-auto" />
+      </div>
     </div>
   );
 }
