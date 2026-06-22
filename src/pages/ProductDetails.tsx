@@ -1104,7 +1104,7 @@ export default function ProductDetails() {
 
                                 <Link
                                     key={item._id}
-                                    to={`/product/${item._id}`}
+                                    to={`/product/${item.slug || item._id}`}
                                     className="bg-white rounded-3xl p-4 shadow-sm border border-zinc-100 hover:shadow-md transition block"
                                 >
 

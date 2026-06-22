@@ -111,6 +111,7 @@ export default function App() {
           <DashboardView
             orders={orders}
             users={users}
+            products={products}
             bestSellers={bestSellers}
             timeFilter={timeFilter}
             setTimeFilter={setTimeFilter}

@@ -191,13 +191,82 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     );
   }
 
-  if (tab === "delivery-outstation" || tab === "delivery-local") {
-    const isOutstation = tab === "delivery-outstation";
-    const deliveries = [
-      { id: "DL-109", destination: isOutstation ? "Mumbai Delivery Zone 2" : "Chennai (Adyar Hub)", carrier: isOutstation ? "BlueDart Air" : "Dunzo Fast", status: "In Transit", eta: "In 4 Hours" },
-      { id: "DL-110", destination: isOutstation ? "Bangalore Wholesale Depot" : "Chennai (T-Nagar Store)", carrier: isOutstation ? "Delhivery Heavy" : "Local Rider", status: "Pending", eta: "Schedules Today" },
-      { id: "DL-111", destination: isOutstation ? "Delhi NCR Depot" : "Chennai (Anna Nagar)", carrier: isOutstation ? "Gati Logistics" : "Porter Courier", status: "Delivered", eta: "Completed" }
-    ];
+  if (tab === "delivery" || tab === "local-delivery") {
+
+    const isOutstation =
+      tab === "delivery";
+
+    const [deliveryOrders, setDeliveryOrders] =
+      useState<any[]>([]);
+
+    const [deliveryLoading, setDeliveryLoading] =
+      useState(false);
+
+    useEffect(() => {
+
+      const loadDeliveries = async () => {
+
+        setDeliveryLoading(true);
+
+        try {
+
+          const res =
+            await fetch(
+              "http://localhost:5000/api/orders"
+            );
+
+          const data =
+            await res.json();
+
+          const ordersArray =
+            Array.isArray(data)
+              ? data
+              : data.orders || data.data || [];
+
+          const filteredOrders =
+            ordersArray.filter((order: any) => {
+
+              const city =
+                (order.city || "")
+                  .toLowerCase()
+                  .trim();
+
+              if (isOutstation) {
+
+                return (
+                  city !== "chennai" &&
+                  order.status !== "Cancelled"
+                );
+
+              }
+
+              return (
+                city === "chennai" &&
+                order.status !== "Cancelled"
+              );
+
+            });
+
+          setDeliveryOrders(filteredOrders);
+
+        } catch (error) {
+
+          console.error(
+            "Delivery loading error:",
+            error
+          );
+
+        } finally {
+
+          setDeliveryLoading(false);
+
+        }
+
+      };
+
+      loadDeliveries();
+
+    }, [tab]);
 
     return (
       <div className="space-y-6 text-left">
@@ -205,42 +274,116 @@ export default function OtherViews({ tab }: OtherViewsProps) {
           <h1 className="text-2xl font-bold text-zinc-950">
             {isOutstation ? "Outstation Deliveries" : "Local Chennai Deliveries"}
           </h1>
+
           <p className="text-sm text-zinc-500 mt-1">
-            {isOutstation ? "Oversee long-haul courier integrations and state-to-state cargo linehauls." : "Control same-day hyperlocal dispatches, rider status logs, and Chennai area drop-offs."}
+            {isOutstation
+              ? "Oversee long-haul courier integrations and state-to-state cargo linehauls."
+              : "Control same-day hyperlocal dispatches, rider status logs, and Chennai area drop-offs."}
           </p>
         </div>
 
         <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-4 bg-zinc-50/50 border-b border-zinc-150 flex items-center gap-2">
             <Truck className="w-5 h-5 text-zinc-500" />
-            <span className="text-xs font-bold text-zinc-650 uppercase tracking-wider">Live Delivery Dispatches</span>
+
+            <span className="text-xs font-bold text-zinc-650 uppercase tracking-wider">
+              Live Delivery Dispatches
+            </span>
           </div>
+
           <div className="divide-y divide-zinc-100">
-            {deliveries.map((d) => (
-              <div key={d.id} className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-zinc-100 rounded-xl flex items-center justify-center border border-zinc-200/50">
-                    {isOutstation ? <Truck className="w-5 h-5 text-zinc-600" /> : <MapPin className="w-5 h-5 text-[#e31e24]" />}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-zinc-900">{d.destination}</span>
-                    <span className="text-xs text-zinc-400 font-mono mt-0.5">{d.carrier} • Tracking ID: {d.id}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-left sm:text-right">
-                    <span className="text-xs font-semibold text-zinc-400 block uppercase">Estimated ETA</span>
-                    <span className="text-xs font-bold text-zinc-800">{d.eta}</span>
-                  </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${d.status === "Delivered" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                    d.status === "In Transit" ? "bg-blue-50 text-blue-700 border-blue-200" :
-                      "bg-amber-50 text-amber-700 border-amber-200"
-                    }`}>
-                    {d.status}
-                  </span>
-                </div>
+
+            {deliveryLoading && (
+              <div className="p-8 text-center text-zinc-400 text-sm">
+                Loading delivery orders...
               </div>
-            ))}
+            )}
+
+            {!deliveryLoading &&
+              deliveryOrders.length === 0 && (
+                <div className="p-8 text-center text-zinc-400 text-sm">
+                  No delivery orders found.
+                </div>
+              )}
+
+            {!deliveryLoading &&
+              deliveryOrders.map((order) => {
+
+                const trackingId =
+                  order.awbCode ||
+                  order.shipmentId ||
+                  order.shiprocketOrderId ||
+                  order.orderNumber;
+
+                const carrier =
+                  order.courierName ||
+                  (isOutstation
+                    ? "Courier Pending"
+                    : "Local Rider Pending");
+
+                const eta =
+                  order.status === "Delivered"
+                    ? "Completed"
+                    : order.status === "Shipped"
+                      ? "In Transit"
+                      : "Pending Dispatch";
+
+                return (
+                  <div
+                    key={order._id}
+                    className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between hover:bg-zinc-50/50 transition-colors gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-zinc-100 rounded-xl flex items-center justify-center border border-zinc-200/50">
+                        {isOutstation ? (
+                          <Truck className="w-5 h-5 text-zinc-600" />
+                        ) : (
+                          <MapPin className="w-5 h-5 text-[#e31e24]" />
+                        )}
+                      </div>
+
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-zinc-900">
+                          {order.city || "Unknown City"} {order.pincode ? `(${order.pincode})` : ""}
+                        </span>
+
+                        <span className="text-xs text-zinc-400 font-mono mt-0.5">
+                          {carrier} • Tracking ID: {trackingId}
+                        </span>
+
+                        <span className="text-xs text-zinc-500 mt-1">
+                          {order.customerName || "Customer"} • {order.orderNumber} • ₹{order.totalAmount || 0}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="text-left sm:text-right">
+                        <span className="text-xs font-semibold text-zinc-400 block uppercase">
+                          Estimated ETA
+                        </span>
+
+                        <span className="text-xs font-bold text-zinc-800">
+                          {eta}
+                        </span>
+                      </div>
+
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${order.status === "Delivered"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : order.status === "Shipped"
+                            ? "bg-blue-50 text-blue-700 border-blue-200"
+                            : "bg-amber-50 text-amber-700 border-amber-200"
+                          }`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
+                  </div>
+                );
+
+              })}
+
           </div>
         </div>
       </div>

@@ -59,7 +59,7 @@ export default function ProductCard({
             transition={{ duration: 0.25 }}
             className="group bg-white/70 backdrop-blur-xl rounded-[32px] overflow-hidden border border-white/50 shadow-lg hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-all duration-500"
         >
-            <Link to={`/product/${product._id}`}>
+            <Link to={`/product/${product.slug || product._id}`}>
 
                 {/* IMAGE */}
 
