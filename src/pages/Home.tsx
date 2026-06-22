@@ -35,7 +35,7 @@ import "swiper/css/effect-fade";
 
 import mobileBanner from "../assets/mobile-case-banner.jpg";
 import tvBanner from "../assets/tv-remote-banner.jpg";
-import acBanner from "../assets/ac-remote-banner.jpg";
+import acBanner from "../assets/acmod.jpeg";
 
 export default function Home() {
   return (
