@@ -127,7 +127,20 @@ export default function Checkout() {
 
         console.log("USER:", user);
 
+
         const orderData = {
+            orderType:
+                buyNowProduct?.orderType ||
+                "normal",
+
+            customerType:
+                user?.customerType ||
+                "b2c",
+
+            bulkOrder:
+                buyNowProduct?.isBulkOrder ||
+                false,
+
             userId: user._id || "guest-user",
 
             customerName: `${firstName} ${lastName}`,

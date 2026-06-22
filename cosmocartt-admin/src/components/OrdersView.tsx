@@ -667,8 +667,32 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                       />
 
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs font-bold text-zinc-900">
-                      {order.orderNumber || order._id.slice(-8)}
+                    <td className="px-6 py-4">
+
+                      <div className="flex flex-col gap-2">
+
+                        <span className="font-mono text-xs font-bold text-zinc-900">
+                          {order.orderNumber || order._id.slice(-8)}
+                        </span>
+
+                        <div className="flex items-center gap-2">
+
+                          {order.bulkOrder && (
+                            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold">
+                              BULK
+                            </span>
+                          )}
+
+                          {order.customerType === "b2b" && (
+                            <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold">
+                              B2B
+                            </span>
+                          )}
+
+                        </div>
+
+                      </div>
+
                     </td>
 
                     <td className="px-6 py-4">

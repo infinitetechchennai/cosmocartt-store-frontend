@@ -82,6 +82,21 @@ const orderSchema = new mongoose.Schema(
             default: "Pending"
         },
 
+        orderType: {
+            type: String,
+            default: "normal"
+        },
+
+        customerType: {
+            type: String,
+            default: "b2c"
+        },
+
+        bulkOrder: {
+            type: Boolean,
+            default: false
+        },
+
         shiprocketOrderId: String,
 
         shipmentId: String,

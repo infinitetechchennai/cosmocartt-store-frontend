@@ -541,7 +541,29 @@ export default function OtherViews({ tab }: OtherViewsProps) {
                       </span>
 
                       <span className="text-xs text-zinc-400 font-mono">
-                        ({order.orderNumber})
+                        (<div className="flex items-center gap-2">
+
+                          <span>
+                            {order.orderNumber}
+                          </span>
+
+                          {order.bulkOrder && (
+
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold">
+                              BULK
+                            </span>
+
+                          )}
+
+                          {order.customerType === "b2b" && (
+
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold">
+                              B2B
+                            </span>
+
+                          )}
+
+                        </div>)
                       </span>
                     </div>
 

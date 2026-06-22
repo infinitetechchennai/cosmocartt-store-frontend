@@ -24,8 +24,15 @@ export default function ProductDetails() {
     const navigate = useNavigate();
 
     const [quantity, setQuantity] = useState(1);
+    const [bulkQuantity, setBulkQuantity] = useState(25);
     const [product, setProduct] = useState<any>(null);
     const [selectedImage, setSelectedImage] = useState("");
+    const [isZooming, setIsZooming] = useState(false);
+    const [zoomPosition, setZoomPosition] =
+        useState({
+            x: 50,
+            y: 50
+        });
     const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
     const [reviews, setReviews] = useState<any[]>([]);
@@ -35,6 +42,10 @@ export default function ProductDetails() {
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewComment, setReviewComment] = useState("");
     const [submittingReview, setSubmittingReview] = useState(false);
+
+    const isB2BVerified =
+        user?.customerType === "b2b" &&
+        user?.verificationStatus === "Verified";
 
     const displayPrice =
         product
@@ -48,7 +59,8 @@ export default function ProductDetails() {
         product?.retailPrice || 0;
 
     const discount =
-        retailPrice && displayPrice < retailPrice
+        retailPrice &&
+            displayPrice < retailPrice
             ? Math.round(
                 (
                     (
@@ -61,18 +73,26 @@ export default function ProductDetails() {
             : 0;
 
     const userHasReviewed = user
-        ? reviews.some((r) => r.userId === user._id)
+        ? reviews.some(
+            (r) =>
+                r.userId === user._id
+        )
         : false;
 
     const ratingCounts =
         [5, 4, 3, 2, 1].map((rating) => {
 
             const count =
-                reviews.filter((review) => review.rating === rating).length;
+                reviews.filter(
+                    (review) =>
+                        review.rating === rating
+                ).length;
 
             const percentage =
                 reviewCount > 0
-                    ? Math.round((count / reviewCount) * 100)
+                    ? Math.round(
+                        (count / reviewCount) * 100
+                    )
                     : 0;
 
             return {
@@ -83,23 +103,55 @@ export default function ProductDetails() {
 
         });
 
+    const productInfo = [
+        ["Brand", product?.brand],
+        ["Model", product?.model || "Not specified"],
+        ["Category", product?.category],
+        ["Subcategory", product?.subcategory],
+        ["SKU", product?.sku],
+        ["HSN Code", product?.hsnCode || "Not specified"],
+        ["GST", `${product?.gstPercentage || 0}%`],
+        ["Seller", product?.sellerName || "CosmoCartt"]
+    ];
+
+    const highlights = [
+        "Premium quality product selected for everyday use",
+        "GST invoice support for business and personal purchases",
+        "Secure checkout with COD and online payment options",
+        "Verified purchase reviews from real CosmoCartt customers",
+        "Fast dispatch support with order tracking after shipment"
+    ];
+
+    const trustBadges = [
+        { icon: "🔒", title: "Secure Pay", text: "256-bit encrypted checkout" },
+        { icon: "💳", title: "COD Available", text: "Pay when it arrives" },
+        { icon: "🧾", title: "GST Bill", text: "Tax invoice included" },
+        { icon: "🚚", title: "Fast Ship", text: "Dispatched in 24-48 hrs" }
+    ];
+
     useEffect(() => {
 
         window.scrollTo(0, 0);
 
-        const isMongoId =
-            /^[0-9a-fA-F]{24}$/.test(
-                id || ""
-            );
+        const loadProduct = async () => {
 
-        const productUrl =
-            isMongoId
-                ? `http://localhost:5000/api/products/${id}`
-                : `http://localhost:5000/api/products/slug/${id}`;
+            try {
 
-        fetch(productUrl)
-            .then((res) => res.json())
-            .then((data) => {
+                const isMongoId =
+                    /^[0-9a-fA-F]{24}$/.test(
+                        id || ""
+                    );
+
+                const productUrl =
+                    isMongoId
+                        ? `http://localhost:5000/api/products/${id}`
+                        : `http://localhost:5000/api/products/slug/${id}`;
+
+                const res =
+                    await fetch(productUrl);
+
+                const data =
+                    await res.json();
 
                 if (data.success) {
 
@@ -110,15 +162,25 @@ export default function ProductDetails() {
                     );
 
                     setQuantity(1);
+                    setBulkQuantity(25);
 
                 }
 
-            })
-            .catch((err) => console.error(err));
+            } catch (err) {
+
+                console.error(err);
+
+            }
+
+        };
+
+        loadProduct();
 
     }, [id]);
 
     useEffect(() => {
+
+        if (!product?._id) return;
 
         const loadReviews = async () => {
 
@@ -128,7 +190,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/reviews/product/${id}`
+                        `http://localhost:5000/api/reviews/product/${product._id}`
                     );
 
                 const data =
@@ -136,9 +198,9 @@ export default function ProductDetails() {
 
                 if (data.success) {
 
-                    setReviews(data.reviews);
-                    setAverageRating(data.averageRating);
-                    setReviewCount(data.reviewCount);
+                    setReviews(data.reviews || []);
+                    setAverageRating(data.averageRating || 0);
+                    setReviewCount(data.reviewCount || 0);
 
                 }
 
@@ -156,9 +218,11 @@ export default function ProductDetails() {
 
         loadReviews();
 
-    }, [id]);
+    }, [product?._id]);
 
     useEffect(() => {
+
+        if (!product?._id) return;
 
         const loadRelatedProducts = async () => {
 
@@ -166,7 +230,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/products/related/${product?._id || id}`
+                        `http://localhost:5000/api/products/related/${product._id}`
                     );
 
                 const data =
@@ -174,7 +238,9 @@ export default function ProductDetails() {
 
                 if (data.success) {
 
-                    setRelatedProducts(data.products || []);
+                    setRelatedProducts(
+                        data.products || []
+                    );
 
                 }
 
@@ -188,72 +254,82 @@ export default function ProductDetails() {
 
         loadRelatedProducts();
 
-    }, [id]);
+    }, [product?._id]);
 
     useEffect(() => {
 
-        const loadSeo = async () => {
+        if (!product?._id) return;
 
-            if (!product) return;
+        const loadSeo = async () => {
 
             try {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/products/seo/${product?._id || id}`
+                        `http://localhost:5000/api/products/seo/${product._id}`
                     );
 
                 const data =
                     await res.json();
 
-                if (!data.success) return;
+                if (data.success) {
 
-                document.title =
-                    data.seo.title;
+                    document.title =
+                        data.seo.title;
 
-                let metaDescription =
-                    document.querySelector('meta[name="description"]');
+                    let metaDescription =
+                        document.querySelector(
+                            'meta[name="description"]'
+                        );
 
-                if (!metaDescription) {
+                    if (!metaDescription) {
 
-                    metaDescription =
-                        document.createElement("meta");
+                        metaDescription =
+                            document.createElement("meta");
+
+                        metaDescription.setAttribute(
+                            "name",
+                            "description"
+                        );
+
+                        document.head.appendChild(
+                            metaDescription
+                        );
+
+                    }
 
                     metaDescription.setAttribute(
-                        "name",
-                        "description"
+                        "content",
+                        (data.seo.description || product.name).slice(0, 160)
                     );
 
-                    document.head.appendChild(metaDescription);
+                    let canonical =
+                        document.querySelector(
+                            'link[rel="canonical"]'
+                        );
 
-                }
+                    if (!canonical) {
 
-                metaDescription.setAttribute(
-                    "content",
-                    data.seo.description.slice(0, 160)
-                );
+                        canonical =
+                            document.createElement("link");
 
-                let canonical =
-                    document.querySelector('link[rel="canonical"]');
+                        canonical.setAttribute(
+                            "rel",
+                            "canonical"
+                        );
 
-                if (!canonical) {
+                        document.head.appendChild(
+                            canonical
+                        );
 
-                    canonical =
-                        document.createElement("link");
+                    }
 
                     canonical.setAttribute(
-                        "rel",
-                        "canonical"
+                        "href",
+                        data.seo.canonicalUrl
                     );
 
-                    document.head.appendChild(canonical);
-
                 }
-
-                canonical.setAttribute(
-                    "href",
-                    data.seo.canonicalUrl
-                );
 
             } catch (err) {
 
@@ -265,14 +341,16 @@ export default function ProductDetails() {
 
         loadSeo();
 
-    }, [product, id]);
+    }, [product?._id]);
 
     useEffect(() => {
 
         if (!product) return;
 
         let structuredData =
-            document.getElementById("product-structured-data");
+            document.getElementById(
+                "product-structured-data"
+            );
 
         if (!structuredData) {
 
@@ -285,7 +363,9 @@ export default function ProductDetails() {
             (structuredData as HTMLScriptElement).type =
                 "application/ld+json";
 
-            document.head.appendChild(structuredData);
+            document.head.appendChild(
+                structuredData
+            );
 
         }
 
@@ -350,6 +430,13 @@ export default function ProductDetails() {
 
         }
 
+        if (!product?._id) {
+
+            toast.error("Product is still loading");
+            return;
+
+        }
+
         setSubmittingReview(true);
 
         try {
@@ -363,7 +450,7 @@ export default function ProductDetails() {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            productId: id,
+                            productId: product._id,
                             userId: user._id,
                             customerName:
                                 user.name ||
@@ -427,87 +514,166 @@ export default function ProductDetails() {
     if (!product) {
 
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                Loading Product...
+            <div className="min-h-screen bg-slate-50">
+                <Navbar />
+                <div className="min-h-[60vh] flex items-center justify-center">
+                    <div className="bg-white border border-zinc-100 rounded-3xl px-8 py-6 shadow-sm text-zinc-500 animate-pulse">
+                        Loading product details...
+                    </div>
+                </div>
+                <Footer />
             </div>
         );
 
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50/30">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
+
+                {/* BREADCRUMB */}
 
                 <nav
-                    className="text-sm text-zinc-500 mb-6"
+                    className="text-sm text-zinc-500 mb-5 md:mb-6 overflow-x-auto"
                     aria-label="Breadcrumb"
                 >
-                    <ol className="flex items-center gap-2 flex-wrap">
+                    <ol className="flex items-center gap-2 whitespace-nowrap">
                         <li>
                             <Link
                                 to="/"
-                                className="hover:text-[#4B1E78]"
+                                className="hover:text-[#4B1E78] transition-colors"
                             >
                                 Home
                             </Link>
                         </li>
 
-                        <li>/</li>
+                        <li className="text-zinc-300">›</li>
 
                         <li>
                             <Link
-                                to={`/products?category=${encodeURIComponent(product.category)}`}
-                                className="hover:text-[#4B1E78]"
+                                to={`/products?category=${encodeURIComponent(product.category || "")}`}
+                                className="hover:text-[#4B1E78] transition-colors"
                             >
                                 {product.category}
                             </Link>
                         </li>
 
-                        <li>/</li>
+                        <li className="text-zinc-300">›</li>
 
                         <li>
                             <Link
-                                to={`/products?category=${encodeURIComponent(product.category)}&subcategory=${encodeURIComponent(product.subcategory)}`}
-                                className="hover:text-[#4B1E78]"
+                                to={`/products?category=${encodeURIComponent(product.category || "")}&subcategory=${encodeURIComponent(product.subcategory || "")}`}
+                                className="hover:text-[#4B1E78] transition-colors"
                             >
                                 {product.subcategory}
                             </Link>
                         </li>
 
-                        <li>/</li>
+                        <li className="text-zinc-300">›</li>
 
-                        <li className="text-zinc-900 font-medium truncate max-w-xs">
+                        <li className="text-zinc-900 font-semibold truncate max-w-[180px] md:max-w-xs">
                             {product.name}
                         </li>
                     </ol>
                 </nav>
 
-                <div className="grid lg:grid-cols-[0.95fr_1.1fr_0.75fr] gap-7 items-start">
+                {/* MAIN STAGE — 2 COLUMN, ROBUST AT EVERY BREAKPOINT */}
 
-                    <div className="bg-white rounded-3xl p-5 shadow-sm border border-zinc-100">
+                <section className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
 
-                        <div className="aspect-square bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden">
+                    {/* IMAGE GALLERY — desktop: vertical thumb rail beside hero. mobile: horizontal scroll below. */}
 
-                            <img
-                                src={`http://localhost:5000${selectedImage}`}
-                                alt={product.name}
-                                className="w-full h-full object-contain"
-                            />
+                    <div className="bg-white border border-zinc-100 rounded-[2rem] p-4 md:p-6 shadow-sm lg:sticky lg:top-24">
+
+                        <div className="flex gap-4">
+
+                            <div className="hidden md:flex md:flex-col gap-3 w-16 lg:w-20 shrink-0 max-h-[440px] overflow-y-auto pr-1">
+                                {product.images?.map((img: string, index: number) => (
+                                    <button
+                                        key={index}
+                                        onClick={() =>
+                                            setSelectedImage(img)
+                                        }
+                                        className={`shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-xl border bg-white overflow-hidden transition-all focus:outline-none focus:ring-2 focus:ring-[#4B1E78]/30 ${selectedImage === img
+                                            ? "border-[#4B1E78] ring-2 ring-[#4B1E78]/20"
+                                            : "border-zinc-200 hover:border-zinc-400"
+                                            }`}
+                                    >
+                                        <img
+                                            src={`http://localhost:5000${img}`}
+                                            alt={`${product.name} view ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div
+                                className="relative flex-1 aspect-square bg-gradient-to-br from-slate-50 to-white rounded-[1.5rem] overflow-hidden flex items-center justify-center border border-zinc-100 cursor-zoom-in group"
+                                onMouseEnter={() =>
+                                    setIsZooming(true)
+                                }
+                                onMouseLeave={() =>
+                                    setIsZooming(false)
+                                }
+                                onMouseMove={(e) => {
+
+                                    const rect =
+                                        e.currentTarget.getBoundingClientRect();
+
+                                    const x =
+                                        ((e.clientX - rect.left) / rect.width) * 100;
+
+                                    const y =
+                                        ((e.clientY - rect.top) / rect.height) * 100;
+
+                                    setZoomPosition({
+                                        x,
+                                        y
+                                    });
+
+                                }}
+                            >
+                                <img
+                                    src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
+                                    alt={product.name}
+                                    className={`w-full h-full object-contain p-4 transition-opacity duration-200 ${isZooming
+                                        ? "lg:opacity-0"
+                                        : "opacity-100"
+                                        }`}
+                                />
+
+                                {isZooming && (
+                                    <div
+                                        className="hidden lg:block absolute inset-0 bg-white bg-no-repeat"
+                                        style={{
+                                            backgroundImage:
+                                                `url(http://localhost:5000${selectedImage || product.images?.[0] || ""})`,
+                                            backgroundSize:
+                                                "230%",
+                                            backgroundPosition:
+                                                `${zoomPosition.x}% ${zoomPosition.y}%`
+                                        }}
+                                    />
+                                )}
+
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Hover to zoom
+    </div>
+                            </div>
 
                         </div>
 
-                        <div className="grid grid-cols-6 gap-2 mt-4">
-
+                        <div className="flex md:hidden gap-3 mt-4 overflow-x-auto pb-1">
                             {product.images?.map((img: string, index: number) => (
-
                                 <button
                                     key={index}
                                     onClick={() =>
                                         setSelectedImage(img)
                                     }
-                                    className={`aspect-square rounded-xl border bg-white overflow-hidden ${selectedImage === img
+                                    className={`shrink-0 w-20 h-20 rounded-xl border bg-white overflow-hidden transition-all ${selectedImage === img
                                         ? "border-[#4B1E78] ring-2 ring-[#4B1E78]/20"
                                         : "border-zinc-200"
                                         }`}
@@ -518,376 +684,458 @@ export default function ProductDetails() {
                                         className="w-full h-full object-cover"
                                     />
                                 </button>
-
                             ))}
-
                         </div>
 
                     </div>
 
-                    <div className="bg-white rounded-3xl p-6 md:p-7 shadow-sm border border-zinc-100 min-h-[560px]">
+                    {/* RIGHT COLUMN — title, price, trust, buy box, bulk order. one natural stack at every width. */}
 
-                        <div className="flex items-center gap-3 flex-wrap mb-4">
+                    <div className="flex flex-col gap-5">
 
-                            <span className="bg-[#4B1E78]/10 text-[#4B1E78] px-3 py-1 rounded-full text-sm font-bold">
-                                {product.brand}
-                            </span>
+                        <div className="bg-white border border-zinc-100 rounded-[2rem] p-5 md:p-7 shadow-sm">
 
-                            {product.model && (
-                                <span className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-sm font-semibold">
-                                    {product.model}
-                                </span>
-                            )}
-
-                            {product.stock > 0 ? (
-                                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                                    In Stock
-                                </span>
-                            ) : (
-                                <span className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
-                                    Out Of Stock
-                                </span>
-                            )}
-
-                        </div>
-
-                        <h1 className="text-2xl md:text-4xl font-extrabold text-zinc-950 leading-tight">
-                            {product.name}
-                        </h1>
-
-                        <div className="flex items-center gap-3 mt-5 flex-wrap">
-
-                            <span className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                                ★ {reviewCount > 0 ? averageRating : "New"}
-                            </span>
-
-                            <a
-                                href="#reviews"
-                                className="text-[#4B1E78] font-semibold hover:underline text-sm"
-                            >
-                                {reviewCount} {reviewCount === 1 ? "Review" : "Reviews"}
-                            </a>
-
-                            <span className="text-zinc-300">|</span>
-
-                            <span className="text-sm text-zinc-500">
-                                SKU: {product.sku}
-                            </span>
-
-                        </div>
-
-                        <div className="mt-7 border-y border-zinc-100 py-7">
-
-                            <div className="flex items-end gap-4 flex-wrap">
-
-                                <span className="text-4xl md:text-5xl font-extrabold text-[#4B1E78]">
-                                    ₹{displayPrice?.toLocaleString()}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="bg-[#4B1E78]/10 text-[#4B1E78] px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide">
+                                    {product.brand}
                                 </span>
 
-                                {discount > 0 && (
-                                    <>
-                                        <span className="text-xl text-zinc-400 line-through">
-                                            ₹{retailPrice.toLocaleString()}
-                                        </span>
-
-                                        <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-bold">
-                                            {discount}% OFF
-                                        </span>
-                                    </>
+                                {product.model && (
+                                    <span className="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold">
+                                        {product.model}
+                                    </span>
                                 )}
+
+                                {isB2BVerified && (
+                                    <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
+                                        Verified B2B Pricing
+                                    </span>
+                                )}
+                            </div>
+
+                            <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 leading-tight tracking-tight mt-4">
+                                {product.name}
+                            </h1>
+
+                            <div className="flex items-center gap-3 flex-wrap mt-3 text-sm">
+
+                                <a
+                                    href="#reviews"
+                                    className="inline-flex items-center gap-1.5 bg-green-600 text-white px-2.5 py-1 rounded-full font-bold hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-300"
+                                >
+                                    ★ {reviewCount > 0 ? averageRating : "New"}
+                                </a>
+
+                                <a
+                                    href="#reviews"
+                                    className="text-[#4B1E78] font-semibold hover:underline"
+                                >
+                                    {reviewCount} {reviewCount === 1 ? "Verified Review" : "Verified Reviews"}
+                                </a>
+
+                                <span className="text-zinc-300">|</span>
+
+                                <span className="text-zinc-500">
+                                    SKU: {product.sku || "-"}
+                                </span>
 
                             </div>
 
-                            <p className="text-sm text-zinc-500 mt-3">
-                                Inclusive of GST. Shipping calculated at checkout.
-                            </p>
 
-                            {user?.customerType === "b2b" &&
-                                user?.verificationStatus === "Verified" && (
+                            <div className="mt-5 border-y border-zinc-100 py-5">
+                                <div className="flex items-end gap-3 flex-wrap">
+                                    <span className="text-3xl md:text-4xl font-black text-[#4B1E78] tracking-tight">
+                                        ₹{displayPrice?.toLocaleString()}
+                                    </span>
 
-                                    <div className="text-green-700 bg-green-50 rounded-2xl px-4 py-4 text-sm font-semibold mt-5">
-                                        Wholesale pricing applied for your verified B2B account.
+                                    {discount > 0 && (
+                                        <>
+                                            <span className="text-lg text-zinc-400 line-through pb-0.5">
+                                                ₹{retailPrice.toLocaleString()}
+                                            </span>
+
+                                            <span className="bg-red-50 text-red-600 px-2.5 py-1 rounded-full text-sm font-extrabold">
+                                                {discount}% OFF
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+
+                                <p className="text-sm text-zinc-500 mt-2">
+                                    Inclusive of GST. Shipping charges calculated at checkout.
+                                </p>
+
+                                {isB2BVerified && (
+                                    <div className="mt-4 bg-green-50 border border-green-100 rounded-2xl p-4 text-sm text-green-800 font-semibold">
+                                        Wholesale pricing has been automatically applied for your verified business account.
                                     </div>
-
                                 )}
-
-                        </div>
-
-                        <div className="grid sm:grid-cols-2 gap-4 mt-7">
-
-                            <div className="bg-slate-50 rounded-2xl p-5">
-                                <p className="font-bold text-zinc-900">
-                                    GST Invoice
-                                </p>
-                                <p className="text-sm text-zinc-500 mt-1 leading-6">
-                                    Business-ready invoice available.
-                                </p>
                             </div>
 
-                            <div className="bg-slate-50 rounded-2xl p-5">
-                                <p className="font-bold text-zinc-900">
-                                    Secure Payment
-                                </p>
-                                <p className="text-sm text-zinc-500 mt-1 leading-6">
-                                    COD and online payment support.
-                                </p>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {trustBadges.map((badge) => (
+                                    <TrustCard
+                                        key={badge.title}
+                                        icon={badge.icon}
+                                        title={badge.title}
+                                        text={badge.text}
+                                    />
+                                ))}
                             </div>
 
-                            <div className="bg-slate-50 rounded-2xl p-5">
-                                <p className="font-bold text-zinc-900">
-                                    Fast Dispatch
-                                </p>
-                                <p className="text-sm text-zinc-500 mt-1 leading-6">
-                                    Delivery tracking after shipment.
-                                </p>
-                            </div>
-
-                            <div className="bg-slate-50 rounded-2xl p-5">
-                                <p className="font-bold text-zinc-900">
-                                    Verified Reviews
-                                </p>
-                                <p className="text-sm text-zinc-500 mt-1 leading-6">
-                                    Reviews only from real buyers.
+                            <div className="mt-5">
+                                <p className={`text-sm font-bold ${product.stock > 0 ? "text-green-700" : "text-red-600"}`}>
+                                    {product.stock > 0
+                                        ? `${product.stock} units in stock`
+                                        : "Out of stock"}
                                 </p>
                             </div>
 
                         </div>
 
-                    </div>
+                        {/* BUY BOX */}
 
-                    <div className="bg-white rounded-3xl p-5 shadow-sm border border-zinc-100 lg:sticky lg:top-24">
+                        <div className="bg-white border border-zinc-100 rounded-[2rem] p-5 md:p-7 shadow-sm">
 
-                        <p className="text-sm text-zinc-500">
-                            Current price
-                        </p>
-
-                        <p className="text-3xl font-extrabold text-[#4B1E78] mt-1">
-                            ₹{displayPrice?.toLocaleString()}
-                        </p>
-
-                        <div className="mt-4 rounded-2xl bg-slate-50 p-4 space-y-2 text-sm">
-
-                            <p className="font-semibold text-zinc-900">
-                                Delivery options
-                            </p>
-
-                            <p className="text-zinc-600 leading-6">
-                                Check delivery details during checkout.
-                            </p>
-
-                            <p className="text-green-700 font-semibold">
-                                {product.stock > 0
-                                    ? `${product.stock} units available`
-                                    : "Currently unavailable"}
-                            </p>
-
-                        </div>
-
-                        <div className="mt-5">
-
-                            <label className="text-sm font-bold text-zinc-900">
-                                Quantity
-                            </label>
-
-                            <div className="flex items-center gap-3 mt-3">
-
-                                <button
-                                    onClick={() =>
-                                        setQuantity((prev) =>
-                                            prev > 1 ? prev - 1 : 1
-                                        )
-                                    }
-                                    className="w-10 h-10 border rounded-xl font-bold"
-                                >
-                                    -
-                                </button>
-
-                                <span className="font-bold min-w-6 text-center">
-                                    {quantity}
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-bold text-zinc-900">
+                                    Quantity
                                 </span>
 
-                                <button
-                                    onClick={() =>
-                                        setQuantity((prev) =>
-                                            prev < product.stock
-                                                ? prev + 1
-                                                : prev
-                                        )
-                                    }
-                                    disabled={
-                                        product.stock <= 0 ||
-                                        quantity >= product.stock
-                                    }
-                                    className="w-10 h-10 border rounded-xl font-bold disabled:opacity-40"
-                                >
-                                    +
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() =>
+                                            setQuantity((prev) =>
+                                                prev > 1 ? prev - 1 : 1
+                                            )
+                                        }
+                                        className="w-9 h-9 border border-zinc-200 rounded-xl font-bold bg-white hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#4B1E78]/30"
+                                    >
+                                        -
+                                    </button>
 
+                                    <span className="font-bold min-w-6 text-center">
+                                        {quantity}
+                                    </span>
+
+                                    <button
+                                        onClick={() =>
+                                            setQuantity((prev) =>
+                                                prev < product.stock
+                                                    ? prev + 1
+                                                    : prev
+                                            )
+                                        }
+                                        disabled={
+                                            product.stock <= 0 ||
+                                            quantity >= product.stock
+                                        }
+                                        className="w-9 h-9 border border-zinc-200 rounded-xl font-bold bg-white hover:bg-slate-50 transition-colors disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-[#4B1E78]/30"
+                                    >
+                                        +
+                                    </button>
+                                </div>
                             </div>
 
-                        </div>
+                            <div className="grid grid-cols-2 gap-3 mt-5">
+                                <button
+                                    onClick={() => {
+                                        if (product.stock <= 0) {
+                                            toast.error("Product is out of stock");
+                                            return;
+                                        }
 
-                        <button
-                            onClick={() => {
-
-                                if (product.stock <= 0) {
-
-                                    toast.error("Product is out of stock");
-                                    return;
-
-                                }
-
-                                addToCart({
-                                    ...product,
-                                    quantity
-                                });
-
-                                toast.success("Added to cart");
-
-                            }}
-                            disabled={product.stock <= 0}
-                            className="w-full bg-[#4B1E78] hover:bg-[#39155d] text-white py-4 rounded-2xl font-bold mt-6 disabled:bg-gray-300"
-                        >
-                            Add To Cart
-                        </button>
-
-                        <button
-                            disabled={product.stock <= 0}
-                            onClick={() => {
-
-                                navigate("/checkout", {
-                                    state: {
-                                        buyNowProduct: {
+                                        addToCart({
                                             ...product,
                                             quantity
-                                        }
-                                    }
-                                });
+                                        });
 
-                            }}
-                            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-2xl font-bold mt-3 disabled:bg-gray-300"
-                        >
-                            Buy Now
-                        </button>
+                                        toast.success("Added to cart");
+                                    }}
+                                    disabled={product.stock <= 0}
+                                    className="bg-[#4B1E78] hover:bg-[#39155d] active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold transition-all disabled:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4B1E78]/40"
+                                >
+                                    Add To Cart
+                                </button>
 
-                        <div className="mt-5 text-xs text-zinc-500 space-y-2">
+                                <button
+                                    disabled={product.stock <= 0}
+                                    onClick={() => {
+                                        navigate("/checkout", {
+                                            state: {
+                                                buyNowProduct: {
+                                                    ...product,
+                                                    quantity
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold transition-all disabled:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-300"
+                                >
+                                    Buy Now
+                                </button>
+                            </div>
 
-                            <p>✓ Secure checkout</p>
-                            <p>✓ GST invoice supported</p>
-                            <p>✓ Order tracking available</p>
-                            <p>✓ Verified purchase review system</p>
+                            <div className="grid grid-cols-3 gap-3 mt-4 text-xs text-center text-zinc-500">
+                                <span>Usually dispatched in 24-48 hrs</span>
+                                <span className="border-x border-zinc-100">GST invoice supported</span>
+                                <span>COD &amp; online payment</span>
+                            </div>
 
                         </div>
 
+                        {/* BULK ORDER — BLUE, AS REQUESTED */}
+
+                        {isB2BVerified && (
+                            <div className="bg-blue-50/60 border border-blue-100 rounded-[2rem] p-5 md:p-7">
+
+                                <h3 className="text-lg font-extrabold text-blue-700">
+                                    B2B Bulk Order
+                                </h3>
+
+                                <p className="text-sm text-blue-700/70 mt-1">
+                                    MOQ starts at 25 units with wholesale pricing.
+                                </p>
+
+                                <div className="mt-4 bg-white rounded-2xl p-4 border border-blue-100 space-y-3">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-zinc-500">
+                                            MOQ
+                                        </span>
+                                        <span className="font-bold text-blue-700">
+                                            25 Units
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-zinc-500">
+                                            Wholesale Price
+                                        </span>
+                                        <span className="font-bold text-blue-700">
+                                            ₹{product.wholesalePrice}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between mt-4">
+                                    <span className="text-sm font-bold text-zinc-900">
+                                        Bulk Quantity
+                                    </span>
+
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() =>
+                                                setBulkQuantity((prev) =>
+                                                    prev > 25 ? prev - 25 : 25
+                                                )
+                                            }
+                                            className="w-9 h-9 border border-blue-200 rounded-xl font-bold bg-white hover:bg-blue-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                        >
+                                            -
+                                        </button>
+
+                                        <span className="font-bold min-w-8 text-center text-blue-700">
+                                            {bulkQuantity}
+                                        </span>
+
+                                        <button
+                                            onClick={() =>
+                                                setBulkQuantity((prev) =>
+                                                    prev + 25 <= product.stock
+                                                        ? prev + 25
+                                                        : prev
+                                                )
+                                            }
+                                            disabled={
+                                                bulkQuantity + 25 > product.stock
+                                            }
+                                            className="w-9 h-9 border border-blue-200 rounded-xl font-bold bg-white hover:bg-blue-50 transition-colors disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 bg-white rounded-2xl p-4 border border-blue-100 flex items-center justify-between">
+                                    <span className="text-sm text-zinc-500">
+                                        Bulk Total
+                                    </span>
+                                    <span className="text-xl font-black text-blue-700">
+                                        ₹{(
+                                            product.wholesalePrice *
+                                            bulkQuantity
+                                        ).toLocaleString()}
+                                    </span>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (bulkQuantity > product.stock) {
+                                            toast.error("Not enough stock available");
+                                            return;
+                                        }
+
+                                        navigate("/checkout", {
+                                            state: {
+                                                buyNowProduct: {
+                                                    ...product,
+                                                    quantity: bulkQuantity,
+                                                    price: product.wholesalePrice,
+                                                    isBulkOrder: true,
+                                                    orderType: "bulk"
+                                                }
+                                            }
+                                        });
+                                    }}
+                                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white py-3.5 rounded-2xl font-bold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300"
+                                >
+                                    Place Bulk Order
+                                </button>
+
+                            </div>
+                        )}
+
                     </div>
 
-                </div>
+                </section>
 
-                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-10">
 
-                    <h2 className="text-2xl font-extrabold mb-4">
+                <div className="bg-white border border-zinc-100 rounded-[2rem] p-5 md:p-7 shadow-sm mt-8">
+                    <h2 className="text-xl font-extrabold text-zinc-950 mb-4">
                         About this item
                     </h2>
 
-                    <p className="text-zinc-600 leading-8 max-w-5xl">
+                    <p className="text-zinc-600 leading-7 md:leading-8">
                         {product.description ||
                             "No description available for this product yet."}
                     </p>
 
-                </div>
-
-                <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-6">
-
-                    <h2 className="text-2xl font-extrabold mb-6">
-                        Product Information
-                    </h2>
-
-                    <div className="grid md:grid-cols-2 gap-x-10 gap-y-4 text-sm">
-
-                        {[
-                            ["Brand", product.brand],
-                            ["Model", product.model || "Not specified"],
-                            ["Category", product.category],
-                            ["Subcategory", product.subcategory],
-                            ["SKU", product.sku],
-                            ["HSN Code", product.hsnCode || "Not specified"],
-                            ["GST", `${product.gstPercentage || 0}%`],
-                            ["Seller", product.sellerName || "CosmoCartt"]
-                        ].map(([label, value]) => (
-
+                    <div className="grid sm:grid-cols-2 gap-3 mt-6">
+                        {highlights.map((item) => (
                             <div
-                                key={label}
-                                className="flex justify-between gap-6 border-b border-zinc-100 py-4"
+                                key={item}
+                                className="flex gap-3 bg-slate-50 rounded-2xl p-4"
                             >
-                                <span className="text-zinc-500">
-                                    {label}
+                                <span className="text-green-600 font-black shrink-0">
+                                    ✓
                                 </span>
-
-                                <span className="font-semibold text-zinc-900 text-right">
-                                    {value}
+                                <span className="text-sm text-zinc-700 leading-6">
+                                    {item}
                                 </span>
                             </div>
-
                         ))}
-
                     </div>
-
                 </div>
 
-                {product.specifications &&
+
+                <section className="grid lg:grid-cols-2 gap-6 mt-8">
+
+                    <div className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm">
+                        <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-6">
+                            Product Information
+                        </h2>
+
+                        <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                            {productInfo.map(([label, value]) => (
+                                <div
+                                    key={label}
+                                    className="flex justify-between gap-4 border-b border-zinc-100 pb-3"
+                                >
+                                    <span className="text-zinc-500">
+                                        {label}
+                                    </span>
+                                    <span className="font-bold text-zinc-900 text-right">
+                                        {value || "-"}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm">
+                        <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-6">
+                            Why buy from CosmoCartt?
+                        </h2>
+
+                        <div className="space-y-4">
+                            <ReasonRow
+                                title="Verified purchase reviews"
+                                text="Only customers who purchased this item can post reviews."
+                            />
+                            <ReasonRow
+                                title="Business friendly billing"
+                                text="B2B customers get wholesale pricing and GST invoice support."
+                            />
+                            <ReasonRow
+                                title="Order tracking ready"
+                                text="Track order status after shipment creation."
+                            />
+                            <ReasonRow
+                                title="Dedicated admin operations"
+                                text="Refunds, exchanges and delivery workflows are monitored from the admin panel."
+                            />
+                        </div>
+                    </div>
+
+                </section>
+
+
+                {
+                    product.specifications &&
                     product.specifications.length > 0 && (
-
-                        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-6">
-
-                            <h2 className="text-2xl font-extrabold mb-6">
+                        <section className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm mt-8">
+                            <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-6">
                                 Specifications
                             </h2>
 
-                            <div className="grid md:grid-cols-2 gap-x-10 gap-y-4 text-sm">
-
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                                 {product.specifications.map((spec: any, index: number) => (
-
                                     <div
                                         key={index}
-                                        className="flex justify-between gap-6 border-b border-zinc-100 py-4"
+                                        className="bg-slate-50 rounded-2xl p-4"
                                     >
-                                        <span className="text-zinc-500">
+                                        <p className="text-zinc-500 text-xs uppercase font-bold">
                                             {spec.key}
-                                        </span>
-
-                                        <span className="font-semibold text-zinc-900 text-right">
+                                        </p>
+                                        <p className="font-bold text-zinc-900 mt-2">
                                             {spec.value}
-                                        </span>
+                                        </p>
                                     </div>
-
                                 ))}
-
                             </div>
+                        </section>
+                    )
+                }
 
+
+                <section
+                    id="reviews"
+                    className="bg-white border border-zinc-100 rounded-[2rem] p-5 md:p-8 shadow-sm mt-8"
+                >
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950">
+                                Ratings & Reviews
+                            </h2>
+                            <p className="text-sm text-zinc-500 mt-1">
+                                Real feedback from verified CosmoCartt buyers.
+                            </p>
                         </div>
 
-                    )}
+                        <div className="bg-slate-50 rounded-2xl px-5 py-3 text-center self-start md:self-auto">
+                            <p className="text-2xl md:text-3xl font-black text-[#4B1E78]">
+                                {reviewCount > 0 ? averageRating : "New"}
+                            </p>
+                            <p className="text-xs text-zinc-500 font-semibold mt-1">
+                                {reviewCount} reviews
+                            </p>
+                        </div>
+                    </div>
 
-                <div
-                    id="reviews"
-                    className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-zinc-100 mt-10"
-                >
-
-                    <h2 className="text-2xl font-extrabold mb-6">
-                        Customer Reviews
-                    </h2>
-
-                    <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-8">
-
+                    <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-8">
                         <div>
-
                             <div className="bg-slate-50 rounded-3xl p-6">
-
-                                <p className="text-5xl font-extrabold text-[#4B1E78]">
-                                    {reviewCount > 0 ? averageRating : "New"}
-                                </p>
-
-                                <p className="text-yellow-400 text-xl mt-2">
+                                <p className="text-yellow-400 text-xl">
                                     {reviewCount > 0
                                         ? "★".repeat(Math.round(averageRating))
                                         : "★★★★★"}
@@ -898,73 +1146,55 @@ export default function ProductDetails() {
                                     </span>
                                 </p>
 
-                                <p className="text-sm text-zinc-500 mt-2">
-                                    Based on {reviewCount} verified {reviewCount === 1 ? "review" : "reviews"}
-                                </p>
-
                                 <div className="space-y-3 mt-6">
-
                                     {ratingCounts.map((item) => (
-
                                         <div
                                             key={item.rating}
-                                            className="grid grid-cols-[45px_1fr_40px] items-center gap-3 text-sm"
+                                            className="grid grid-cols-[42px_1fr_42px] items-center gap-3 text-sm"
                                         >
                                             <span className="text-zinc-600">
                                                 {item.rating} ★
                                             </span>
-
                                             <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
                                                 <div
-                                                    className="h-full bg-orange-400"
+                                                    className="h-full bg-orange-400 transition-all duration-500"
                                                     style={{
                                                         width: `${item.percentage}%`
                                                     }}
                                                 />
                                             </div>
-
                                             <span className="text-zinc-500 text-right">
                                                 {item.percentage}%
                                             </span>
                                         </div>
-
                                     ))}
-
                                 </div>
-
                             </div>
 
                             <div className="mt-6">
-
                                 {user ? (
                                     !userHasReviewed ? (
-
                                         <div className="border border-zinc-200 rounded-3xl p-5">
-
                                             <h3 className="font-bold mb-3">
                                                 Write a Review
                                             </h3>
 
                                             <div className="flex items-center gap-2 mb-3">
-
                                                 {[1, 2, 3, 4, 5].map((star) => (
-
                                                     <button
                                                         key={star}
                                                         type="button"
                                                         onClick={() =>
                                                             setReviewRating(star)
                                                         }
-                                                        className={`text-2xl ${star <= reviewRating
+                                                        className={`text-2xl transition-colors focus:outline-none focus:ring-2 focus:ring-[#4B1E78]/30 rounded ${star <= reviewRating
                                                             ? "text-yellow-400"
                                                             : "text-zinc-300"
                                                             }`}
                                                     >
                                                         ★
                                                     </button>
-
                                                 ))}
-
                                             </div>
 
                                             <textarea
@@ -973,14 +1203,14 @@ export default function ProductDetails() {
                                                     setReviewComment(e.target.value)
                                                 }
                                                 placeholder="Share your experience with this product..."
-                                                className="w-full border rounded-2xl p-3 text-sm"
+                                                className="w-full border border-zinc-200 rounded-2xl p-3 text-sm outline-none focus:border-[#4B1E78] transition-colors"
                                                 rows={4}
                                             />
 
                                             <button
                                                 onClick={submitReview}
                                                 disabled={submittingReview}
-                                                className="mt-3 bg-[#4B1E78] hover:bg-[#39155d] text-white py-3 px-6 rounded-2xl font-bold disabled:opacity-50"
+                                                className="mt-3 bg-[#4B1E78] hover:bg-[#39155d] text-white py-3 px-6 rounded-2xl font-bold disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4B1E78]/40"
                                             >
                                                 {submittingReview
                                                     ? "Submitting..."
@@ -990,18 +1220,13 @@ export default function ProductDetails() {
                                             <p className="text-xs text-zinc-400 mt-2">
                                                 Only customers who purchased this product can review it.
                                             </p>
-
                                         </div>
-
                                     ) : (
-
                                         <p className="text-sm text-zinc-500">
                                             You've already reviewed this product.
                                         </p>
-
                                     )
                                 ) : (
-
                                     <p className="text-sm text-zinc-500">
                                         <Link
                                             to="/login"
@@ -1011,15 +1236,11 @@ export default function ProductDetails() {
                                         </Link>{" "}
                                         to write a review.
                                     </p>
-
                                 )}
-
                             </div>
-
                         </div>
 
                         <div>
-
                             {reviewLoading && (
                                 <p className="text-sm text-zinc-400">
                                     Loading reviews...
@@ -1033,41 +1254,32 @@ export default function ProductDetails() {
                             )}
 
                             {!reviewLoading && reviews.length > 0 && (
-
-                                <div className="space-y-4">
-
+                                <div className="space-y-4 max-h-[560px] overflow-y-auto pr-2">
                                     {reviews.map((review) => (
-
                                         <div
                                             key={review._id}
                                             className="border border-zinc-100 rounded-3xl p-5"
                                         >
-
                                             <div className="flex items-center justify-between gap-4">
-
                                                 <div>
-
                                                     <p className="font-bold text-zinc-900">
                                                         {review.customerName}
                                                     </p>
-
                                                     <p className="text-yellow-400 mt-1">
                                                         {"★".repeat(review.rating)}
                                                         <span className="text-zinc-200">
                                                             {"★".repeat(5 - review.rating)}
                                                         </span>
                                                     </p>
-
                                                 </div>
 
-                                                <p className="text-xs text-zinc-400">
+                                                <p className="text-xs text-zinc-400 shrink-0">
                                                     {new Date(review.createdAt).toLocaleDateString("en-IN", {
                                                         day: "numeric",
                                                         month: "short",
                                                         year: "numeric"
                                                     })}
                                                 </p>
-
                                             </div>
 
                                             {review.comment && (
@@ -1075,74 +1287,115 @@ export default function ProductDetails() {
                                                     {review.comment}
                                                 </p>
                                             )}
-
                                         </div>
-
                                     ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </section>
 
+
+                {
+                    relatedProducts.length > 0 && (
+                        <section className="mt-8">
+                            <div className="flex items-center justify-between mb-5">
+                                <div>
+                                    <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950">
+                                        Related Products
+                                </h2>
+                                    <p className="text-sm text-zinc-500 mt-1">
+                                        Similar products customers may also like.
+                                </p>
                                 </div>
 
-                            )}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {relatedProducts.length > 0 && (
-
-                    <div className="mt-10">
-
-                        <h2 className="text-2xl font-extrabold mb-5">
-                            Related Products
-                        </h2>
-
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-                            {relatedProducts.map((item) => (
-
                                 <Link
-                                    key={item._id}
-                                    to={`/product/${item.slug || item._id}`}
-                                    className="bg-white rounded-3xl p-4 shadow-sm border border-zinc-100 hover:shadow-md transition block"
+                                    to={`/products?category=${encodeURIComponent(product.category || "")}&subcategory=${encodeURIComponent(product.subcategory || "")}`}
+                                    className="hidden sm:inline-flex text-sm font-bold text-[#4B1E78] hover:underline"
                                 >
+                                    View all
+                            </Link>
+                            </div>
 
-                                    <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
+                            <div className="flex gap-5 overflow-x-auto pb-4 snap-x">
+                                {relatedProducts.map((item) => (
+                                    <Link
+                                        key={item._id}
+                                        to={`/product/${item.slug || item._id}`}
+                                        className="snap-start shrink-0 w-[240px] md:w-[270px] bg-white rounded-3xl p-4 shadow-sm border border-zinc-100 hover:shadow-md transition-shadow block"
+                                    >
+                                        <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
+                                            <img
+                                                src={`http://localhost:5000${item.images?.[0]}`}
+                                                alt={item.name}
+                                                className="w-full h-full object-contain p-2"
+                                            />
+                                        </div>
 
-                                        <img
-                                            src={`http://localhost:5000${item.images?.[0]}`}
-                                            alt={item.name}
-                                            className="w-full h-full object-contain"
-                                        />
+                                        <p className="text-xs text-[#4B1E78] font-bold mt-4 uppercase">
+                                            {item.brand}
+                                        </p>
 
-                                    </div>
+                                        <h3 className="font-bold text-zinc-900 mt-1 line-clamp-2 min-h-[48px]">
+                                            {item.name}
+                                        </h3>
 
-                                    <p className="text-xs text-[#4B1E78] font-bold mt-4">
-                                        {item.brand}
-                                    </p>
+                                        <p className="font-black text-[#4B1E78] mt-2">
+                                            ₹{getDisplayPrice(item, user).toLocaleString()}
+                                        </p>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+                    )
+                }
 
-                                    <h3 className="font-bold text-zinc-900 mt-1 line-clamp-2">
-                                        {item.name}
-                                    </h3>
-
-                                    <p className="font-extrabold text-[#4B1E78] mt-2">
-                                        ₹{getDisplayPrice(item, user).toLocaleString()}
-                                    </p>
-
-                                </Link>
-
-                            ))}
-
-                        </div>
-
-                    </div>
-
-                )}
-
-            </div>
+            </div >
 
             <Footer />
+        </div >
+
+    );
+}
+
+function TrustCard({
+    icon,
+    title,
+    text
+}: {
+    icon: string;
+    title: string;
+    text: string;
+}) {
+    return (
+        <div className="bg-slate-50 rounded-2xl p-3 text-center">
+            <p className="text-base">{icon}</p>
+            <p className="text-xs font-bold text-zinc-900 mt-1">{title}</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5 leading-tight">{text}</p>
+        </div>
+    );
+}
+
+function ReasonRow({
+    title,
+    text
+}: {
+    title: string;
+    text: string;
+}) {
+    return (
+        <div className="flex gap-3">
+            <span className="w-7 h-7 rounded-full bg-[#4B1E78]/10 text-[#4B1E78] flex items-center justify-center font-black text-sm shrink-0">
+                ✓
+            </span>
+            <div>
+                <p className="font-bold text-zinc-900">
+                    {title}
+                </p>
+                <p className="text-sm text-zinc-500 mt-1 leading-6">
+                    {text}
+                </p>
+            </div>
         </div>
     );
 }
