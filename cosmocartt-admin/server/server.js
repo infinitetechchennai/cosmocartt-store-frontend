@@ -19,6 +19,7 @@ import seoRoutes from "./routes/seoRoutes.js";
 
 dotenv.config();
 
+
 const app = express();
 app.use(
   "/uploads",
@@ -37,6 +38,9 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+app.get("/", (req, res) => {
+  res.send("Server Running");
+});
 
 app.use(
   "/api/shiprocket",
@@ -72,9 +76,7 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/products", productRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Server Running");
-});
+
 
 const PORT = process.env.PORT || 5000;
 

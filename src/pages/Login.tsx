@@ -50,13 +50,13 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]">
+        <div className="min-h-screen bg-[#EDE7F6]">
 
             <Navbar />
 
             <div className="max-w-6xl mx-auto py-8 px-6">
 
-                <div className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-white shadow-2xl">
+                <div className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-[#FCFAFF] shadow-2xl">
 
                     {/* LEFT SIDE */}
 

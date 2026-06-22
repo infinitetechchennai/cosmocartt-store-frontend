@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { categories } from "../data/categories";
 
 
@@ -64,15 +64,13 @@ export default function Products() {
 
                 if (data.success) {
                     setProducts(data.products);
-                    const brands = [
-                        ...new Set(
-                            data.products
-                                .map(
-                                    (p: any) => p.brand
-                                )
-                                .filter(Boolean)
-                        )
-                    ];
+                  const brands: string[] = Array.from(
+    new Set<string>(
+        data.products
+            .map((p: any) => String(p.brand))
+            .filter(Boolean)
+    )
+);
 
                     console.log("BRANDS:", brands);
 
@@ -87,8 +85,8 @@ export default function Products() {
     const filteredProducts = products.filter((product) => {
         console.log("STORE PRODUCTS:", products);
         const matchesSearch =
-            product.name.toLowerCase().includes(search.toLowerCase()) ||
-            product.brand.toLowerCase().includes(search.toLowerCase());
+  product.name?.toLowerCase().includes(search.toLowerCase()) ||
+  product.brand?.toLowerCase().includes(search.toLowerCase());
 
         const matchesCategory =
             !selectedCategory ||
@@ -501,7 +499,43 @@ export default function Products() {
 
 
                         </div>
+                        {/* Products You May Like Slider */}
+                        <section className="mt-10 bg-gradient-to-r from-white to-purple-50 rounded-3xl p-6 shadow-lg border border-purple-100">
+                           <div className="flex items-center justify-between mb-5">
+    <div>
+        <p className="text-xs font-black text-purple-700 uppercase tracking-wider mb-1">
+            Recommended
+        </p>
 
+        <h2 className="text-2xl font-black text-slate-900">
+            Products You May Like
+        </h2>
+
+        <p className="text-slate-500 text-sm mt-1">
+            Handpicked electronics based on popular choices
+        </p>
+    </div>
+
+    <Link
+        to="/products"
+        className="hidden md:flex items-center gap-2 text-purple-700 font-bold hover:text-purple-900"
+    >
+        View All
+        <span>→</span>
+    </Link>
+</div>
+
+                         <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth">
+                                {products.slice(0, 8).map((product) => (
+                                   <div
+ key={product._id || product.id}
+  className="min-w-[280px] snap-start"
+>
+                                        <ProductCard product={product} />
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
                         {filteredProducts.length > 0 && (
 
                             <div className="flex justify-center items-center gap-3 mt-10">
