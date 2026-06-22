@@ -16,6 +16,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useState } from "react";
+import logo from "../assets/logo.png";
 
 
 interface SidebarProps {
@@ -85,11 +86,13 @@ export default function Sidebar({
       className="w-72 bg-gradient-to-b from-[#2E1065] via-[#4C1D95] to-[#5B2A86] text-white flex flex-col h-screen shrink-0 border-r border-white/10 z-10 select-none overflow-y-auto"
     >
       {/* Brand */}
-      <div className="px-6 py-6 flex justify-center border-b border-white/10">
-        <h1 className="text-3xl font-black tracking-wide text-white">
-          Cosmo<span className="text-violet-300">Cartt</span>
-        </h1>
-      </div>
+<div className="px-6 py-5 flex justify-center border-b border-white/10">
+  <img
+    src={logo}
+    alt="Cosmocartt"
+    className="h-14 object-contain grayscale brightness-0 invert"
+  />
+</div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
