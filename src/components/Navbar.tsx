@@ -8,73 +8,73 @@ import { categories } from "../data/categories";
 
 
 import {
-    Search,
-    ShoppingCart,
-    Heart,
-    User,
-    ChevronDown,
-    MapPin,
-    ClipboardList,
-    UserRoundPlus,
-    Package
+  Search,
+  ShoppingCart,
+  Heart,
+  User,
+  ChevronDown,
+  MapPin,
+  ClipboardList,
+  UserRoundPlus,
+  Package
 } from "lucide-react";
 
 export default function Navbar() {
-    const { cartItems } = useCart();
-    const { wishlistItems } = useWishlist();
-    const [search, setSearch] = useState("");
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [hoveredCategory, setHoveredCategory] = useState("");
-    const searchSuggestions = [
-  "iPhone",
-  "iPhone Case",
-  "Samsung Case",
-  "OnePlus Case",
-  "TV Remote",
-  "AC Remote",
-  "Mobile Back Cover",
-  "Clear Case",
-  "Shockproof Case",
-  "Silicone Case",
-];
+  const { cartItems } = useCart();
+  const { wishlistItems } = useWishlist();
+  const [search, setSearch] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState("");
+  const searchSuggestions = [
+    "iPhone",
+    "iPhone Case",
+    "Samsung Case",
+    "OnePlus Case",
+    "TV Remote",
+    "AC Remote",
+    "Mobile Back Cover",
+    "Clear Case",
+    "Shockproof Case",
+    "Silicone Case",
+  ];
 
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-    const handleSearch = () => {
-        if (!search.trim()) return;
+  const handleSearch = () => {
+    if (!search.trim()) return;
 
-        navigate(
-            `/products?search=${encodeURIComponent(search)}`
-        );
-    };
-    const filteredSuggestions = search.trim()
-  ? searchSuggestions.filter((item) =>
+    navigate(
+      `/products?search=${encodeURIComponent(search)}`
+    );
+  };
+  const filteredSuggestions = search.trim()
+    ? searchSuggestions.filter((item) =>
       item.toLowerCase().startsWith(search.toLowerCase())
     )
-  : searchSuggestions.slice(0, 6);
+    : searchSuggestions.slice(0, 6);
 
-const handleSuggestionClick = (suggestion: string) => {
-  setSearch(suggestion);
-  setShowSuggestions(false);
-  navigate(`/products?search=${encodeURIComponent(suggestion)}`);
-};
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearch(suggestion);
+    setShowSuggestions(false);
+    navigate(`/products?search=${encodeURIComponent(suggestion)}`);
+  };
 
-    return (
-        <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+  return (
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
 
-            <div className="max-w-[1600px] mx-auto px-8 h-24 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto px-8 h-24 flex items-center justify-between">
 
-                {/* Logo */}
-                <Link
-                    to="/"
-                    className="flex items-center"
-                >
-                    <img
-                        src={logo}
-                        alt="CosmoCartt"
-                        className="
-        h-24
+        {/* Logo */}
+        <Link
+          to="/"
+          className="flex items-center"
+        >
+          <img
+            src={logo}
+            alt="CosmoCartt"
+            className="
+        h-30
         md:h-32
         w-auto
         object-contain
@@ -83,12 +83,12 @@ const handleSuggestionClick = (suggestion: string) => {
         transition-all
         duration-300
     "
-                    />
-                </Link>
+          />
+        </Link>
 
-                {/* Search */}
-                <div
-                    className="
+        {/* Search */}
+        <div
+          className="
                         hidden
                         md:flex
                         items-center
@@ -101,11 +101,11 @@ const handleSuggestionClick = (suggestion: string) => {
                         border-purple-400
                         shadow-[0_0_20px_rgba(168,85,247,0.6)]
                     "
-                >
+        >
 
-                    <div className="relative group">
-    <button
-        className="
+          <div className="relative group">
+            <button
+              className="
             bg-transparent
             text-gray-700
             border-r
@@ -114,14 +114,14 @@ const handleSuggestionClick = (suggestion: string) => {
             font-medium
             cursor-pointer
         "
-    >
-        All Categories ▾
+            >
+              All Categories ▾
     </button>
 
-   
-         <div
-    onMouseLeave={() => setHoveredCategory("")}
-    className={`
+
+            <div
+              onMouseLeave={() => setHoveredCategory("")}
+              className={`
         absolute
         top-full
         left-0
@@ -141,22 +141,22 @@ const handleSuggestionClick = (suggestion: string) => {
         overflow-hidden
        ${hoveredCategory ? "w-[590px]" : "w-72"}
     `}
->
-    {/* Categories */}
-   <div
-    className={`
+            >
+              {/* Categories */}
+              <div
+                className={`
         w-72
         bg-white
         ${hoveredCategory ? "border-r" : ""}
     `}
->
-        {categories.map((cat) => (
-            <div
-                key={cat.name}
-                onMouseEnter={() =>
-                    setHoveredCategory(cat.name)
-                }
-                className="
+              >
+                {categories.map((cat) => (
+                  <div
+                    key={cat.name}
+                    onMouseEnter={() =>
+                      setHoveredCategory(cat.name)
+                    }
+                    className="
                     flex
                     items-center
                     justify-between
@@ -167,33 +167,33 @@ const handleSuggestionClick = (suggestion: string) => {
                     hover:text-[#4B1E78]
                     font-medium
                 "
-            >
-                <span>{cat.name}</span>
-                <span>›</span>
-            </div>
-        ))}
-    </div>
+                  >
+                    <span>{cat.name}</span>
+                    <span>›</span>
+                  </div>
+                ))}
+              </div>
 
-   {hoveredCategory && (
-    <div className="w-[300px] p-4 bg-slate-50 border-l">
-        <h3 className="font-bold text-[#4B1E78] mb-3">
-            {hoveredCategory}
-        </h3>
+              {hoveredCategory && (
+                <div className="w-[300px] p-4 bg-slate-50 border-l">
+                  <h3 className="font-bold text-[#4B1E78] mb-3">
+                    {hoveredCategory}
+                  </h3>
 
-        <div className="space-y-2">
-            {categories
-                .find((cat) => cat.name === hoveredCategory)
-                ?.subcategories.map((sub) => (
-                    <Link
-                        key={sub}
-                        to={
+                  <div className="space-y-2">
+                    {categories
+                      .find((cat) => cat.name === hoveredCategory)
+                      ?.subcategories.map((sub) => (
+                        <Link
+                          key={sub}
+                          to={
                             sub === "Cases & Covers"
-                                ? "/backcase-brands"
-                                : `/products?category=${encodeURIComponent(
-                                      hoveredCategory
-                                  )}&subcategory=${encodeURIComponent(sub)}`
-                        }
-                        className="
+                              ? "/backcase-brands"
+                              : `/products?category=${encodeURIComponent(
+                                hoveredCategory
+                              )}&subcategory=${encodeURIComponent(sub)}`
+                          }
+                          className="
                             block
                             bg-white
                             rounded-lg
@@ -204,43 +204,43 @@ const handleSuggestionClick = (suggestion: string) => {
                             hover:text-[#4B1E78]
                             transition-all
                         "
-                    >
-                        {sub}
-                    </Link>
-                ))}
-        </div>
-    </div>
-)}
-</div>
-</div>
-                    
-                    <div className="relative flex-1">
-  <input
-    type="text"
-    placeholder="Search products..."
-    value={search}
-    onFocus={() => setShowSuggestions(true)}
-    onBlur={() => {
-      setTimeout(() => {
-        setShowSuggestions(false);
-      }, 150);
-    }}
-    onChange={(e) => {
-      setSearch(e.target.value);
-      setShowSuggestions(true);
-    }}
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        handleSearch();
-        setShowSuggestions(false);
-      }
-    }}
-    className="w-full text-base outline-none text-gray-700"
-  />
+                        >
+                          {sub}
+                        </Link>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
 
-  {showSuggestions && filteredSuggestions.length > 0 && (
-    <div
-      className="
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={search}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => {
+                setTimeout(() => {
+                  setShowSuggestions(false);
+                }, 150);
+              }}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                  setShowSuggestions(false);
+                }
+              }}
+              className="w-full text-base outline-none text-gray-700"
+            />
+
+            {showSuggestions && filteredSuggestions.length > 0 && (
+              <div
+                className="
         absolute
         top-full
         left-0
@@ -254,13 +254,13 @@ const handleSuggestionClick = (suggestion: string) => {
         overflow-hidden
         z-[99999]
       "
-    >
-      {filteredSuggestions.map((item) => (
-        <button
-          key={item}
-          type="button"
-          onMouseDown={() => handleSuggestionClick(item)}
-          className="
+              >
+                {filteredSuggestions.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onMouseDown={() => handleSuggestionClick(item)}
+                    className="
             w-full
             text-left
             px-5
@@ -272,20 +272,20 @@ const handleSuggestionClick = (suggestion: string) => {
             hover:text-[#4B1E78]
             transition-all
           "
-        >
-          {item}
-        </button>
-      ))}
-    </div>
-  )}
-</div>
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-                   <div className="flex items-center h-12 -mr-6">
-    <div className="w-px h-8 bg-purple-200"></div>
+          <div className="flex items-center h-12 -mr-6">
+            <div className="w-px h-8 bg-purple-200"></div>
 
-    <button
-        onClick={handleSearch}
-        className="
+            <button
+              onClick={handleSearch}
+              className="
             h-12
            w-12
             bg-[#4B1E78]
@@ -297,44 +297,44 @@ const handleSuggestionClick = (suggestion: string) => {
             transition-all
             duration-300
         "
-    >
-        <Search
-            size={24}
-            className="text-white"
-        />
-    </button>
-</div>
-                </div>
+            >
+              <Search
+                size={24}
+                className="text-white"
+              />
+            </button>
+          </div>
+        </div>
 
 
-             <div className="hidden lg:flex items-center gap-2 text-[#4B1E78] ml-6">
-                    <MapPin size={22} />
+        <div className="hidden lg:flex items-center gap-2 text-[#4B1E78] ml-6">
+          <MapPin size={22} />
 
-                    <div>
-                        <p className="text-xs text-gray-500">
-                            Deliver to
+          <div>
+            <p className="text-xs text-gray-500">
+              Deliver to
         </p>
 
-                        <p className="font-semibold">
-                            India
+            <p className="font-semibold">
+              India
         </p>
-                    </div>
-                </div>
+          </div>
+        </div>
 
 
 
-                {/* Right Side */}
-                <div className="flex items-center gap-5 text-[#4B1E78]">
-                    {/* Divider */}
-                    <div className="w-px h-10 bg-purple-200"></div>
+        {/* Right Side */}
+        <div className="flex items-center gap-5 text-[#4B1E78]">
+          {/* Divider */}
+          <div className="w-px h-10 bg-purple-200"></div>
 
 
 
-                    {!user ? (
-                        <>
-                            <Link
-  to="/login"
-  className="
+          {!user ? (
+            <>
+              <Link
+                to="/login"
+                className="
     group
     relative
     flex
@@ -348,21 +348,21 @@ const handleSuggestionClick = (suggestion: string) => {
     transition-all
     duration-300
   "
->
-  <User
-    size={20}
-    className="
+              >
+                <User
+                  size={20}
+                  className="
       group-hover:-translate-y-1
       transition-transform
       duration-300
     "
-  />
+                />
 
-  <span className="relative">
-    Login
+                <span className="relative">
+                  Login
 
     <span
-      className="
+                    className="
         absolute
         left-0
         -bottom-1
@@ -373,13 +373,13 @@ const handleSuggestionClick = (suggestion: string) => {
         transition-all
         duration-300
       "
-    />
-  </span>
-</Link>
+                  />
+                </span>
+              </Link>
 
-                            <Link
-  to="/register"
-  className="
+              <Link
+                to="/register"
+                className="
     group
     relative
     flex
@@ -393,21 +393,21 @@ const handleSuggestionClick = (suggestion: string) => {
     transition-all
     duration-300
   "
->
-  <UserRoundPlus
-    size={20}
-    className="
+              >
+                <UserRoundPlus
+                  size={20}
+                  className="
       group-hover:-translate-y-1
       transition-transform
       duration-300
     "
-  />
+                />
 
-  <span className="relative">
-    Register
+                <span className="relative">
+                  Register
 
     <span
-      className="
+                    className="
         absolute
         left-0
         -bottom-1
@@ -418,40 +418,40 @@ const handleSuggestionClick = (suggestion: string) => {
         transition-all
         duration-300
       "
-    />
-  </span>
-</Link>
-                        </>
-                    ) : (
-                        <>
-                            <div className="relative group">
+                  />
+                </span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="relative group">
 
-                                <button
-                                    className="
+                <button
+                  className="
         flex
         items-center
         gap-2
         font-medium
         text-[#4B1E78]
     "
-                                >
-                                    <User size={18} />
+                >
+                  <User size={18} />
 
-                                    <div className="text-left">
-                                        <p className="text-xs text-slate-500">
-                                            Hello, {user.name}
-                                        </p>
+                  <div className="text-left">
+                    <p className="text-xs text-slate-500">
+                      Hello, {user.name}
+                    </p>
 
-                                        <p className="font-semibold">
-                                            My Account
+                    <p className="font-semibold">
+                      My Account
     </p>
-                                    </div>
+                  </div>
 
-                                    <ChevronDown size={16} />
-                                </button>
+                  <ChevronDown size={16} />
+                </button>
 
-                                <div
-                                    className="
+                <div
+                  className="
         absolute
         right-0
         top-full
@@ -470,21 +470,21 @@ const handleSuggestionClick = (suggestion: string) => {
         transition-all
         duration-200
     "
-                                >
+                >
 
-                                    <div className="px-4 py-3 border-b">
-                                        <p className="font-semibold">
-                                            {user.name}
-                                        </p>
+                  <div className="px-4 py-3 border-b">
+                    <p className="font-semibold">
+                      {user.name}
+                    </p>
 
-                                        <p className="text-xs text-slate-500">
-                                            {user.email}
-                                        </p>
-                                    </div>
+                    <p className="text-xs text-slate-500">
+                      {user.email}
+                    </p>
+                  </div>
 
-                                    <Link
-                                        to="/orders"
-                                        className="
+                  <Link
+                    to="/orders"
+                    className="
             flex
             items-center
             gap-3
@@ -493,14 +493,14 @@ const handleSuggestionClick = (suggestion: string) => {
             hover:bg-slate-50
             text-[#4B1E78]
         "
-                                    >
-                                        <ClipboardList size={18} />
-                                        <span>My Orders</span>
-                                    </Link>
+                  >
+                    <ClipboardList size={18} />
+                    <span>My Orders</span>
+                  </Link>
 
-                                    <Link
-                                        to="/wishlist"
-                                        className="
+                  <Link
+                    to="/wishlist"
+                    className="
             flex
             items-center
             gap-3
@@ -509,19 +509,19 @@ const handleSuggestionClick = (suggestion: string) => {
             hover:bg-slate-50
             text-[#4B1E78]
         "
-                                    >
-                                        <Heart size={18} />
-                                        <span>Wishlist</span>
-                                    </Link>
+                  >
+                    <Heart size={18} />
+                    <span>Wishlist</span>
+                  </Link>
 
-                                    <div className="border-t"></div>
+                  <div className="border-t"></div>
 
-                                    <button
-                                        onClick={() => {
-                                            logout();
-                                            navigate("/");
-                                        }}
-                                        className="
+                  <button
+                    onClick={() => {
+                      logout();
+                      navigate("/");
+                    }}
+                    className="
             w-full
             text-left
             px-4
@@ -529,21 +529,21 @@ const handleSuggestionClick = (suggestion: string) => {
             hover:bg-red-50
             text-red-600
         "
-                                    >
-                                        Logout
+                  >
+                    Logout
     </button>
 
-                                </div>
+                </div>
 
-                            </div>
+              </div>
 
 
-                        </>
-                    )}
+            </>
+          )}
 
-                   <Link
-  to="/products"
-  className="
+          <Link
+            to="/products"
+            className="
     group
     relative
     flex
@@ -557,23 +557,23 @@ const handleSuggestionClick = (suggestion: string) => {
     transition-all
     duration-300
   "
->
-  <Package
-    size={20}
-    className="
+          >
+            <Package
+              size={20}
+              className="
       group-hover:-translate-y-1
       transition-transform
       duration-300
     "
-  />
+            />
 
-  <div>
+            <div>
 
-    <p className="relative font-semibold">
-      Products
+              <p className="relative font-semibold">
+                Products
 
       <span
-        className="
+                  className="
           absolute
           left-0
           -bottom-1
@@ -584,26 +584,26 @@ const handleSuggestionClick = (suggestion: string) => {
           transition-all
           duration-300
         "
-      />
-    </p>
-  </div>
-</Link>
+                />
+              </p>
+            </div>
+          </Link>
 
 
 
-                    <Link
-                        to="/wishlist"
-                        className="
+          <Link
+            to="/wishlist"
+            className="
         relative
         hover:scale-110
         transition-all
         duration-300
     "
-                    >
-                        <Heart size={28} />
+          >
+            <Heart size={28} />
 
-                        <span
-                            className="
+            <span
+              className="
             absolute
             -top-2
             -right-2
@@ -618,23 +618,23 @@ const handleSuggestionClick = (suggestion: string) => {
             justify-center
             font-bold
         "
-                        >
-                            {wishlistItems.length}
-                        </span>
+            >
+              {wishlistItems.length}
+            </span>
 
-                    </Link>
+          </Link>
 
-                    {/* Divider */}
-                    <div className="w-px h-10 bg-purple-200"></div>
+          {/* Divider */}
+          <div className="w-px h-10 bg-purple-200"></div>
 
-                    <Link
-                        to="/cart"
-                        className="relative hover:scale-110 transition-all duration-300"
-                    >
-                        <ShoppingCart size={30} />
+          <Link
+            to="/cart"
+            className="relative hover:scale-110 transition-all duration-300"
+          >
+            <ShoppingCart size={30} />
 
-                        <span
-                            className="
+            <span
+              className="
                 absolute
                 -top-2
                 -right-2
@@ -649,15 +649,15 @@ const handleSuggestionClick = (suggestion: string) => {
                 justify-center
                 font-bold
             "
-                        >
-                            {cartItems.length}
-                        </span>
-                    </Link>
+            >
+              {cartItems.length}
+            </span>
+          </Link>
 
-                </div>
+        </div>
 
-            </div>
+      </div>
 
-        </header>
-    );
+    </header>
+  );
 }

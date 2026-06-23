@@ -1,7 +1,25 @@
 import express from "express";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import Razorpay from "razorpay";
 
+const getRazorpayInstance = () => {
+
+    if (
+        !process.env.RAZORPAY_KEY_ID ||
+        !process.env.RAZORPAY_KEY_SECRET
+    ) {
+        throw new Error(
+            "Razorpay keys missing in .env"
+        );
+    }
+
+    return new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+
+};
 const router = express.Router();
 
 // TEST ROUTE
@@ -346,6 +364,19 @@ export const requestRefund = async (
 
         }
 
+        if (
+            order.exchangeStatus === "Completed" ||
+            order.exchangeStatus === "Approved"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Exchange already processed for this order. Refund cannot be requested."
+            });
+
+        }
+
         order.refundStatus =
             "Requested";
 
@@ -388,7 +419,8 @@ export const decideRefund = async (
 
         const {
             decision,
-            note
+            note,
+            amount
         } = req.body;
 
         if (
@@ -398,8 +430,7 @@ export const decideRefund = async (
 
             return res.status(400).json({
                 success: false,
-                message:
-                    "Decision must be Approved or Rejected"
+                message: "Decision must be Approved or Rejected"
             });
 
         }
@@ -430,23 +461,135 @@ export const decideRefund = async (
 
         }
 
+        if (
+            decision === "Rejected"
+        ) {
+
+            order.refundStatus =
+                "Rejected";
+
+            order.refundDecisionNote =
+                note || "Refund rejected by admin";
+
+            order.refundProcessedAt =
+                new Date();
+
+            await order.save();
+
+            return res.json({
+                success: true,
+                order
+            });
+
+        }
+
+        const refundAmount =
+            Number(
+                amount ||
+                order.totalAmount ||
+                0
+            );
+
+        if (
+            refundAmount <= 0
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Invalid refund amount"
+            });
+
+        }
+
+        if (
+            order.paymentMethod !== "COD" &&
+            order.paymentStatus === "Paid" &&
+            order.razorpayPaymentId
+        ) {
+
+            const razorpay =
+                getRazorpayInstance();
+
+            const refund =
+                await razorpay.payments.refund(
+                    order.razorpayPaymentId,
+                    {
+                        amount:
+                            Math.round(
+                                refundAmount * 100
+                            ),
+                        speed: "normal",
+                        notes: {
+                            orderId:
+                                order._id.toString(),
+                            orderNumber:
+                                order.orderNumber || "",
+                            reason:
+                                order.refundReason || ""
+                        }
+                    }
+                );
+
+            order.refundStatus =
+                "Completed";
+
+            order.refundDecisionNote =
+                note ||
+                "Refund processed through Razorpay";
+
+            order.refundProcessedAt =
+                new Date();
+
+            order.refundAmount =
+                refundAmount;
+
+            order.razorpayRefundId =
+                refund.id;
+
+            order.refundMode =
+                "Razorpay";
+
+            await order.save();
+
+            return res.json({
+                success: true,
+                order,
+                refund
+            });
+
+        }
+
         order.refundStatus =
-            decision;
+            "Approved";
 
         order.refundDecisionNote =
-            note || "";
+            note ||
+            "COD refund approved. Manual payout required.";
 
         order.refundProcessedAt =
             new Date();
 
+        order.refundAmount =
+            refundAmount;
+
+        order.refundMode =
+            "Manual COD";
+
         await order.save();
 
-        res.json({
+        return res.json({
             success: true,
-            order
+            order,
+            message:
+                "COD refund approved. Complete payout manually."
         });
 
     } catch (error) {
+
+        console.error(
+            "REFUND DECISION ERROR:",
+            error
+        );
 
         res.status(500).json({
             success: false,
@@ -531,6 +674,19 @@ export const requestExchange = async (
         }
 
         if (
+            order.refundStatus === "Completed" ||
+            order.refundStatus === "Approved"
+        ) {
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Refund already processed for this order. Exchange cannot be requested."
+            });
+
+        }
+
+        if (
             order.exchangeStatus !== "Not Requested"
         ) {
 
@@ -569,12 +725,6 @@ export const requestExchange = async (
     }
 
 };
-
-
-router.put(
-    "/:id/request-exchange",
-    requestExchange
-);
 
 
 export const decideExchange = async (
@@ -628,23 +778,215 @@ export const decideExchange = async (
 
         }
 
+        if (
+            decision === "Rejected"
+        ) {
+
+            order.exchangeStatus =
+                "Rejected";
+
+            order.exchangeDecisionNote =
+                note || "Exchange rejected by admin";
+
+            order.exchangeProcessedAt =
+                new Date();
+
+            await order.save();
+
+            return res.json({
+                success: true,
+                order
+            });
+
+        }
+
+        for (const item of order.products) {
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if (!product) {
+
+                return res.status(404).json({
+                    success: false,
+                    message:
+                        `${item.name} not found for replacement`
+                });
+
+            }
+
+            if (
+                product.stock <
+                item.quantity
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        `${item.name} has only ${product.stock} units left for replacement`
+                });
+
+            }
+
+        }
+
+        const lastOrder =
+            await Order.findOne()
+                .sort({
+                    createdAt: -1
+                });
+
+        let nextNumber =
+            1;
+
+        if (
+            lastOrder &&
+            lastOrder.orderNumber
+        ) {
+
+            const lastNumber =
+                parseInt(
+                    lastOrder.orderNumber
+                        .replace("CC-", "")
+                );
+
+            nextNumber =
+                lastNumber + 1;
+
+        }
+
+        const replacementOrder =
+            new Order({
+
+                userId:
+                    order.userId,
+
+                customerName:
+                    order.customerName,
+
+                email:
+                    order.email,
+
+                phone:
+                    order.phone,
+
+                address:
+                    order.address,
+
+                city:
+                    order.city,
+
+                state:
+                    order.state,
+
+                pincode:
+                    order.pincode,
+
+                products:
+                    order.products,
+
+                subtotal:
+                    0,
+
+                shippingCharge:
+                    0,
+
+                tax:
+                    0,
+
+                totalAmount:
+                    0,
+
+                paymentMethod:
+                    "Exchange",
+
+                paymentStatus:
+                    "Paid",
+
+                status:
+                    "Order Placed",
+
+                orderType:
+                    "exchange-replacement",
+
+                customerType:
+                    order.customerType || "b2c",
+
+                bulkOrder:
+                    false,
+
+                originalOrderId:
+                    order._id.toString(),
+
+                orderNumber:
+                    `CC-${String(nextNumber)
+                        .padStart(6, "0")}`,
+
+                trackingTimeline: [
+                    {
+                        status:
+                            "Exchange Replacement Created",
+                        date:
+                            new Date()
+                                .toISOString()
+                    }
+                ]
+
+            });
+
+        await replacementOrder.save();
+
+        for (const item of replacementOrder.products) {
+
+            const product =
+                await Product.findById(
+                    item.productId
+                );
+
+            if (product) {
+
+                product.stock =
+                    Math.max(
+                        0,
+                        product.stock -
+                        item.quantity
+                    );
+
+                await product.save();
+
+            }
+
+        }
+
         order.exchangeStatus =
-            decision;
+            "Completed";
 
         order.exchangeDecisionNote =
-            note || "";
+            note ||
+            "Exchange approved and replacement order created.";
 
         order.exchangeProcessedAt =
             new Date();
 
+        order.replacementOrderId =
+            replacementOrder._id.toString();
+
         await order.save();
 
-        res.json({
+        return res.json({
             success: true,
-            order
+            order,
+            replacementOrder
         });
 
     } catch (error) {
+
+        console.error(
+            "EXCHANGE DECISION ERROR:",
+            error
+        );
 
         res.status(500).json({
             success: false,

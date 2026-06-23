@@ -16,6 +16,8 @@ import invoiceRoutes
 import reviewRoutes
   from "./routes/reviewRoutes.js";
 import seoRoutes from "./routes/seoRoutes.js";
+import campaignRoutes from "./routes/campaignRoutes.js";
+import cmsRoutes from "./routes/cmsRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
 dotenv.config();
@@ -79,6 +81,10 @@ app.use(
   reportRoutes
 );
 app.use("/api/auth", authRoutes);
+
+app.use("/api/campaigns", campaignRoutes);
+
+app.use("/api/cms", cmsRoutes);
 
 app.use("/api/products", productRoutes);
 

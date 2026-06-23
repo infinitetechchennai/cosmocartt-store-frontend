@@ -11,15 +11,30 @@ import Order from "../models/Order.js";
 
 const router = express.Router();
 
+const isMockMode = () =>
+    process.env.SHIPROCKET_MODE !== "live";
+
+const buildMockTrackingUrl = (awbCode) =>
+    `https://www.delhivery.com/track/package/${awbCode}`;
+
 router.get("/test", async (req, res) => {
 
     try {
+
+        if (isMockMode()) {
+            return res.json({
+                success: true,
+                mode: "mock",
+                message: "Shiprocket mock mode active"
+            });
+        }
 
         const token =
             await getShiprocketToken();
 
         res.json({
             success: true,
+            mode: "live",
             tokenExists: !!token
         });
 
@@ -31,7 +46,9 @@ router.get("/test", async (req, res) => {
             success: false,
             message: error.message
         });
+
     }
+
 });
 
 router.get(
@@ -49,8 +66,7 @@ router.get(
 
                 return res.status(404).json({
                     success: false,
-                    message:
-                        "Order not found"
+                    message: "Order not found"
                 });
 
             }
@@ -65,10 +81,7 @@ router.get(
 
                 return res.status(400).json({
                     success: false,
-                    error: {
-                        message:
-                            "Order missing shipping details"
-                    }
+                    message: "Order missing shipping details"
                 });
 
             }
@@ -77,40 +90,69 @@ router.get(
 
                 return res.json({
                     success: true,
-                    message:
-                        "Shipment already exists",
-                    shipmentId:
-                        order.shipmentId
+                    message: "Shipment already exists",
+                    order
                 });
 
             }
 
-            const shipmentData =
-                await createShipment(
-                    order
-                );
+            let shipmentData = {};
 
-            console.log(
-                "SHIPROCKET RESPONSE:",
-                shipmentData
-            );
+            if (isMockMode()) {
 
-            order.shiprocketOrderId =
-                shipmentData.order_id || "";
+                const mockShipmentId =
+                    `MOCK-SHIP-${Date.now()}`;
 
-            order.shipmentId =
-                shipmentData.shipment_id || "";
+                const mockOrderId =
+                    `MOCK-ORDER-${Date.now()}`;
 
-            /* MOCK SHIPPING DATA */
+                const mockAwb =
+                    `AWB${Date.now()}`;
 
-            order.awbCode =
-                `AWB${Date.now()}`;
+                order.shiprocketOrderId =
+                    mockOrderId;
 
-            order.courierName =
-                "Delhivery";
+                order.shipmentId =
+                    mockShipmentId;
 
-            order.trackingUrl =
-                `https://www.delhivery.com/track/package/${order.awbCode}`;
+                order.awbCode =
+                    mockAwb;
+
+                order.courierName =
+                    order.city?.toLowerCase() === "chennai"
+                        ? "Local Delivery"
+                        : "Delhivery";
+
+                order.trackingUrl =
+                    buildMockTrackingUrl(mockAwb);
+
+                order.shippingStatus =
+                    "Shipped";
+
+                shipmentData = {
+                    mode: "mock",
+                    order_id: mockOrderId,
+                    shipment_id: mockShipmentId,
+                    awb_code: mockAwb,
+                    courier_name: order.courierName,
+                    tracking_url: order.trackingUrl
+                };
+
+            } else {
+
+                shipmentData =
+                    await createShipment(order);
+
+                order.shiprocketOrderId =
+                    shipmentData.order_id || "";
+
+                order.shipmentId =
+                    shipmentData.shipment_id || "";
+
+                order.shippingStatus =
+                    "Shipment Created";
+
+            }
 
             order.status =
                 "Shipped";
@@ -122,23 +164,17 @@ router.get(
 
             await order.save();
 
-            console.log(
-                "ORDER SAVED:",
-                order._id
-            );
-
             res.json({
                 success: true,
+                mode: isMockMode() ? "mock" : "live",
+                order,
                 shipmentData
             });
 
-            console.log(
-                "SUCCESS RESPONSE SENT"
-            );
         } catch (error) {
 
             console.error(
-                "SHIPROCKET ERROR:",
+                "SHIPROCKET CREATE SHIPMENT ERROR:",
                 error.response?.data ||
                 error.message
             );
@@ -151,6 +187,7 @@ router.get(
             });
 
         }
+
     }
 );
 
@@ -159,6 +196,29 @@ router.get(
     async (req, res) => {
 
         try {
+
+            if (isMockMode()) {
+
+                return res.json({
+                    success: true,
+                    mode: "mock",
+                    couriers: [
+                        {
+                            courier_company_id: 1,
+                            courier_name: "Delhivery",
+                            rate: 55,
+                            estimated_delivery_days: 3
+                        },
+                        {
+                            courier_company_id: 2,
+                            courier_name: "BlueDart",
+                            rate: 85,
+                            estimated_delivery_days: 2
+                        }
+                    ]
+                });
+
+            }
 
             const data =
                 await getCourierOptions(
@@ -172,7 +232,10 @@ router.get(
             console.error(error);
 
             res.status(500).json({
-                success: false
+                success: false,
+                error:
+                    error.response?.data ||
+                    error.message
             });
 
         }
@@ -180,35 +243,63 @@ router.get(
     }
 );
 
-router.get("/generate-awb/:shipmentId", async (req, res) => {
-    try {
-        const token = await getShiprocketToken();
+router.get(
+    "/generate-awb/:shipmentId",
+    async (req, res) => {
 
-        const response = await axios.post(
-            "https://apiv2.shiprocket.in/v1/external/courier/assign/awb",
-            {
-                shipment_id: Number(req.params.shipmentId)
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+        try {
+
+            if (isMockMode()) {
+
+                return res.json({
+                    success: true,
+                    mode: "mock",
+                    awb_assign_status: 1,
+                    response: {
+                        data: {
+                            awb_code:
+                                `AWB${Date.now()}`,
+                            courier_name:
+                                "Delhivery"
+                        }
+                    }
+                });
+
             }
-        );
 
-        res.json(response.data);
+            const token =
+                await getShiprocketToken();
 
-    } catch (error) {
+            const response =
+                await axios.post(
+                    "https://apiv2.shiprocket.in/v1/external/courier/assign/awb",
+                    {
+                        shipment_id:
+                            Number(req.params.shipmentId)
+                    },
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
 
-        res.status(500).json({
-            success: false,
-            error:
-                error.response?.data ||
-                error.message
-        });
+            res.json(response.data);
+
+        } catch (error) {
+
+            res.status(500).json({
+                success: false,
+                error:
+                    error.response?.data ||
+                    error.message
+            });
+
+        }
 
     }
-});
+);
 
 router.get(
     "/tracking/:orderId",
@@ -228,8 +319,30 @@ router.get(
 
                 return res.status(404).json({
                     success: false,
-                    message:
-                        "Shipment not found"
+                    message: "Shipment not found"
+                });
+
+            }
+
+            if (isMockMode()) {
+
+                return res.json({
+                    success: true,
+                    mode: "mock",
+                    trackingData: {
+                        shipment_id:
+                            order.shipmentId,
+                        awb_code:
+                            order.awbCode,
+                        courier_name:
+                            order.courierName,
+                        current_status:
+                            order.status,
+                        tracking_url:
+                            order.trackingUrl,
+                        timeline:
+                            order.trackingTimeline || []
+                    }
                 });
 
             }
@@ -239,18 +352,130 @@ router.get(
                     order.shipmentId
                 );
 
-            console.log(
-                trackingData
-            );
-
             res.json({
                 success: true,
+                mode: "live",
                 trackingData
             });
 
         } catch (error) {
 
             console.error(error);
+
+            res.status(500).json({
+                success: false,
+                error:
+                    error.response?.data ||
+                    error.message
+            });
+
+        }
+
+    }
+);
+
+router.get(
+    "/create-return/:orderId",
+    async (req, res) => {
+
+        try {
+
+            const order =
+                await Order.findById(
+                    req.params.orderId
+                );
+
+            if (!order) {
+
+                return res.status(404).json({
+                    success: false,
+                    message: "Order not found"
+                });
+
+            }
+
+            if (
+                order.returnShipmentId
+            ) {
+
+                return res.json({
+                    success: true,
+                    message: "Return shipment already exists",
+                    order
+                });
+
+            }
+
+            if (
+                order.refundStatus !== "Requested" &&
+                order.exchangeStatus !== "Requested" &&
+                order.exchangeStatus !== "Completed"
+            ) {
+
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Return can be created only for refund or exchange orders"
+                });
+
+            }
+
+            if (isMockMode()) {
+
+                const returnShipmentId =
+                    `MOCK-RETURN-${Date.now()}`;
+
+                const returnAwb =
+                    `R-AWB${Date.now()}`;
+
+                order.returnShipmentId =
+                    returnShipmentId;
+
+                order.returnAwbCode =
+                    returnAwb;
+
+                order.returnCourierName =
+                    "Delhivery Reverse Pickup";
+
+                order.returnTrackingUrl =
+                    buildMockTrackingUrl(returnAwb);
+
+                order.trackingTimeline.push({
+                    status: "Return Pickup Created",
+                    date: new Date().toISOString()
+                });
+
+                await order.save();
+
+                return res.json({
+                    success: true,
+                    mode: "mock",
+                    order,
+                    returnShipment: {
+                        returnShipmentId,
+                        returnAwb,
+                        courierName:
+                            order.returnCourierName,
+                        trackingUrl:
+                            order.returnTrackingUrl
+                    }
+                });
+
+            }
+
+            return res.status(501).json({
+                success: false,
+                message:
+                    "Live Shiprocket return API will be enabled after KYC/API access is active"
+            });
+
+        } catch (error) {
+
+            console.error(
+                "SHIPROCKET RETURN ERROR:",
+                error.response?.data ||
+                error.message
+            );
 
             res.status(500).json({
                 success: false,

@@ -82,17 +82,17 @@ export default function Sidebar({
       );
   return (
     <aside
-      id="seven-sidebar"
+      id="Cosmocartt-sidebar"
       className="w-72 bg-gradient-to-b from-[#2E1065] via-[#4C1D95] to-[#5B2A86] text-white flex flex-col h-screen shrink-0 border-r border-white/10 z-10 select-none overflow-y-auto"
     >
       {/* Brand */}
-<div className="px-6 py-5 flex justify-center border-b border-white/10">
-  <img
-    src={logo}
-    alt="Cosmocartt"
-    className="h-14 object-contain grayscale brightness-0 invert"
-  />
-</div>
+      <div className="h-20 flex items-center justify-center border-b border-white/10 px-4">
+        <img
+          src={logo}
+          alt="Cosmocartt"
+          className="h-30 w-auto object-contain brightness-0 invert relative top-[14px]"
+        />
+      </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">

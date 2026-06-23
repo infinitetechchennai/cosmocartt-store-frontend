@@ -107,6 +107,19 @@ const orderSchema = new mongoose.Schema(
 
         trackingUrl: String,
 
+        returnShipmentId: String,
+
+        returnAwbCode: String,
+
+        returnCourierName: String,
+
+        returnTrackingUrl: String,
+
+        shippingStatus: {
+            type: String,
+            default: ""
+        },
+
         status: {
             type: String,
             default: "Order Placed",
@@ -160,6 +173,31 @@ const orderSchema = new mongoose.Schema(
         exchangeProcessedAt: Date,
 
         exchangeDecisionNote: {
+            type: String,
+            default: ""
+        },
+
+        refundAmount: {
+            type: Number,
+            default: 0
+        },
+
+        refundMode: {
+            type: String,
+            default: ""
+        },
+
+        razorpayRefundId: {
+            type: String,
+            default: ""
+        },
+
+        replacementOrderId: {
+            type: String,
+            default: ""
+        },
+
+        originalOrderId: {
             type: String,
             default: ""
         },

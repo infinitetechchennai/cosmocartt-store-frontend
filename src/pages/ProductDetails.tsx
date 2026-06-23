@@ -585,7 +585,7 @@ export default function ProductDetails() {
 
                     {/* IMAGE GALLERY — desktop: vertical thumb rail beside hero. mobile: horizontal scroll below. */}
 
-                    <div className="bg-white border border-zinc-100 rounded-[2rem] p-4 md:p-6 shadow-sm lg:sticky lg:top-24">
+                    <div className="relative bg-white border border-zinc-100 rounded-[2rem] p-4 md:p-6 shadow-sm lg:sticky lg:top-24">
 
                         <div className="flex gap-4">
 
@@ -611,7 +611,22 @@ export default function ProductDetails() {
                             </div>
 
                             <div
-                                className="relative flex-1 aspect-square bg-gradient-to-br from-slate-50 to-white rounded-[1.5rem] overflow-hidden flex items-center justify-center border border-zinc-100 cursor-zoom-in group"
+                                className="
+        relative
+        flex-1
+        aspect-square
+        bg-gradient-to-br
+        from-slate-50
+        to-white
+        rounded-[1.5rem]
+        overflow-hidden
+        flex
+        items-center
+        justify-center
+        border
+        border-zinc-100
+        cursor-crosshair
+    "
                                 onMouseEnter={() =>
                                     setIsZooming(true)
                                 }
@@ -624,10 +639,14 @@ export default function ProductDetails() {
                                         e.currentTarget.getBoundingClientRect();
 
                                     const x =
-                                        ((e.clientX - rect.left) / rect.width) * 100;
+                                        ((e.clientX - rect.left) /
+                                            rect.width) *
+                                        100;
 
                                     const y =
-                                        ((e.clientY - rect.top) / rect.height) * 100;
+                                        ((e.clientY - rect.top) /
+                                            rect.height) *
+                                        100;
 
                                     setZoomPosition({
                                         x,
@@ -639,29 +658,44 @@ export default function ProductDetails() {
                                 <img
                                     src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
                                     alt={product.name}
-                                    className={`w-full h-full object-contain p-4 transition-opacity duration-200 ${isZooming
-                                        ? "lg:opacity-0"
-                                        : "opacity-100"
-                                        }`}
+                                    className="
+w-full
+h-full
+object-contain
+p-4
+"
                                 />
 
-                                {isZooming && (
-                                    <div
-                                        className="hidden lg:block absolute inset-0 bg-white bg-no-repeat"
-                                        style={{
-                                            backgroundImage:
-                                                `url(http://localhost:5000${selectedImage || product.images?.[0] || ""})`,
-                                            backgroundSize:
-                                                "230%",
-                                            backgroundPosition:
-                                                `${zoomPosition.x}% ${zoomPosition.y}%`
-                                        }}
-                                    />
-                                )}
+
 
                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                                     Hover to zoom
     </div>
+                                <div
+                                    className="
+        absolute
+        top-0
+        left-0
+        w-28
+        h-28
+        border
+        border-[#4B1E78]
+        bg-white/20
+        pointer-events-none
+        hidden
+        lg:block
+    "
+                                    style={{
+                                        display: isZooming
+                                            ? "block"
+                                            : "none",
+
+                                        left: `calc(${Math.min(85, Math.max(15, zoomPosition.x))}% - 56px)`,
+
+                                        top: `calc(${Math.min(85, Math.max(15, zoomPosition.y))}% - 56px)`
+                                    }}
+                                />
+
                             </div>
 
                         </div>
@@ -686,6 +720,44 @@ export default function ProductDetails() {
                                 </button>
                             ))}
                         </div>
+
+                        {isZooming && (
+
+                            <div
+                                className="
+            hidden
+            xl:block
+            absolute
+            left-[105%]
+top-0
+            w-[520px]
+            h-[520px]
+            bg-white
+            border
+            border-zinc-200
+            rounded-[2rem]
+shadow-[0_30px_80px_rgba(0,0,0,0.18)]
+overflow-hidden
+z-50
+pointer-events-none
+        "
+                            >
+                                <img
+                                    src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
+                                    alt="Zoom Preview"
+                                    className="w-full h-full object-cover"
+                                    style={{
+                                        transform: `scale(2.8) translate(${(50 - zoomPosition.x) / 2
+                                            }%, ${(50 - zoomPosition.y) / 2
+                                            }%)`,
+                                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`
+                                    }}
+                                />
+                            </div>
+
+                        )}
+
+                        {/* RIGHT COLUMN — title, price, trust, buy box */}
 
                     </div>
 
@@ -995,7 +1067,11 @@ export default function ProductDetails() {
                             </div>
                         )}
 
+
+
                     </div>
+
+
 
                 </section>
 
