@@ -2,35 +2,57 @@ export default function AIExperienceSection() {
   return (
     <section
       style={{
-        minHeight: "720px",
+        minHeight: "760px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: "110px 30px",
-        background: "#ffffff",
+        padding: "120px 30px",
+        background:
+          "linear-gradient(180deg, #ffffff 0%, rgba(243,232,255,0.45) 50%, #ffffff 100%)",
         fontFamily:
           "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Soft Background Glow */}
+      {/* Premium Purple Glow */}
+      <div
+        style={{
+          position: "absolute",
+          width: "650px",
+          height: "650px",
+          borderRadius: "50%",
+          right: "-140px",
+          top: "-120px",
+          background: `
+            radial-gradient(
+              circle,
+              rgba(111,45,189,0.12),
+              transparent 70%
+            )
+          `,
+          filter: "blur(120px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Secondary Glow */}
       <div
         style={{
           position: "absolute",
           width: "500px",
           height: "500px",
+          left: "-100px",
+          bottom: "-120px",
           borderRadius: "50%",
-          right: "-100px",
-          top: "-120px",
           background: `
             radial-gradient(
               circle,
-              rgba(122,55,221,0.08),
+              rgba(75,30,120,0.08),
               transparent 70%
             )
           `,
-          filter: "blur(100px)",
+          filter: "blur(120px)",
           pointerEvents: "none",
         }}
       />
@@ -41,29 +63,32 @@ export default function AIExperienceSection() {
           maxWidth: "1350px",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "70px",
+          gap: "80px",
           alignItems: "center",
           position: "relative",
           zIndex: 2,
         }}
       >
-        {/* LEFT CONTENT */}
+        {/* LEFT */}
         <div>
+
           {/* Badge */}
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "8px 18px",
+              padding: "9px 18px",
               borderRadius: "999px",
-              background: "#f3e8ff",
-              border: "1px solid rgba(122,55,221,0.12)",
-              marginBottom: "28px",
-              color: "#7a37dd",
+              background: "#faf5ff",
+              border: "1px solid rgba(111,45,189,0.12)",
+              marginBottom: "30px",
+              color: "#6F2DBD",
               fontSize: "11px",
-              fontWeight: 600,
-              letterSpacing: "0.14em",
+              fontWeight: 700,
+              letterSpacing: "0.15em",
+              boxShadow:
+                "0 4px 14px rgba(111,45,189,0.06)",
             }}
           >
             <span
@@ -71,7 +96,7 @@ export default function AIExperienceSection() {
                 width: "6px",
                 height: "6px",
                 borderRadius: "50%",
-                background: "#a88cff",
+                background: "#6F2DBD",
               }}
             />
             AI PRODUCT EXPERIENCE
@@ -80,20 +105,23 @@ export default function AIExperienceSection() {
           {/* Heading */}
           <h2
             style={{
-              color: "#0f172a",
-              fontSize: "clamp(42px,5vw,68px)",
-              lineHeight: 1.05,
+              color: "#1e1b4b",
+              fontSize: "clamp(44px,5vw,72px)",
+              lineHeight: 1.03,
               letterSpacing: "-0.05em",
-              fontWeight: 700,
-              marginBottom: "22px",
+              fontWeight: 800,
+              marginBottom: "24px",
             }}
           >
             Experience Products
             <br />
             <span
               style={{
-                color: "#7a37dd",
-                fontWeight: 600,
+                background:
+                  "linear-gradient(90deg,#4B1E78,#6F2DBD)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: 700,
               }}
             >
               Before You Buy.
@@ -104,61 +132,67 @@ export default function AIExperienceSection() {
           <p
             style={{
               fontSize: "17px",
-              lineHeight: 1.8,
+              lineHeight: 1.9,
               color: "#64748b",
-              maxWidth: "520px",
-              marginBottom: "35px",
+              maxWidth: "530px",
+              marginBottom: "38px",
             }}
           >
-            Explore interactive AI-powered product previews and
-            immersive demonstrations that let you experience
-            products before making a purchase.
+            Explore immersive AI-powered product previews and
+            interactive demonstrations that allow you to
+            experience products in a smarter and more engaging
+            way before making a purchase.
           </p>
 
-          {/* Features */}
+          {/* Feature Pills */}
           <div
             style={{
               display: "flex",
               gap: "14px",
               flexWrap: "wrap",
-              marginBottom: "35px",
+              marginBottom: "40px",
             }}
           >
-            {["Smart Preview", "3D Experience", "Live Product Demo"].map(
-              (item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: "10px 18px",
-                    borderRadius: "999px",
-                    background: "#faf5ff",
-                    border: "1px solid rgba(122,55,221,0.08)",
-                    color: "#6b7280",
-                    fontSize: "13px",
-                  }}
-                >
-                  {item}
-                </div>
-              )
-            )}
+            {[
+              "Smart Preview",
+              "3D Experience",
+              "Live Product Demo",
+            ].map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: "11px 18px",
+                  borderRadius: "999px",
+                  background: "#ffffff",
+                  border:
+                    "1px solid rgba(111,45,189,0.10)",
+                  color: "#4B1E78",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  boxShadow:
+                    "0 6px 14px rgba(111,45,189,0.04)",
+                }}
+              >
+                {item}
+              </div>
+            ))}
           </div>
 
           {/* Button */}
           <button
             style={{
-              padding: "17px 34px",
+              padding: "18px 36px",
               borderRadius: "18px",
-              border: "1px solid rgba(255,255,255,0.12)",
+              border: "none",
               background: `
                 linear-gradient(
-                  180deg,
-                  rgba(122,55,221,0.96) 0%,
-                  rgba(82,32,164,0.96) 100%
+                  90deg,
+                  #4B1E78 0%,
+                  #6F2DBD 100%
                 )
               `,
               boxShadow: `
-                inset 0 1px 0 rgba(255,255,255,0.22),
-                0 8px 24px rgba(80,20,180,0.20)
+                0 10px 25px rgba(111,45,189,0.20)
               `,
               color: "#ffffff",
               fontSize: "15px",
@@ -179,26 +213,27 @@ export default function AIExperienceSection() {
           </button>
         </div>
 
-        {/* RIGHT VIDEO CONTAINER */}
+        {/* RIGHT VIDEO PANEL */}
         <div
           style={{
             position: "relative",
-            height: "460px",
-            borderRadius: "36px",
+            height: "470px",
+            borderRadius: "38px",
             overflow: "hidden",
             background: `
               linear-gradient(
                 180deg,
-                rgba(122,55,221,0.12) 0%,
-                rgba(122,55,221,0.05) 100%
+                rgba(111,45,189,0.08) 0%,
+                rgba(111,45,189,0.03) 100%
               )
             `,
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(122,55,221,0.12)",
+            border:
+              "1px solid rgba(111,45,189,0.10)",
             boxShadow: `
-              inset 0 1px 0 rgba(255,255,255,0.3),
-              0 0 40px rgba(120,50,255,0.10)
+              inset 0 1px 0 rgba(255,255,255,0.35),
+              0 0 40px rgba(111,45,189,0.08)
             `,
             display: "flex",
             alignItems: "center",
@@ -217,7 +252,7 @@ export default function AIExperienceSection() {
               background: `
                 linear-gradient(
                   90deg,
-                  rgba(255,255,255,0.25),
+                  rgba(255,255,255,0.35),
                   transparent
                 )
               `,
@@ -228,19 +263,20 @@ export default function AIExperienceSection() {
           {/* Play Button */}
           <div
             style={{
-              width: "92px",
-              height: "92px",
+              width: "96px",
+              height: "96px",
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "rgba(122,55,221,0.12)",
-              border: "1px solid rgba(122,55,221,0.15)",
+              background:
+                "rgba(111,45,189,0.10)",
+              border:
+                "1px solid rgba(111,45,189,0.15)",
               fontSize: "34px",
-              color: "#7a37dd",
-              boxShadow: `
-                0 0 30px rgba(120,50,255,.12)
-              `,
+              color: "#6F2DBD",
+              boxShadow:
+                "0 0 35px rgba(111,45,189,0.10)",
               cursor: "pointer",
             }}
           >
