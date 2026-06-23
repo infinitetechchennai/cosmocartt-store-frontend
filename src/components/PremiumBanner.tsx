@@ -1,216 +1,86 @@
-import {
-  ShieldCheck,
-  RotateCcw,
-  Truck,
-  Headphones,
-} from "lucide-react";
+import { ShieldCheck, RotateCcw, Truck, Headphones } from "lucide-react";
 
 export default function PremiumBanner() {
-  return (
-    <section className="max-w-7xl mx-auto px-6 py-6 pb-14">
+return ( <section className="max-w-7xl mx-auto px-6 pt-2 pb-10">
 
-      <div
-        className="
-          relative
-          overflow-hidden
-          rounded-[42px]
-          bg-gradient-to-br
-          from-[#120424]
-          via-[#24103E]
-          to-[#4B1E78]
-          px-10
-          lg:px-14
-          py-14
-          shadow-[0_30px_80px_rgba(30,10,60,0.18)]
-        "
-      >
+        <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#14052d] via-[#2B1055] to-[#6F2DBD] px-10 py-12 shadow-2xl">
 
-        {/* BACKGROUND GLOW */}
+            <div className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl"></div>
 
-        <div className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl" />
-        <div className="absolute bottom-0 left-0 h-80 w-80 rounded-full bg-pink-500/10 blur-3xl" />
+            <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-pink-500/20 blur-3xl"></div>
 
-        {/* MAIN GRID */}
+            <div className="grid lg:grid-cols-2 gap-10 items-center relative z-10">
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+                {/* Left Side */}
+                <div>
 
-          {/* LEFT */}
+                    <div className="inline-flex bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-white text-sm">
+                        ✨ Premium Quality Products
+                    </div>
 
-          <div>
+                    <h1 className="text-5xl lg:text-7xl font-black text-white mt-6 leading-tight">
+                        Discover Amazing
+                        <span className="block bg-gradient-to-r from-pink-400 to-purple-300 bg-clip-text text-transparent">
+                            Products
+                        </span>
+                    </h1>
 
-            <div
-              className="
-                inline-flex
-                bg-white/10
-                backdrop-blur-xl
-                border border-white/10
-                px-5
-                py-2
-                rounded-full
-                text-white
-                text-sm
-                font-medium
-              "
-            >
-              ✨ Premium Quality Collection
+                    <p className="text-purple-100 mt-5 text-lg max-w-xl">
+                        Explore premium gadgets, fashion,
+                        electronics and lifestyle products
+                        from top brands at unbeatable prices.
+                    </p>
+
+                </div>
+
+                {/* Right Side */}
+                <div className="relative flex justify-center">
+
+                    <div className="absolute w-96 h-96 bg-purple-500/30 rounded-full blur-3xl"></div>
+
+                    <img
+                        src="https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+                        alt="Products"
+                        className="w-[420px] rounded-3xl shadow-2xl relative z-10"
+                    />
+
+                    <div className="absolute top-6 right-6 z-50 bg-pink-500 text-white rounded-full h-32 w-32 flex flex-col items-center justify-center font-bold shadow-[0_0_40px_rgba(236,72,153,0.7)]">
+                        <span>UP TO</span>
+                        <span className="text-4xl">50%</span>
+                        <span>OFF</span>
+                    </div>
+
+                </div>
+
             </div>
 
-            <h1
-              className="
-                mt-6
-                text-5xl
-                lg:text-7xl
-                font-black
-                leading-tight
-                tracking-tight
-                text-white
-              "
-            >
-              Discover Future
-              <span
-                className="
-                  block
-                  bg-gradient-to-r
-                  from-purple-200
-                  via-pink-300
-                  to-white
-                  bg-clip-text
-                  text-transparent
-                "
-              >
-                Shopping
-              </span>
-            </h1>
+            {/* Bottom Features */}
+            <div className="grid md:grid-cols-4 gap-4 mt-10 relative z-10">
 
-            <p className="mt-5 text-purple-100 text-lg leading-relaxed max-w-xl">
-              Premium electronics, fashion, gaming accessories and
-              flagship products curated for a next-generation shopping experience.
-            </p>
+                <div className="bg-white/10 p-4 rounded-2xl text-center text-white flex items-center justify-center gap-2">
+                    <ShieldCheck size={18} />
+                    100% Secure
+                </div>
 
-            {/* BUTTON */}
+                <div className="bg-white/10 p-4 rounded-2xl text-center text-white flex items-center justify-center gap-2">
+                    <RotateCcw size={18} />
+                    Easy Returns
+                </div>
 
-            <button
-              className="
-                mt-8
-                px-7
-                py-4
-                rounded-2xl
-                bg-white
-                text-[#4B1E78]
-                font-semibold
-                hover:scale-105
-                hover:shadow-xl
-                transition-all
-              "
-            >
-              Explore Collection
-            </button>
+                <div className="bg-white/10 p-4 rounded-2xl text-center text-white flex items-center justify-center gap-2">
+                    <Truck size={18} />
+                    Free Delivery
+                </div>
 
-          </div>
+                <div className="bg-white/10 p-4 rounded-2xl text-center text-white flex items-center justify-center gap-2">
+                    <Headphones size={18} />
+                    24/7 Support
+                </div>
 
-          {/* RIGHT */}
-
-          <div className="relative flex justify-center">
-
-            <div className="absolute w-[430px] h-[430px] bg-purple-500/20 rounded-full blur-3xl" />
-
-            <img
-              src="https://images.unsplash.com/photo-1542291026-7eec264c27ff"
-              alt="Products"
-              className="
-                w-[430px]
-                rounded-[30px]
-                shadow-[0_30px_60px_rgba(0,0,0,0.25)]
-                relative
-                z-10
-                hover:scale-105
-                transition-all
-                duration-500
-              "
-            />
-
-            {/* FLOATING OFFER */}
-
-            <div
-              className="
-                absolute
-                top-5
-                right-5
-                z-50
-                bg-white/10
-                backdrop-blur-xl
-                border border-white/10
-                text-white
-                rounded-3xl
-                h-32
-                w-32
-                flex
-                flex-col
-                items-center
-                justify-center
-                font-bold
-                shadow-xl
-              "
-            >
-              <span className="text-sm">UP TO</span>
-              <span className="text-4xl">50%</span>
-              <span className="text-sm">OFF</span>
             </div>
-
-          </div>
 
         </div>
-
-        {/* BOTTOM FEATURES */}
-
-        <div className="grid md:grid-cols-4 gap-4 mt-12 relative z-10">
-
-          {[
-            {
-              icon: <ShieldCheck size={18} />,
-              text: "100% Secure Payment",
-            },
-            {
-              icon: <RotateCcw size={18} />,
-              text: "Easy Returns",
-            },
-            {
-              icon: <Truck size={18} />,
-              text: "Fast Delivery",
-            },
-            {
-              icon: <Headphones size={18} />,
-              text: "24/7 Support",
-            },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className="
-                bg-white/10
-                backdrop-blur-xl
-                border border-white/10
-                rounded-2xl
-                px-5
-                py-5
-                text-white
-                flex
-                items-center
-                justify-center
-                gap-3
-                font-medium
-                hover:bg-white/15
-                transition-all
-              "
-            >
-              {item.icon}
-              {item.text}
-            </div>
-          ))}
-
-        </div>
-
-      </div>
 
     </section>
-  );
+);
 }

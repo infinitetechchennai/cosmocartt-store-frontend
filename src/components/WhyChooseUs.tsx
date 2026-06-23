@@ -30,54 +30,24 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-24 bg-white">
-
+    <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* HEADER */}
-
-        <div className="text-center mb-16">
-
-          <span
-            className="
-              inline-flex
-              px-5
-              py-2
-              rounded-full
-              bg-purple-50
-              text-[#4B1E78]
-              text-sm
-              font-semibold
-              border
-              border-purple-100
-            "
-          >
+        <div className="text-center mb-14">
+          <span className="inline-block px-5 py-2 rounded-full bg-purple-100 text-[#4B1E78] text-sm font-bold">
             WHY CHOOSE US
           </span>
 
-          <h2
-            className="
-              mt-5
-              text-5xl
-              font-black
-              tracking-tight
-              text-slate-900
-            "
-          >
-            Shopping Reimagined
+          <h2 className="mt-5 text-4xl md:text-5xl font-black text-slate-900">
+            Shopping Made Simple
           </h2>
 
-          <p className="text-slate-500 mt-4 text-lg max-w-2xl mx-auto leading-relaxed">
-            Designed to deliver a faster, safer and premium shopping
-            experience built around trust and convenience.
+          <p className="text-slate-500 mt-4 max-w-2xl mx-auto">
+            A smoother, safer and more reliable shopping experience for every Cosmocartt customer.
           </p>
-
         </div>
 
-        {/* FEATURE GRID */}
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-7">
-
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((item) => {
             const Icon = item.icon;
 
@@ -86,34 +56,23 @@ export default function WhyChooseUs() {
                 key={item.title}
                 className="
                   group
-                  relative
-                  overflow-hidden
-                  rounded-[32px]
                   bg-white
+                  rounded-[30px]
+                  p-8
                   border
                   border-slate-200
-                  p-8
-                  shadow-[0_12px_35px_rgba(15,23,42,0.04)]
+                  shadow-md
+                  hover:shadow-2xl
                   hover:-translate-y-2
-                  hover:shadow-[0_20px_45px_rgba(75,30,120,0.10)]
                   transition-all
-                  duration-500
+                  duration-300
                 "
               >
-
-                {/* LIGHT GLOW */}
-
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-100/30 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-all" />
-
-                {/* ICON */}
-
                 <div
                   className="
-                    relative
-                    z-10
-                    w-18
-                    h-18
-                    rounded-3xl
+                    w-16
+                    h-16
+                    rounded-2xl
                     bg-purple-50
                     flex
                     items-center
@@ -124,57 +83,23 @@ export default function WhyChooseUs() {
                   "
                 >
                   <Icon
-                    size={30}
-                    className="
-                      text-[#4B1E78]
-                      group-hover:text-white
-                      transition-all
-                    "
+                    size={34}
+                    className="text-[#4B1E78] group-hover:text-white transition"
                   />
                 </div>
 
-                {/* TEXT */}
-
-                <h3
-                  className="
-                    mt-6
-                    text-xl
-                    font-bold
-                    text-slate-900
-                  "
-                >
+                <h3 className="mt-6 text-xl font-black text-slate-900">
                   {item.title}
                 </h3>
 
-                <p
-                  className="
-                    mt-3
-                    text-slate-500
-                    leading-relaxed
-                  "
-                >
+                <p className="text-slate-500 mt-3 leading-relaxed">
                   {item.desc}
                 </p>
 
-                {/* ACCENT BAR */}
-
-                <div
-                  className="
-                    mt-6
-                    h-1
-                    w-14
-                    rounded-full
-                    bg-[#4B1E78]
-                    opacity-20
-                    group-hover:opacity-100
-                    transition-all
-                  "
-                />
-
+                <div className="mt-6 h-1 w-12 rounded-full bg-[#4B1E78] opacity-0 group-hover:opacity-100 transition" />
               </div>
             );
           })}
-
         </div>
 
       </div>

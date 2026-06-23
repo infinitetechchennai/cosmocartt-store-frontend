@@ -39,7 +39,7 @@ import acBanner from "../assets/acmod.jpeg";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen bg-white">
 
       <AnnouncementBar />
 
@@ -49,144 +49,81 @@ export default function Home() {
 
       <QuickLinks />
 
-      {/* HERO SECTION */}
-      <section className="max-w-7xl mx-auto px-4 lg:px-6 mt-6 mb-12 relative">
-        <div className="rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
+      {/* HERO SLIDER */}
+      <div className="max-w-7xl mx-auto px-4 mt-4 relative">
+        <Swiper
+          modules={[
+            Autoplay,
+            Pagination,
+            EffectFade,
+            Navigation,
+          ]}
+          effect="fade"
+          navigation={true}
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+          }}
+          pagination={{
+            clickable: true,
+          }}
+          loop={true}
+          grabCursor={true}
+          className="rounded-3xl overflow-hidden shadow-2xl home-swiper"
+        >
+          <SwiperSlide>
+            <img
+              src={mobileBanner}
+              alt="Mobile Cases"
+              className="w-full h-[500px] object-cover"
+            />
+          </SwiperSlide>
 
-          <Swiper
-            modules={[
-              Autoplay,
-              Pagination,
-              EffectFade,
-              Navigation,
-            ]}
-            effect="fade"
-            navigation={true}
-            autoplay={{
-              delay: 4000,
-              disableOnInteraction: false,
-            }}
-            pagination={{
-              clickable: true,
-            }}
-            loop={true}
-            grabCursor={true}
-            className="home-swiper"
-          >
-            <SwiperSlide>
-              <img
-                src={mobileBanner}
-                alt="Mobile Cases"
-                className="
-                  w-full
-                  h-[240px]
-                  sm:h-[350px]
-                  md:h-[450px]
-                  lg:h-[550px]
-                  object-cover
-                  transition-transform
-                  duration-700
-                  hover:scale-105
-                "
-              />
-            </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src={tvBanner}
+              alt="TV Remote"
+              className="w-full h-[500px] object-cover"
+            />
+          </SwiperSlide>
 
-            <SwiperSlide>
-              <img
-                src={tvBanner}
-                alt="TV Remote"
-                className="
-                  w-full
-                  h-[240px]
-                  sm:h-[350px]
-                  md:h-[450px]
-                  lg:h-[550px]
-                  object-cover
-                  transition-transform
-                  duration-700
-                  hover:scale-105
-                "
-              />
-            </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src={acBanner}
+              alt="AC Remote"
+              className="w-full h-[500px] object-cover"
+            />
+          </SwiperSlide>
+        </Swiper>
+      </div>
 
-            <SwiperSlide>
-              <img
-                src={acBanner}
-                alt="AC Remote"
-                className="
-                  w-full
-                  h-[240px]
-                  sm:h-[350px]
-                  md:h-[450px]
-                  lg:h-[550px]
-                  object-cover
-                  transition-transform
-                  duration-700
-                  hover:scale-105
-                "
-              />
-            </SwiperSlide>
-          </Swiper>
+      {/* <Categories /> */}
 
-        </div>
-      </section>
+      <TrendingProducts />
 
-      {/* TRENDING PRODUCTS */}
-      <section className="py-10">
-        <TrendingProducts />
-      </section>
+      <Stats />
 
-      {/* STATS */}
-      <section className="py-12 bg-white">
-        <Stats />
-      </section>
+      <CategoryShowcase />
 
-      {/* CATEGORY SHOWCASE */}
-      <section className="py-14 bg-gray-50">
-        <CategoryShowcase />
-      </section>
+      <WhyChooseUs />
 
-      {/* WHY CHOOSE US */}
-      <section className="py-14 bg-white">
-        <WhyChooseUs />
-      </section>
+      <PremiumBanner />
 
-      {/* PREMIUM BANNER */}
-      <section className="py-12 px-4">
-        <PremiumBanner />
-      </section>
+      <FeaturedProducts />
 
-      {/* FEATURED PRODUCTS */}
-      <section className="py-14 bg-gray-50">
-        <FeaturedProducts />
-      </section>
+      <TopDeals />
 
-      {/* TOP DEALS */}
-      <section className="py-14 bg-white">
-        <TopDeals />
-      </section>
+      <DealBanner />
 
-      {/* DEAL BANNER */}
-      <section className="py-10 px-4">
-        <DealBanner />
-      </section>
+      {/* NEW AI EXPERIENCE SECTION */}
+      <AIExperienceSection />
 
-      {/* AI EXPERIENCE */}
-      <section className="py-16 bg-gradient-to-r from-slate-50 to-purple-50">
-        <AIExperienceSection />
-      </section>
+      <Brands />
 
-      {/* BRANDS */}
-      <section className="py-14 bg-white">
-        <Brands />
-      </section>
+      {/* <Testimonials /> */}
 
-      {/* NEWSLETTER */}
-      <section className="py-16 px-4">
-        <Newsletter />
-      </section>
+      <Newsletter />
 
-      {/* FOOTER */}
       <Footer />
 
     </div>
