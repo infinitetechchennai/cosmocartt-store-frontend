@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 import mobileBanner from "../assets/mobile-category.jpg";
 import tvBanner from "../assets/tv-category.jpg";
@@ -6,48 +7,75 @@ import acBanner from "../assets/ac-category.jpg";
 
 export default function CategoryShowcase() {
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
+    <section className="py-24 bg-white">
 
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* Heading */}
+        {/* HEADER */}
 
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
 
-          <span className="inline-block px-5 py-2 rounded-full bg-purple-100 text-[#4B1E78] text-sm font-bold">
+          <span
+            className="
+              inline-flex
+              px-5
+              py-2
+              rounded-full
+              bg-purple-50
+              border
+              border-purple-100
+              text-[#4B1E78]
+              text-sm
+              font-semibold
+            "
+          >
             SHOP BY CATEGORY
           </span>
 
-          <h2 className="text-4xl md:text-5xl font-black mt-5 text-slate-900">
-            Explore Our Collections
+          <h2
+            className="
+              mt-5
+              text-5xl
+              font-black
+              tracking-tight
+              text-slate-900
+            "
+          >
+            Explore Collections
           </h2>
 
-          <p className="text-slate-500 mt-4 max-w-2xl mx-auto">
-            Discover premium mobile cases, TV remotes and AC remotes designed
-            for style, convenience and everyday use.
+          <p className="mt-4 text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+            Premium mobile cases, smart remotes and essential accessories
+            designed for convenience and everyday performance.
           </p>
 
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        {/* GRID */}
 
-          {/* MOBILE CASES - BIG CARD */}
+        <div className="grid lg:grid-cols-3 gap-7">
+
+          {/* LARGE CARD */}
 
           <Link
             to="/backcase-brands"
             className="
               lg:col-span-2
               relative
-              h-[450px]
-              rounded-[32px]
+              h-[500px]
               overflow-hidden
+              rounded-[40px]
               group
-              shadow-xl
-              hover:shadow-2xl
+              border
+              border-slate-200
+              shadow-[0_20px_60px_rgba(15,23,42,0.06)]
+              hover:-translate-y-2
+              hover:shadow-[0_25px_70px_rgba(75,30,120,0.12)]
               transition-all
               duration-500
             "
           >
+
             <img
               src={mobileBanner}
               alt="Mobile Cases"
@@ -63,22 +91,39 @@ export default function CategoryShowcase() {
               "
             />
 
-            <div className="absolute inset-0 bg-gradient-to-r from-[#2B1055]/95 to-[#7C3AED]/50" />
+            {/* OVERLAY */}
+
+            <div className="absolute inset-0 bg-gradient-to-r from-[#15052b]/95 via-[#2B1055]/75 to-transparent" />
 
             <div className="relative z-10 h-full p-10 flex flex-col justify-between text-white">
 
               <div>
-                <p className="text-sm font-bold tracking-widest opacity-80">
-                  
-                </p>
 
-                <h3 className="text-5xl md:text-6xl font-black mt-3">
+                <span
+                  className="
+                    inline-flex
+                    px-4
+                    py-2
+                    rounded-full
+                    bg-white/10
+                    backdrop-blur-xl
+                    border
+                    border-white/10
+                    text-sm
+                  "
+                >
+                  Premium Collection
+                </span>
+
+                <h3 className="mt-5 text-6xl font-black tracking-tight">
                   Mobile Cases
                 </h3>
 
-                <p className="mt-4 text-white/90 max-w-md">
-                  Premium protection, stylish designs and perfect fit for your favorite devices.
+                <p className="mt-4 max-w-md text-white/80 text-lg">
+                  Premium protection, sleek finishes and
+                  perfect fit for your favorite devices.
                 </p>
+
               </div>
 
               <div
@@ -86,133 +131,46 @@ export default function CategoryShowcase() {
                   inline-flex
                   items-center
                   gap-2
-                  bg-white
-                  text-[#4B1E78]
                   px-6
                   py-4
                   rounded-2xl
-                  font-bold
+                  bg-white
+                  text-[#4B1E78]
+                  font-semibold
                   w-fit
                   group-hover:gap-4
                   transition-all
                 "
               >
-                Browse Cases →
+                Browse Collection
+                <ArrowRight size={18} />
               </div>
 
             </div>
 
           </Link>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT COLUMN */}
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-7">
 
-            {/* TV REMOTE */}
+            {/* TV */}
 
-            <Link
-              to="/products"
-              className="
-                relative
-                h-[212px]
-                rounded-[28px]
-                overflow-hidden
-                group
-                shadow-xl
-                hover:shadow-2xl
-                transition-all
-                duration-500
-              "
-            >
-              <img
-                src={tvBanner}
-                alt="TV Remotes"
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                  object-cover
-                  group-hover:scale-110
-                  transition-transform
-                  duration-700
-                "
-              />
+            <CategoryCard
+              image={tvBanner}
+              title="TV Remotes"
+              subtitle="Universal & Smart Controls"
+              gradient="from-blue-950/90 to-blue-500/50"
+            />
 
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 to-blue-500/60" />
+            {/* AC */}
 
-              <div className="relative z-10 h-full p-6 flex flex-col justify-between text-white">
-
-                <div>
-                  <h3 className="text-4xl font-black">
-                    TV Remotes
-                  </h3>
-
-                  <p className="text-sm mt-2 text-white/80">
-                    Universal & Smart Controls
-                  </p>
-                </div>
-
-                <span className="font-bold">
-                  Explore →
-                </span>
-
-              </div>
-
-            </Link>
-
-            {/* AC REMOTE */}
-
-            <Link
-              to="/products"
-              className="
-                relative
-                h-[212px]
-                rounded-[28px]
-                overflow-hidden
-                group
-                shadow-xl
-                hover:shadow-2xl
-                transition-all
-                duration-500
-              "
-            >
-              <img
-                src={acBanner}
-                alt="AC Remotes"
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                  object-cover
-                  group-hover:scale-110
-                  transition-transform
-                  duration-700
-                "
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/95 to-emerald-500/60" />
-
-              <div className="relative z-10 h-full p-6 flex flex-col justify-between text-white">
-
-                <div>
-                  <h3 className="text-3xl font-black">
-                    AC Remotes
-                  </h3>
-
-                  <p className="text-sm mt-2 text-white/80">
-                    Smart Climate Control
-                  </p>
-                </div>
-
-                <span className="font-bold">
-                  Explore →
-                </span>
-
-              </div>
-
-            </Link>
+            <CategoryCard
+              image={acBanner}
+              title="AC Remotes"
+              subtitle="Smart Climate Control"
+              gradient="from-emerald-950/90 to-emerald-500/50"
+            />
 
           </div>
 
@@ -221,5 +179,91 @@ export default function CategoryShowcase() {
       </div>
 
     </section>
+  );
+}
+
+/* CARD */
+
+function CategoryCard({
+  image,
+  title,
+  subtitle,
+  gradient,
+}: {
+  image: string;
+  title: string;
+  subtitle: string;
+  gradient: string;
+}) {
+  return (
+    <Link
+      to="/products"
+      className="
+        relative
+        h-[236px]
+        overflow-hidden
+        rounded-[32px]
+        group
+        border
+        border-slate-200
+        shadow-[0_15px_40px_rgba(15,23,42,0.05)]
+        hover:-translate-y-1
+        hover:shadow-[0_20px_45px_rgba(75,30,120,0.10)]
+        transition-all
+        duration-500
+      "
+    >
+
+      <img
+        src={image}
+        alt={title}
+        className="
+          absolute
+          inset-0
+          w-full
+          h-full
+          object-cover
+          group-hover:scale-110
+          transition-transform
+          duration-700
+        "
+      />
+
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${gradient}`}
+      />
+
+      <div className="relative z-10 h-full p-7 flex flex-col justify-between text-white">
+
+        <div>
+
+          <h3 className="text-3xl font-black tracking-tight">
+            {title}
+          </h3>
+
+          <p className="mt-2 text-white/75 text-sm">
+            {subtitle}
+          </p>
+
+        </div>
+
+        <div
+          className="
+            inline-flex
+            items-center
+            gap-2
+            font-medium
+            text-white
+            group-hover:gap-3
+            transition-all
+          "
+        >
+          Explore
+          <ArrowRight size={16} />
+        </div>
+
+      </div>
+
+    </Link>
   );
 }

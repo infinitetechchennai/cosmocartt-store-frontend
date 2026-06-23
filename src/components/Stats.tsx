@@ -34,13 +34,22 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="pt-20 pb-10 bg-gradient-to-b from-slate-50 via-white to-slate-100">
-
+    <section
+      className="
+        pt-24
+        pb-14
+        bg-gradient-to-b
+        from-white
+        via-purple-50/25
+        to-white
+      "
+    >
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* Premium Heading */}
-        <div className="text-center mb-10">
+        {/* HEADER */}
+        <div className="text-center mb-14">
 
+          {/* Badge */}
           <span
             className="
               inline-flex
@@ -48,51 +57,85 @@ export default function Stats() {
               px-5
               py-2
               rounded-full
-              bg-purple-100
-              text-[#4B1E78]
-              font-bold
+              bg-gradient-to-r
+              from-[#4B1E78]
+              to-[#6F2DBD]
+              text-white
+              font-semibold
               text-sm
+              shadow-lg
+              shadow-purple-200
               tracking-wide
             "
           >
-            TRUSTED NATIONWIDE
+            Trusted Nationwide
           </span>
 
-          <h2 className="mt-6 leading-tight">
-  <span className="block text-5xl md:text-6xl font-black text-slate-900">
-    Premium Products.
-  </span>
+          {/* Heading */}
+          <h2 className="mt-7 leading-tight">
 
-  <span
-    className="
-      block
-      mt-1
-      text-2xl
-      md:text-3xl
-      font-bold
-      tracking-wide
-      bg-gradient-to-r
-      from-[#4B1E78]
-      to-[#A855F7]
-      bg-clip-text
-      text-transparent
-    "
-  >
-    Trusted Experience.
-  </span>
-</h2>
+            <span
+              className="
+                block
+                text-5xl
+                md:text-6xl
+                font-black
+                tracking-tight
+                text-[#24103d]
+              "
+            >
+              Premium Products.
+            </span>
 
-          <p className="mt-6 text-lg text-slate-500 max-w-3xl mx-auto">
-            Discover premium mobile cases, TV remotes and AC remotes
-            trusted by thousands of customers with fast delivery,
-            quality assurance and dedicated support.
+            <span
+              className="
+                block
+                mt-2
+                text-2xl
+                md:text-3xl
+                font-bold
+                bg-gradient-to-r
+                from-[#4B1E78]
+                to-[#A855F7]
+                bg-clip-text
+                text-transparent
+              "
+            >
+              Trusted Experience.
+            </span>
+
+          </h2>
+
+          {/* Subtitle */}
+          <p
+            className="
+              mt-6
+              text-base
+              md:text-lg
+              text-slate-500
+              max-w-3xl
+              mx-auto
+              leading-8
+            "
+          >
+            Discover premium mobile cases,
+            TV remotes and AC remotes trusted
+            by thousands of customers with
+            fast delivery, quality assurance
+            and dedicated support.
           </p>
 
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-
+        {/* STATS GRID */}
+        <div
+          className="
+            grid
+            grid-cols-2
+            lg:grid-cols-4
+            gap-7
+          "
+        >
           {stats.map((stat) => {
             const Icon = stat.icon;
 
@@ -103,20 +146,20 @@ export default function Stats() {
                   group
                   relative
                   overflow-hidden
-                  rounded-[28px]
+                  rounded-[30px]
                   bg-white
                   p-8
                   text-center
                   border
-                  border-slate-200
-                  shadow-lg
-                  hover:shadow-2xl
+                  border-purple-100
+                  shadow-[0_10px_30px_rgba(111,45,189,0.08)]
+                  hover:shadow-[0_18px_40px_rgba(111,45,189,0.12)]
                   hover:-translate-y-3
                   transition-all
                   duration-300
                 "
               >
-                {/* Glow */}
+                {/* Hover Glow */}
                 <div
                   className="
                     absolute
@@ -126,9 +169,9 @@ export default function Stats() {
                     transition-all
                     duration-300
                     bg-gradient-to-br
-                    from-purple-500/10
+                    from-purple-500/5
                     via-fuchsia-500/5
-                    to-indigo-500/10
+                    to-indigo-500/5
                   "
                 />
 
@@ -137,16 +180,17 @@ export default function Stats() {
                   className="
                     relative
                     mx-auto
-                    w-18
-                    h-18
+                    w-20
+                    h-20
                     flex
                     items-center
                     justify-center
                     rounded-3xl
-                    bg-gradient-to-br
+                    bg-gradient-to-r
                     from-[#4B1E78]
-                    to-[#7C3AED]
-                    shadow-xl
+                    to-[#6F2DBD]
+                    shadow-lg
+                    shadow-purple-200
                     group-hover:scale-110
                     transition-all
                     duration-300
@@ -158,14 +202,14 @@ export default function Stats() {
                   />
                 </div>
 
-                {/* Number */}
+                {/* Value */}
                 <h3
                   className="
                     relative
                     mt-6
                     text-5xl
                     font-black
-                    text-slate-900
+                    text-[#24103d]
                   "
                 >
                   {stat.value}
@@ -175,7 +219,7 @@ export default function Stats() {
                 <p
                   className="
                     relative
-                    mt-2
+                    mt-3
                     text-xl
                     font-bold
                     text-[#4B1E78]
@@ -191,6 +235,7 @@ export default function Stats() {
                     mt-3
                     text-sm
                     text-slate-500
+                    leading-6
                   "
                 >
                   {stat.description}
@@ -217,11 +262,9 @@ export default function Stats() {
               </div>
             );
           })}
-
         </div>
 
       </div>
-
     </section>
   );
 }

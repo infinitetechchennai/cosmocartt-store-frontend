@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 const slides = [
   {
@@ -45,19 +46,22 @@ export default function Hero() {
   };
 
   return (
-    <section className="bg-slate-50 py-6 overflow-hidden">
+    <section className="py-8 bg-white overflow-hidden">
+
       <div className="max-w-7xl mx-auto px-6">
 
-        <div className="
-relative
-overflow-hidden
-rounded-3xl
-shadow-2xl
-border
-border-purple-300/20
-">
+        <div
+          className="
+            relative
+            overflow-hidden
+            rounded-[42px]
+            border
+            border-slate-200
+            shadow-[0_30px_80px_rgba(15,23,42,0.08)]
+          "
+        >
 
-          {/* Progress Bar */}
+          {/* PROGRESS BAR */}
 
           <div className="absolute top-0 left-0 w-full h-1 bg-white/10 z-30">
 
@@ -77,111 +81,182 @@ border-purple-300/20
           <AnimatePresence mode="wait" initial={false}>
 
             <motion.div
-  key={current}
-  initial={{
-    opacity: 0,
-    x: 60,
-  }}
-  animate={{
-    opacity: 1,
-    x: 0,
-  }}
-  exit={{
-    opacity: 0,
-    x: -60,
-  }}
-  transition={{
-    duration: 0.7,
-    ease: "easeInOut",
-  }}
-  className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD]"
->
+              key={current}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{
+                duration: 0.7,
+                ease: "easeInOut",
+              }}
+              className="
+                bg-gradient-to-br
+                from-[#15052b]
+                via-[#2B1055]
+                to-[#4B1E78]
+              "
+            >
+
               <div className="grid lg:grid-cols-2 items-center">
 
                 {/* LEFT */}
 
-                <div className="p-12 lg:p-20 text-white">
+                <div className="px-12 lg:px-16 py-14 text-white">
 
-                  <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-sm">
-                    India's Trusted Electronics Marketplace
+                  <span
+                    className="
+                      inline-flex
+                      px-4
+                      py-2
+                      rounded-full
+                      bg-white/10
+                      backdrop-blur-xl
+                      border
+                      border-white/10
+                      text-sm
+                      font-medium
+                    "
+                  >
+                    India’s Premium Electronics Marketplace
                   </span>
 
                   <motion.h1
-  key={slides[current].title}
-  initial={{ opacity: 0, y: 25 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.2, duration: 0.6 }}
-  className="text-5xl md:text-6xl font-black mt-6 leading-tight"
->
-  {slides[current].title}
-</motion.h1>
+                    key={slides[current].title}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.2,
+                      duration: 0.6,
+                    }}
+                    className="
+                      mt-6
+                      text-5xl
+                      md:text-7xl
+                      font-black
+                      leading-tight
+                      tracking-tight
+                    "
+                  >
+                    {slides[current].title}
+                  </motion.h1>
 
                   <div
                     className="
-        inline-flex
-        mt-5
-        bg-green-500
-        text-white
-        px-4
-        py-2
-        rounded-full
-        text-sm
-        font-bold
-    "
+                      inline-flex
+                      mt-5
+                      px-4
+                      py-2
+                      rounded-full
+                      bg-green-500/90
+                      text-white
+                      text-sm
+                      font-semibold
+                    "
                   >
                     ⚡ Limited Time Offer
-</div>
+                  </div>
 
                   <motion.p
-  key={slides[current].subtitle}
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.35, duration: 0.6 }}
-  className="mt-4 text-xl text-gray-200"
->
-  {slides[current].subtitle}
-</motion.p>
+                    key={slides[current].subtitle}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.35,
+                      duration: 0.6,
+                    }}
+                    className="
+                      mt-5
+                      text-xl
+                      text-purple-100
+                    "
+                  >
+                    {slides[current].subtitle}
+                  </motion.p>
 
-                  <div className="flex gap-4 mt-8">
+                  {/* BUTTONS */}
+
+                  <div className="flex flex-wrap gap-4 mt-8">
 
                     <Link
                       to="/products"
-                      className="bg-white text-[#4B1E78] px-8 py-4 rounded-xl font-bold hover:scale-105 transition-all duration-300"
+                      className="
+                        inline-flex
+                        items-center
+                        gap-2
+                        bg-white
+                        text-[#4B1E78]
+                        px-7
+                        py-4
+                        rounded-2xl
+                        font-semibold
+                        hover:scale-105
+                        hover:shadow-xl
+                        transition-all
+                      "
                     >
                       Shop Now
+                      <ArrowRight size={18} />
                     </Link>
 
-                    <button className="border border-white/30 bg-white/10 backdrop-blur-md px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition">
-                      Explore
+                    <button
+                      className="
+                        px-7
+                        py-4
+                        rounded-2xl
+                        border
+                        border-white/20
+                        bg-white/10
+                        backdrop-blur-xl
+                        font-medium
+                        hover:bg-white/15
+                        transition-all
+                      "
+                    >
+                      Explore Collection
                     </button>
 
+                  </div>
 
+                  {/* STATS */}
+
+                  <div className="grid grid-cols-3 gap-4 mt-10 max-w-xl">
+
+                    {[
+                      {
+                        number: "50K+",
+                        text: "Happy Customers",
+                      },
+                      {
+                        number: "1000+",
+                        text: "Premium Products",
+                      },
+                      {
+                        number: "50+",
+                        text: "Global Brands",
+                      },
+                    ].map((item, index) => (
+                      <div
+                        key={index}
+                        className="
+                          bg-white/10
+                          backdrop-blur-xl
+                          border
+                          border-white/10
+                          rounded-2xl
+                          p-4
+                        "
+                      >
+                        <h3 className="text-2xl font-black">
+                          {item.number}
+                        </h3>
+
+                        <p className="text-sm text-purple-200 mt-1">
+                          {item.text}
+                        </p>
+                      </div>
+                    ))}
 
                   </div>
-                  <div className="flex gap-8 mt-10 flex-wrap">
-
-  <div>
-    <h3 className="text-3xl font-black">50K+</h3>
-    <p className="text-purple-200 text-sm">
-      Happy Customers
-    </p>
-  </div>
-
-  <div>
-    <h3 className="text-3xl font-black">1000+</h3>
-    <p className="text-purple-200 text-sm">
-      Products
-    </p>
-  </div>
-
-  <div>
-    <h3 className="text-3xl font-black">50+</h3>
-    <p className="text-purple-200 text-sm">
-      Brands
-    </p>
-  </div>
-
-</div>
 
                 </div>
 
@@ -189,57 +264,75 @@ border-purple-300/20
 
                 <div className="relative">
 
-  <motion.img
-  key={slides[current].image}
-  src={slides[current].image}
-  alt={slides[current].title}
-  initial={{
-    scale: 1.08,
-  }}
-  animate={{
-    scale: 1,
-  }}
-  transition={{
-    duration: 5,
-    ease: "easeOut",
-  }}
-  className="w-full h-[600px] object-cover"
-/>
+                  <motion.img
+                    key={slides[current].image}
+                    src={slides[current].image}
+                    alt={slides[current].title}
+                    initial={{ scale: 1.06 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      duration: 5,
+                      ease: "easeOut",
+                    }}
+                    className="
+                      w-full
+                      h-[640px]
+                      object-cover
+                    "
+                  />
 
-  <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#2B1055]/30"></div>
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#2B1055]/30" />
 
-
-
-
-</div>
+                </div>
 
               </div>
+
             </motion.div>
 
           </AnimatePresence>
 
-          {/* LEFT ARROW */}
+          {/* LEFT BUTTON */}
 
           <button
             onClick={prevSlide}
-            className="absolute left-5 top-1/2 -translate-y-1/2 bg-white/70
-hover:bg-white
-hover:scale-110
-transition-all
-duration-300 h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
+            className="
+              absolute
+              left-6
+              top-1/2
+              -translate-y-1/2
+              h-12
+              w-12
+              rounded-full
+              bg-white/70
+              backdrop-blur-xl
+              hover:scale-110
+              transition-all
+              shadow-xl
+              z-20
+            "
           >
             ❮
           </button>
 
-          {/* RIGHT ARROW */}
+          {/* RIGHT BUTTON */}
 
           <button
             onClick={nextSlide}
-            className="absolute right-5 top-1/2 -translate-y-1/2 bg-white/70
-hover:bg-white
-hover:scale-110
-transition-all
-duration-300 h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
+            className="
+              absolute
+              right-6
+              top-1/2
+              -translate-y-1/2
+              h-12
+              w-12
+              rounded-full
+              bg-white/70
+              backdrop-blur-xl
+              hover:scale-110
+              transition-all
+              shadow-xl
+              z-20
+            "
           >
             ❯
           </button>
@@ -254,16 +347,23 @@ duration-300 h-12 w-12 rounded-full shadow-xl backdrop-blur-md z-20"
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`transition-all duration-300 rounded-full ${current === index
-                ? "w-10 h-3 bg-[#4B1E78]"
-                : "w-3 h-3 bg-gray-300"
-                }`}
+              className={`
+                transition-all
+                duration-300
+                rounded-full
+                ${
+                  current === index
+                    ? "w-10 h-3 bg-[#4B1E78]"
+                    : "w-3 h-3 bg-slate-300"
+                }
+              `}
             />
           ))}
 
         </div>
 
       </div>
+
     </section>
   );
 }

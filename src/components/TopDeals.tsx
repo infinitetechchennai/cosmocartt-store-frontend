@@ -27,22 +27,25 @@ const deals = [
 
 export default function TopDeals() {
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
+    <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-6">
 
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+        {/* HEADER */}
+
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
+
           <div>
-            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-red-100 text-red-600 text-sm font-black">
+            <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-purple-100 text-[#4B1E78] text-sm font-semibold">
               <Flame size={16} />
-              LIMITED TIME DEALS
+              Exclusive Deals
             </span>
 
-            <h2 className="mt-5 text-4xl md:text-5xl font-black text-slate-900">
+            <h2 className="mt-5 text-5xl font-black tracking-tight text-slate-900">
               Today’s Top Offers
             </h2>
 
-            <p className="text-slate-500 mt-4 max-w-2xl">
-              Grab premium electronics, accessories and latest gadgets at special prices before the offers expire.
+            <p className="text-slate-500 mt-4 max-w-2xl text-lg leading-relaxed">
+              Premium gadgets and electronics curated with exclusive offers for a limited time.
             </p>
           </div>
 
@@ -52,16 +55,15 @@ export default function TopDeals() {
               inline-flex
               items-center
               gap-2
-              px-6
-              py-3
-              rounded-full
-              bg-slate-900
+              px-7
+              py-4
+              rounded-2xl
+              bg-[#4B1E78]
               text-white
-              font-bold
-              hover:bg-[#4B1E78]
-              hover:gap-4
+              font-semibold
+              hover:shadow-xl
+              hover:scale-105
               transition-all
-              w-fit
             "
           >
             View All Deals
@@ -69,7 +71,10 @@ export default function TopDeals() {
           </Link>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-7">
+        {/* CARDS */}
+
+        <div className="grid lg:grid-cols-3 gap-8">
+
           {deals.map((deal) => (
             <Link
               key={deal.title}
@@ -78,15 +83,22 @@ export default function TopDeals() {
                 group
                 relative
                 overflow-hidden
-                rounded-[34px]
-                h-[360px]
-                shadow-[0_18px_45px_rgba(15,23,42,0.15)]
-                hover:shadow-[0_28px_70px_rgba(75,30,120,0.28)]
+                rounded-[32px]
+                h-[420px]
+                border
+                border-white/30
+                bg-white/40
+                backdrop-blur-xl
+                shadow-[0_15px_40px_rgba(15,23,42,0.08)]
                 hover:-translate-y-2
+                hover:shadow-[0_25px_60px_rgba(75,30,120,0.18)]
                 transition-all
                 duration-500
               "
             >
+
+              {/* IMAGE */}
+
               <img
                 src={deal.image}
                 alt={deal.title}
@@ -102,38 +114,98 @@ export default function TopDeals() {
                 "
               />
 
-              <div className="absolute inset-0 bg-gradient-to-br from-black/95 via-black/60 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2B1055]/80 via-transparent to-transparent opacity-80" />
+              {/* PREMIUM OVERLAY */}
 
-              <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
-                <span className="bg-white text-red-500 px-4 py-2 rounded-full text-xs font-black shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+              {/* TOP BADGES */}
+
+              <div className="absolute top-6 left-6 right-6 flex justify-between">
+
+                <span className="
+                  px-4 py-2
+                  rounded-full
+                  bg-white/80
+                  backdrop-blur-xl
+                  text-[#4B1E78]
+                  text-xs
+                  font-bold
+                ">
                   {deal.discount}
                 </span>
 
-                <span className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md text-white px-3 py-2 rounded-full text-xs font-bold">
-                  <Clock size={14} />
+                <span className="
+                  inline-flex
+                  items-center
+                  gap-1
+                  px-4
+                  py-2
+                  rounded-full
+                  bg-black/20
+                  backdrop-blur-xl
+                  text-white
+                  text-xs
+                  font-semibold
+                ">
+                  <Clock size={13} />
                   {deal.tag}
                 </span>
+
               </div>
 
-              <div className="relative z-10 h-full p-7 flex flex-col justify-end text-white">
-                <h3 className="text-3xl md:text-4xl font-black">
+              {/* CONTENT */}
+
+              <div className="relative z-10 h-full flex flex-col justify-end p-8 text-white">
+
+                <h3 className="text-4xl font-black tracking-tight">
                   {deal.title}
                 </h3>
 
-                <p className="text-white/85 mt-3 leading-relaxed">
+                <p className="mt-3 text-white/80 leading-relaxed">
                   {deal.subtitle}
                 </p>
 
-                <div className="mt-6 inline-flex items-center gap-2 bg-white text-[#4B1E78] px-5 py-3 rounded-2xl font-black w-fit group-hover:gap-4 transition-all">
+                <div
+                  className="
+                    mt-6
+                    inline-flex
+                    items-center
+                    gap-2
+                    px-6
+                    py-3
+                    rounded-2xl
+                    bg-white/90
+                    text-[#4B1E78]
+                    font-semibold
+                    w-fit
+                    group-hover:gap-4
+                    transition-all
+                  "
+                >
                   Shop Now
                   <ArrowRight size={18} />
                 </div>
+
               </div>
 
-              <div className="absolute -bottom-20 -right-20 w-52 h-52 bg-white/20 rounded-full blur-3xl group-hover:bg-purple-400/30 transition-all" />
+              {/* GLOW EFFECT */}
+
+              <div className="
+                absolute
+                -bottom-20
+                -right-20
+                w-56
+                h-56
+                rounded-full
+                bg-purple-400/20
+                blur-3xl
+                group-hover:bg-purple-400/30
+                transition-all
+              " />
+
             </Link>
           ))}
+
         </div>
 
       </div>
