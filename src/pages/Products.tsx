@@ -2,10 +2,11 @@ import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { useState, useEffect, useRef } from "react";
-import { Search, Package } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { categories } from "../data/categories";
- 
+
+
+
 export default function Products() {
     const [popupTop, setPopupTop] = useState(0);
     const [searchParams] = useSearchParams();
@@ -18,7 +19,6 @@ export default function Products() {
     const [currentPage, setCurrentPage] = useState(1);
 
     const productsSectionRef = useRef<HTMLDivElement>(null);
-    const recommendedRef = useRef<HTMLDivElement>(null);
 
     const productsPerPage = 6;
 
@@ -136,72 +136,55 @@ export default function Products() {
     );
 
     return (
-        <div className="min-h-screen bg-[#F7F5FB]">
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-purple-50">
 
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
+            <div className="max-w-7xl mx-auto px-6 py-10">
 
                 {/* Heading */}
-                <div className="relative bg-gradient-to-r from-[#1E0B3A] via-[#3D1766] to-[#6F2DBD] rounded-[2rem] p-6 sm:p-8 mb-8 text-white shadow-2xl border border-white/10 overflow-hidden">
 
-    <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-3xl"></div>
+                <div className="bg-gradient-to-r from-[#2B1055] to-[#6F2DBD] rounded-3xl p-8 mb-8 text-white shadow-xl">
 
-    <div className="absolute -bottom-24 left-1/2 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl"></div>
+                    <p className="text-purple-200">
+                        Home / Products
+    </p>
 
-    <div className="relative z-10">
+                    <h1 className="text-5xl font-black mt-2">
+                        Discover Products
+    </h1>
 
-        <p className="text-purple-200">
-            Home / Products
+                    <p className="mt-3 text-purple-100">
+                        Explore premium products at the best prices.
+    </p>
+
+                    <div className="mt-6 flex gap-4">
+
+                        <div className="bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl">
+                            <p className="text-sm text-purple-100">
+                                Products
         </p>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black mt-2 leading-tight">
-            Discover Products
-        </h1>
+                            <h3 className="text-2xl font-bold">
+                                {filteredProducts.length}
+                            </h3>
+                        </div>
 
-        <p className="mt-3 text-purple-100 text-lg">
-            Explore premium products at the best prices.
+                        <div className="bg-white/20 backdrop-blur-md px-5 py-3 rounded-2xl">
+                            <p className="text-sm text-purple-100">
+                                Brands
         </p>
 
-        <div className="mt-4 inline-flex items-center gap-2 bg-white/10 border border-white/10 px-4 py-2 rounded-full text-sm font-medium">
-            ✨ Premium Electronics Marketplace
-        </div>
+                            <h3 className="text-2xl font-bold">
+                                4+
+        </h3>
+                        </div>
 
-        <div className="mt-6 flex gap-4">
+                    </div>
 
-            <div className="bg-white/10 backdrop-blur-xl border border-white/10 px-5 py-3 rounded-2xl shadow-lg">
-                <p className="text-sm text-purple-100">
-                    Products
-                </p>
+                </div>
 
-                <h3 className="text-2xl font-bold">
-                    {filteredProducts.length}
-                </h3>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-xl border border-white/10 px-5 py-3 rounded-2xl shadow-lg">
-                <p className="text-sm text-purple-100">
-                    Brands
-                </p>
-
-                <h3 className="text-2xl font-bold">
-                    4+
-                </h3>
-            </div>
-
-        </div>
-
-        <p className="mt-5 text-sm text-purple-100">
-            Browse laptops, mobiles, accessories, gaming gear and more.
-        </p>
-
-    </div>
-
-</div>
-
-                
-
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8 relative z-10">
+                <div className="grid lg:grid-cols-4 gap-8 relative z-10">
 
                     {/* Sidebar */}
 
@@ -362,7 +345,7 @@ export default function Products() {
 
                         {/* Brands */}
 
-                        <div className="bg-white p-5 rounded-3xl shadow-lg border border-purple-100">
+                        <div className="bg-white p-5 rounded-xl">
                             <h3 className="font-semibold mb-3">
                                 Brands
                             </h3>
@@ -373,7 +356,7 @@ export default function Products() {
 
                                     <label
                                         key={brand}
-                                        className="flex items-center gap-3 cursor-pointer px-3 py-2 rounded-xl hover:bg-purple-50 transition-all duration-200"
+                                        className="flex items-center gap-2 cursor-pointer"
                                     >
 
                                         <input
@@ -408,9 +391,9 @@ export default function Products() {
                                             }}
                                         />
 
-                                        <span className="text-sm font-semibold text-slate-700">
-    {brand}
-</span>
+                                        <span>
+                                            {brand}
+                                        </span>
 
                                     </label>
 
@@ -427,7 +410,7 @@ export default function Products() {
                                 setSelectedBrands([]);
                                 setCurrentPage(1);
                             }}
-                            className="w-full bg-white text-red-500 border border-red-100 py-3 rounded-2xl font-bold hover:bg-red-50 hover:border-red-200 transition-all duration-200 shadow-sm"
+                            className="w-full bg-red-500 text-white py-2 rounded-xl hover:bg-red-600"
                         >
                             Clear Filters
                         </button>
@@ -441,22 +424,18 @@ export default function Products() {
                         className="lg:col-span-3 relative z-0"
                     >
 
-                        <div className="bg-white rounded-3xl p-4 mb-6 shadow-lg border border-purple-100 flex gap-4 flex-wrap items-center justify-between">
+                        <div className="flex gap-4 mb-6 flex-wrap">
 
-                            <div className="relative w-full md:flex-1">
-    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-
-    <input
-        type="text"
-        placeholder="Search products..."
-        value={search}
-        onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-        }}
-        className="w-full pl-14 pr-5 py-4 rounded-2xl bg-white border border-purple-200 shadow-sm focus:ring-4 focus:ring-[#6F2DBD]/20 focus:border-[#6F2DBD] focus:shadow-[0_0_25px_rgba(111,45,189,0.25)] outline-none font-medium transition-all duration-300"
-    />
-</div>
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="w-full md:w-96 px-5 py-4 rounded-2xl bg-white/80 backdrop-blur-lg border border-white shadow-lg focus:ring-4 focus:ring-purple-200 outline-none"
+                            />
 
                             <select
                                 value={sortBy}
@@ -464,7 +443,7 @@ export default function Products() {
                                     setSortBy(e.target.value);
                                     setCurrentPage(1);
                                 }}
-                                className="w-full sm:w-auto border border-purple-100 bg-slate-50 px-4 py-3 rounded-2xl font-semibold text-slate-700 shadow-sm focus:ring-2 focus:ring-purple-200 outline-none min-w-[180px] transition-all"
+                                className="border bg-white px-4 py-3 rounded-xl"
                             >
                                 <option value="latest">
                                     Latest
@@ -481,62 +460,24 @@ export default function Products() {
 
                         </div>
 
-<div className="mb-5 flex items-center justify-between">
-    <div>
-        <p className="text-xs font-black text-purple-600 uppercase tracking-[0.2em] mb-1">
-            Products
-        </p>
 
-        <h2 className="text-3xl font-black text-slate-900">
-    Explore Collection
-</h2>
-    </div>
-
-    <div className="bg-white border border-purple-100 px-4 py-2 rounded-xl shadow-sm">
-    <span className="text-sm font-bold text-[#6F2DBD]">
-        {filteredProducts.length}
-    </span>
-    <span className="text-sm text-slate-500 ml-1">
-        items found
-    </span>
-</div>
-</div>
                         <div
                             key={currentPage}
-                            className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-6 animate-fadeIn"
+                            className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fadeIn"
                         >
 
                             {filteredProducts.length === 0 ? (
 
-                                <div className="col-span-full bg-white rounded-[2rem] p-10 sm:p-14 text-center shadow-xl border border-purple-100 min-h-[280px] flex flex-col justify-center items-center">
+                                <div className="col-span-full bg-white rounded-3xl p-12 text-center shadow-lg">
 
-                                    <div className="w-28 h-28 mx-auto mb-6 rounded-full bg-purple-50 flex items-center justify-center shadow-inner border border-purple-100">
-    <Package
-        size={48}
-        className="text-[#6F2DBD]"
-        strokeWidth={1.8}
-    />
-</div>
+                                    <h2 className="text-3xl font-bold">
+                                        No Products Found
+            </h2>
 
-<h2 className="text-3xl font-black text-slate-900">
-    No Products Found
-</h2>
+                                    <p className="text-slate-500 mt-3">
+                                        Try changing filters or search.
+            </p>
 
-<p className="text-slate-500 mt-3 max-w-md">
-    We couldn't find products matching your search or filters.
-</p>
-
-<button
-    onClick={() => {
-        setSearch("");
-        setSelectedCategory("");
-        setSelectedBrands([]);
-        setSelectedSubcategory("");
-    }}
-    className="mt-6 px-6 py-3 bg-[#4B1E78] text-white rounded-xl font-semibold hover:bg-[#3a165d] transition-all"
->
-    Reset Filters
-</button>
                                 </div>
 
                             ) : (
@@ -558,7 +499,44 @@ export default function Products() {
 
 
                         </div>
-                                                {filteredProducts.length > 0 && (
+                        {/* Products You May Like Slider */}
+                        <section className="mt-10 bg-gradient-to-r from-white to-purple-50 rounded-3xl p-6 shadow-lg border border-purple-100">
+                           <div className="flex items-center justify-between mb-5">
+    <div>
+        <p className="text-xs font-black text-purple-700 uppercase tracking-wider mb-1">
+            Recommended
+        </p>
+
+        <h2 className="text-2xl font-black text-slate-900">
+            Products You May Like
+        </h2>
+
+        <p className="text-slate-500 text-sm mt-1">
+            Handpicked electronics based on popular choices
+        </p>
+    </div>
+
+    <Link
+        to="/products"
+        className="hidden md:flex items-center gap-2 text-purple-700 font-bold hover:text-purple-900"
+    >
+        View All
+        <span>→</span>
+    </Link>
+</div>
+
+                         <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth">
+                                {products.slice(0, 8).map((product) => (
+                                   <div
+ key={product._id || product.id}
+  className="min-w-[280px] snap-start"
+>
+                                        <ProductCard product={product} />
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                        {filteredProducts.length > 0 && (
 
                             <div className="flex justify-center items-center gap-3 mt-10">
 
@@ -578,15 +556,13 @@ export default function Products() {
 
                                     }}
                                     disabled={currentPage === 1}
-                                   className="
-                w-12 h-12
-                rounded-2xl
+                                    className="
+                w-11 h-11
+                rounded-full
                 bg-white
-                border border-purple-100
                 shadow-md
-                hover:bg-purple-50
-                hover:border-purple-300
-                hover:shadow-lg
+                hover:shadow-xl
+                hover:scale-105
                 transition-all
                 duration-200
                 disabled:opacity-40
@@ -613,14 +589,14 @@ export default function Products() {
 
                                         }}
                                         className={`
-                    w-12 h-12
-                    rounded-2xl
+                    w-11 h-11
+                    rounded-full
                     font-semibold
                     transition-all
                     duration-200
                     ${currentPage === index + 1
-                                                ? "bg-gradient-to-r from-[#4B1E78] to-[#6F2DBD] text-white shadow-lg border border-purple-500"
-                                                : "bg-white text-slate-700 border border-purple-100 hover:bg-purple-50 hover:border-purple-300"
+                                                ? "bg-[#6F2DBD] text-white scale-110 shadow-lg"
+                                                : "bg-white text-gray-700 hover:bg-purple-100"
                                             }
                 `}
                                     >
@@ -646,15 +622,13 @@ export default function Products() {
 
                                     }}
                                     disabled={currentPage === totalPages}
-                                   className="
-        w-12 h-12
-        rounded-2xl
+                                    className="
+        w-11 h-11
+        rounded-full
         bg-white
-        border border-purple-100
         shadow-md
-        hover:bg-purple-50
-        hover:border-purple-300
-        hover:shadow-lg
+        hover:shadow-xl
+        hover:scale-105
         transition-all
         duration-200
         disabled:opacity-40
@@ -674,63 +648,6 @@ export default function Products() {
 
             </div>
 
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 pb-8">
-    {/* Products You May Like Slider */}
-    <section className="mt-4 bg-white rounded-3xl p-4 shadow-lg border border-purple-100">
-                           <div className="flex items-center justify-between mb-4 pb-3 border-b border-purple-100">
-    <div>
-        <p className="text-xs font-black text-purple-600 uppercase tracking-[0.2em] mb-1">
-            Recommended
-        </p>
-
-        <h2 className="text-3xl font-black text-slate-900">
-            Products You May Like
-        </h2>
-
-        <p className="text-slate-500 text-sm mt-1">
-            Handpicked electronics based on popular choices
-        </p>
-    </div>
-
-    <Link
-    to="/products"
-    className="
-        hidden md:flex
-        items-center
-        gap-3
-        px-8
-        py-4
-        rounded-2xl
-        border-2
-        border-purple-300
-        bg-white
-        text-purple-700
-        font-bold
-        shadow-sm
-        hover:shadow-lg
-        hover:border-purple-500
-        hover:-translate-y-0.5
-        transition-all
-        duration-300
-    "
->
-    View All
-    <span className="text-lg">→</span>
-</Link>
-</div>
-
-  <div ref={recommendedRef} className="flex gap-6 overflow-x-auto pb-5 pt-2 snap-x snap-mandatory scroll-smooth">                     
-                                {products.slice(0, 8).map((product) => (
-                                   <div
- key={product._id || product.id}
-  className="min-w-[220px] max-w-[220px] snap-start shrink-0"
->
-                                        <ProductCard product={product} />
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
- </div>
             <Footer />
 
         </div >
