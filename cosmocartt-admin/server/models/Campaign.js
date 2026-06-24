@@ -4,7 +4,8 @@ const campaignSchema = new mongoose.Schema(
     {
         title: {
             type: String,
-            required: true
+            required: true,
+            trim: true
         },
 
         type: {
@@ -13,26 +14,10 @@ const campaignSchema = new mongoose.Schema(
                 "Homepage Banner",
                 "Flash Sale",
                 "Coupon",
-                "Festival Offer",
-                "Email Campaign"
+                "Festival Offer"
             ],
             default: "Homepage Banner"
         },
-
-        description: String,
-
-        discountCode: String,
-
-        discountPercentage: {
-            type: Number,
-            default: 0
-        },
-
-        bannerText: String,
-
-        startDate: String,
-
-        endDate: String,
 
         status: {
             type: String,
@@ -43,6 +28,46 @@ const campaignSchema = new mongoose.Schema(
                 "Expired"
             ],
             default: "Draft"
+        },
+
+        bannerText: {
+            type: String,
+            default: ""
+        },
+
+        description: {
+            type: String,
+            default: ""
+        },
+
+        discountCode: {
+            type: String,
+            default: ""
+        },
+
+        discountPercentage: {
+            type: Number,
+            default: 0
+        },
+
+        startDate: {
+            type: String,
+            default: ""
+        },
+
+        endDate: {
+            type: String,
+            default: ""
+        },
+
+        placement: {
+            type: String,
+            enum: [
+                "Home",
+                "Products",
+                "All Store"
+            ],
+            default: "Home"
         }
     },
     {
@@ -50,7 +75,4 @@ const campaignSchema = new mongoose.Schema(
     }
 );
 
-export default mongoose.model(
-    "Campaign",
-    campaignSchema
-);
+export default mongoose.model("Campaign", campaignSchema);

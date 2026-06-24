@@ -18,6 +18,7 @@ import FeaturesStrip from "../components/FeaturesStrip";
 import TrendingProducts from "../components/TrendingProducts";
 import CategoryShowcase from "../components/CategoryShowcase";
 import AIExperienceSection from "../components/AIExperienceSection";
+import CampaignBanner from "../components/CampaignBanner";
 
 import "swiper/css/navigation";
 
@@ -98,6 +99,8 @@ export default function Home() {
       </div>
 
       {/* <Categories /> */}
+
+      <CampaignBanner />
 
       <TrendingProducts />
 
