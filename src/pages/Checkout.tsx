@@ -549,15 +549,24 @@ export default function Checkout() {
 
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-[#F7F5FB]">
 
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-6 py-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div className="mb-8">
+    <p className="text-sm text-slate-500">
+        Home / Cart / Checkout
+    </p>
 
-                <h1 className="text-4xl font-bold mb-8">
-                    Checkout
-                </h1>
+    <h1 className="text-4xl font-black text-slate-900 mt-2">
+        Checkout
+    </h1>
+
+    <p className="text-slate-500 mt-2">
+        Complete your order securely with CosmoCartt.
+    </p>
+</div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
 
@@ -566,12 +575,23 @@ export default function Checkout() {
                     <div className="lg:col-span-2 space-y-6">
 
                         {/* ADDRESS SECTION */}
-                        <div className="bg-white rounded-2xl p-6 border">
+                        <div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-purple-100 shadow-xl">
 
-                            <h2 className="text-xl font-semibold mb-5">
-                                Shipping Address
-    </h2>
+                           <div className="flex items-center justify-between mb-6 pb-4 border-b border-purple-100">
+    <div>
+        <p className="text-xs font-black text-purple-600 uppercase tracking-[0.2em]">
+            Step 1
+        </p>
 
+        <h2 className="text-2xl font-black text-slate-900 mt-1">
+            Shipping Address
+        </h2>
+    </div>
+
+    <span className="bg-purple-50 text-purple-700 px-4 py-2 rounded-full text-sm font-bold">
+        Required
+    </span>
+</div>
                             <div className="grid md:grid-cols-2 gap-4">
 
                                 <div>
@@ -690,12 +710,17 @@ export default function Checkout() {
                         </div>
 
                         {/* PAYMENT SECTION */}
-                        <div className="bg-white rounded-2xl p-6 border">
+                        <div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-purple-100 shadow-xl">
 
-                            <h2 className="text-xl font-semibold mb-5">
-                                Payment Method
+                            <div className="mb-6 pb-4 border-b border-purple-100">
+    <p className="text-xs font-black text-purple-600 uppercase tracking-[0.2em]">
+        Step 2
+    </p>
+
+    <h2 className="text-2xl font-black text-slate-900 mt-1">
+        Payment Method
     </h2>
-
+</div>
                             <div className="space-y-3">
 
                                 <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
@@ -736,11 +761,17 @@ export default function Checkout() {
 
                     {/* ORDER SUMMARY */}
 
-                    <div className="bg-white rounded-2xl p-6 h-fit border space-y-5 sticky top-24">
+                    <div className="bg-white rounded-[2rem] p-6 h-fit border border-purple-100 shadow-xl space-y-5 sticky top-24">
 
-                        <h2 className="text-xl font-semibold">
-                            Order Summary
-  </h2>
+                       <div className="pb-4 border-b border-purple-100">
+    <p className="text-xs font-black text-purple-600 uppercase tracking-[0.2em]">
+        Summary
+    </p>
+
+    <h2 className="text-2xl font-black text-slate-900 mt-1">
+        Order Summary
+    </h2>
+</div>
 
                         {/* ITEMS */}
                         <p className="text-xs uppercase text-gray-400 tracking-wider">
@@ -831,7 +862,7 @@ export default function Checkout() {
 
                         <button
                             onClick={handlePlaceOrder}
-                            className="w-full bg-[#4B1E78] hover:bg-[#3a155d] transition text-white py-3 rounded-xl font-semibold"
+                            className="w-full bg-gradient-to-r from-[#5B21B6] to-[#7C3AED] text-white py-4 rounded-2xl font-black shadow-lg hover:scale-[1.02] transition-all duration-300"
                         >
                             Place Order
   </button>
