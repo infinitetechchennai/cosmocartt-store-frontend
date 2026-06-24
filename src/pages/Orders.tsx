@@ -8,8 +8,6 @@ import {
     Truck,
     CreditCard,
     Banknote,
-    RefreshCw,
-    Shuffle,
     X,
     AlertCircle,
     CheckCircle2

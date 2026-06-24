@@ -2,15 +2,14 @@ import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 
 export default function Login() {
-    const navigate = useNavigate();
 
     const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);

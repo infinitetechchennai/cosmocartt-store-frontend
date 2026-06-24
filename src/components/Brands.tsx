@@ -4,11 +4,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 
 
 import apple from "../assets/apple.png";
-import samsung from "../assets/samsung.png";
-import sony from "../assets/sony.png";
-import dell from "../assets/dell.png";
-import hp from "../assets/hp.png";
-import asus from "../assets/asus.png";
+
 
 
 
@@ -26,13 +22,13 @@ export default function Brands() {
 
         if (!data.success) return;
 
-       const uniqueBrands: string[] = Array.from(
-  new Set(
-    data.products
-      .map((p: any) => p.brand)
-      .filter(Boolean)
-  )
-);
+        const uniqueBrands: string[] = Array.from(
+          new Set(
+            data.products
+              .map((p: any) => p.brand)
+              .filter(Boolean)
+          )
+        );
 
         setBrands(
           uniqueBrands.map(
