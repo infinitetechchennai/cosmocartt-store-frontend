@@ -83,7 +83,7 @@ export default function Sidebar({
   return (
     <aside
       id="Cosmocartt-sidebar"
-      className="w-72 bg-gradient-to-b from-[#2E1065] via-[#4C1D95] to-[#5B2A86] text-white flex flex-col h-screen shrink-0 border-r border-white/10 z-10 select-none overflow-y-auto"
+      className="relative z-[999] w-72 bg-gradient-to-b from-[#2E1065] via-[#4C1D95] to-[#5B2A86] text-white flex flex-col h-screen shrink-0 border-r border-white/10 select-none overflow-y-auto"
     >
       {/* Brand */}
       <div className="h-20 flex items-center justify-center border-b border-white/10 px-4">
@@ -105,7 +105,7 @@ export default function Sidebar({
               key={item.id}
               id={`sidebar-tab-${item.id}`}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center justify-between text-left px-3 py-2.5 rounded-xl transition-all duration-200 group text-sm font-medium ${isActive
+              className={`w-full flex items-center justify-between text-left px-3 py-2.5 rounded-xl transition-all duration-200 group text-sm font-medium relative z-[1000] w-full cursor-pointer pointer-events-auto ${isActive
                 ? "bg-white/15 border-l-4 border-violet-300 text-white rounded-l-none"
                 : "text-slate-200 hover:text-white hover:bg-white/10"
                 }`}

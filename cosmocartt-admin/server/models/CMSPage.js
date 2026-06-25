@@ -18,6 +18,11 @@ const cmsPageSchema = new mongoose.Schema(
             default: ""
         },
 
+        fields: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {}
+        },
+
         metaTitle: {
             type: String,
             default: ""

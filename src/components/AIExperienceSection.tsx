@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 export default function AIExperienceSection() {
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const videoSrc = "src/assets/cosmocartt_video.mp4";

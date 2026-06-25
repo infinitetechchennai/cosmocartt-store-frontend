@@ -3,35 +3,93 @@ import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import {
+    Package,
+    Truck,
+    CreditCard,
+    Banknote,
+    X,
+    AlertCircle,
+    CheckCircle2
+} from "lucide-react";
 
 export default function Orders() {
-
     const { user } = useAuth();
 
     const [orders, setOrders] = useState<any[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
-    const cancelOrder = async (
-        orderId: string
-    ) => {
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState<any>(null);
 
+    const [refundModalOrder, setRefundModalOrder] = useState<any>(null);
+    const [exchangeModalOrder, setExchangeModalOrder] = useState<any>(null);
+    const [reason, setReason] = useState("");
+
+    const formatCurrency = (value: number) =>
+        new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+        }).format(value || 0);
+
+    const loadOrders = async () => {
         try {
+            setLoading(true);
 
-            const response =
-                await fetch(
-                    `http://localhost:5000/api/orders/cancel/${orderId}`,
-                    {
-                        method: "PUT",
-                    }
-                );
+            if (!user?._id) {
+                setOrders([]);
+                return;
+            }
 
-            const data =
-                await response.json();
+            const res = await fetch(
+                `http://localhost:5000/api/orders/user/${user._id}`
+            );
+
+            const data = await res.json();
+
+            if (data.success) {
+                setOrders(data.orders || []);
+            } else {
+                setMessage({
+                    type: "error",
+                    title: "Orders Failed",
+                    text: data.message || "Could not load your orders."
+                });
+            }
+        } catch (error) {
+            console.error(error);
+
+            setMessage({
+                type: "error",
+                title: "Orders Failed",
+                text: "Something went wrong while loading orders."
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadOrders();
+    }, [user?._id]);
+
+    const cancelOrder = async (orderId: string) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/orders/cancel/${orderId}`,
+                {
+                    method: "PUT"
+                }
+            );
+
+            const data = await response.json();
 
             if (!data.success) {
-
-                alert(
-                    data.message
-                );
+                setMessage({
+                    type: "error",
+                    title: "Cancel Failed",
+                    text: data.message || "Could not cancel this order."
+                });
 
                 return;
             }
@@ -44,535 +102,665 @@ export default function Orders() {
                 )
             );
 
-            setSelectedOrder(
-                data.order
-            );
+            setSelectedOrder(data.order);
 
-        } catch (err) {
+            setMessage({
+                type: "success",
+                title: "Order Cancelled",
+                text: "Your order has been cancelled successfully."
+            });
+        } catch (error) {
+            console.error(error);
 
-            console.error(err);
-
+            setMessage({
+                type: "error",
+                title: "Cancel Failed",
+                text: "Something went wrong while cancelling this order."
+            });
         }
-
     };
 
-    const requestRefund = async (
-        orderId: string
-    ) => {
+    const requestRefund = async () => {
+        if (!refundModalOrder || !reason.trim()) {
+            setMessage({
+                type: "warning",
+                title: "Reason Required",
+                text: "Please enter a reason for refund."
+            });
 
-        const reason =
-            prompt(
-                "Reason for refund?"
-            );
-
-        if (!reason) return;
+            return;
+        }
 
         try {
+            const response = await fetch(
+                `http://localhost:5000/api/orders/${refundModalOrder._id}/request-refund`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        reason
+                    })
+                }
+            );
 
-            const response =
-                await fetch(
-                    `http://localhost:5000/api/orders/${orderId}/request-refund`,
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            reason
-                        })
-                    }
-                );
-
-            const data =
-                await response.json();
+            const data = await response.json();
 
             if (!data.success) {
-
-                alert(
-                    data.message
-                );
+                setMessage({
+                    type: "error",
+                    title: "Refund Failed",
+                    text: data.message || "Could not request refund."
+                });
 
                 return;
-
             }
 
-            setOrders(prev =>
-                prev.map(order =>
-                    order._id === orderId
-                        ? {
-                            ...order,
-                            refundStatus:
-                                "Requested"
-                        }
-                        : order
-                )
-            );
+            await loadOrders();
 
-            alert(
-                "Refund requested successfully"
-            );
+            setRefundModalOrder(null);
+            setReason("");
 
-        } catch (err) {
+            setMessage({
+                type: "success",
+                title: "Refund Requested",
+                text: "Your refund request was submitted successfully."
+            });
+        } catch (error) {
+            console.error(error);
 
-            console.error(err);
-
+            setMessage({
+                type: "error",
+                title: "Refund Failed",
+                text: "Something went wrong while requesting refund."
+            });
         }
-
     };
 
-    useEffect(() => {
-        fetch(
-            `http://localhost:5000/api/orders/user/${user?._id}`
-        )
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.success) {
-                    setOrders(data.orders);
+    const requestExchange = async () => {
+        if (!exchangeModalOrder || !reason.trim()) {
+            setMessage({
+                type: "warning",
+                title: "Reason Required",
+                text: "Please enter a reason for exchange."
+            });
+
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/orders/${exchangeModalOrder._id}/request-exchange`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        reason
+                    })
                 }
-            })
-            .catch((err) => console.error(err));
-    }, [user]);
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+                setMessage({
+                    type: "error",
+                    title: "Exchange Failed",
+                    text: data.message || "Could not request exchange."
+                });
+
+                return;
+            }
+
+            await loadOrders();
+
+            setExchangeModalOrder(null);
+            setReason("");
+
+            setMessage({
+                type: "success",
+                title: "Exchange Requested",
+                text: "Your exchange request was submitted successfully."
+            });
+        } catch (error) {
+            console.error(error);
+
+            setMessage({
+                type: "error",
+                title: "Exchange Failed",
+                text: "Something went wrong while requesting exchange."
+            });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-slate-50">
-
             <Navbar />
 
             <div className="max-w-6xl mx-auto px-6 py-10">
+                {message && (
+                    <div
+                        className={`mb-6 border rounded-2xl p-4 flex items-start gap-3 ${message.type === "success"
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                            : message.type === "warning"
+                                ? "bg-amber-50 border-amber-200 text-amber-800"
+                                : "bg-red-50 border-red-200 text-red-800"
+                            }`}
+                    >
+                        {message.type === "success" ? (
+                            <CheckCircle2 className="w-5 h-5 mt-0.5" />
+                        ) : (
+                            <AlertCircle className="w-5 h-5 mt-0.5" />
+                        )}
 
-                <h1 className="text-4xl font-bold mb-8">
-                    My Orders
-        </h1>
+                        <div className="flex-1">
+                            <h3 className="font-bold text-sm">
+                                {message.title}
+                            </h3>
+                            <p className="text-sm opacity-80 mt-1">
+                                {message.text}
+                            </p>
+                        </div>
 
-                {/* EMPTY STATE */}
-                {orders.length === 0 && (
-                    <div className="text-center py-24">
-                        <h2 className="text-xl font-semibold">
-                            No orders yet
-            </h2>
-                        <p className="text-gray-500 mt-2">
-                            Start shopping to place your first order
-</p>
+                        <button onClick={() => setMessage(null)}>
+                            <X className="w-4 h-4" />
+                        </button>
                     </div>
                 )}
 
-                {/* ORDERS LIST */}
+                <h1 className="text-4xl font-black text-zinc-950 mb-8">
+                    My Orders
+        </h1>
+
+                {loading && (
+                    <div className="bg-white border border-zinc-100 rounded-3xl p-12 text-center text-zinc-500">
+                        Loading your orders...
+                    </div>
+                )}
+
+                {!loading && orders.length === 0 && (
+                    <div className="bg-white border border-zinc-100 rounded-3xl p-16 text-center">
+                        <Package className="w-14 h-14 mx-auto text-zinc-300" />
+                        <h2 className="text-2xl font-black mt-4">
+                            No orders yet
+            </h2>
+                        <p className="text-zinc-500 mt-2">
+                            Start shopping to place your first order.
+            </p>
+                        <Link
+                            to="/products"
+                            className="inline-flex mt-6 bg-[#4B1E78] text-white px-6 py-3 rounded-2xl font-bold"
+                        >
+                            Browse Products
+            </Link>
+                    </div>
+                )}
+
                 <div className="space-y-6">
-
-                    {orders.map((order) => (
-
-                        <div key={order._id} className="bg-white border rounded-lg">
-
-                            {/* HEADER */}
-                            <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
-
-                                <div className="text-sm text-gray-600">
-                                    <p>
-                                        <span className="font-semibold text-black">Order ID:</span> #{order.orderNumber.slice(-8)}
-                                    </p>
-                                    <p>
-                                        {order.createdAt
-                                            ? new Date(order.createdAt).toLocaleDateString()
-                                            : "No date"}
-                                    </p>
-                                </div>
-
-                                <div className="text-right">
-                                    <span
-                                        className={`text-xs px-3 py-1 rounded-full font-medium ${order.status === "Placed"
-                                            ? "bg-yellow-100 text-yellow-700"
-                                            : "bg-green-100 text-green-700"
-                                            }`}
-                                    >
-                                        {order.status}
-                                    </span>
-
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Payment: {order.paymentStatus}
-                                    </p>
-                                </div>
-
-
-
-                            </div>
-
-
-                            {/* ITEMS */}
-                            {/* TRACKING TIMELINE */}
-
-                            <div className="px-6 py-4 border-b bg-slate-50">
-
-                                <div className="flex flex-wrap gap-3">
-
-                                    {[
-                                        "Order Placed",
-                                        "Processing",
-                                        "Shipped",
-                                        "Delivered"
-                                    ].map((step) => {
-
-                                        const completed =
-                                            order.trackingTimeline?.some(
-                                                (t: any) => t.status === step
-                                            );
-
-                                        return (
-
-                                            <div
-                                                key={step}
-                                                className={`px-3 py-2 rounded-full text-xs font-medium ${completed
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-gray-100 text-gray-500"
-                                                    }`}
-                                            >
-                                                {completed ? "✓" : "○"} {step}
-                                            </div>
-
-                                        );
-
-                                    })}
-
-                                </div>
-
-                            </div>
-
-                            {/* ITEMS */}
-                            <div className="px-6 py-4 space-y-4">
-
-                                {order.products?.map((item: any) => (
-
-
-                                    <div
-                                        key={item.productId}
-                                        className="flex justify-between items-center"
-                                    >
-
-                                        <div>
-                                            <p className="font-medium text-gray-800">
-                                                {item.name}
-                                            </p>
-                                            <p className="text-sm text-gray-500">
-                                                Qty: {item.quantity}
-                                            </p>
-                                        </div>
-
-                                        <p className="font-semibold">
-                                            ₹{(item.price * item.quantity).toLocaleString()}
-                                        </p>
-
-                                    </div>
-
-                                ))}
-
-                            </div>
-
-                            {/* FOOTER */}
-                            <div className="flex justify-end px-6 py-4 border-t">
-
-                                <div className="text-right">
-                                    <p className="text-sm text-gray-500">Total</p>
-                                    <p className="text-xl font-bold">
-                                        ₹{order.totalAmount?.toLocaleString()}
-                                    </p>
-                                    <button
-                                        onClick={() => setSelectedOrder(order)}
-                                        className="mt-3 px-4 py-2 text-sm bg-[#4B1E78] text-white rounded hover:opacity-90"
-                                    >
-                                        View Details
-                                    </button>
-
-                                    <Link
-                                        to={`/track-order/${order._id}`}
-                                        className="block mt-2 text-sm text-[#4B1E78] font-medium"
-                                    >
-                                        Track Order
-                                    </Link>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                    ))}
-
+                    {!loading &&
+                        orders.map((order) => (
+                            <OrderCard
+                                key={order._id}
+                                order={order}
+                                formatCurrency={formatCurrency}
+                                onView={() => setSelectedOrder(order)}
+                            />
+                        ))}
                 </div>
-
             </div>
 
-            {/* ORDER DETAILS MODAL */}
-
             {selectedOrder && (
-
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
-                    <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl">
-
-                        <div className="flex justify-between items-center mb-6">
-
-                            <h2 className="text-2xl font-bold">
-                                Order Details
-                </h2>
-
-                            <button
-                                onClick={() => setSelectedOrder(null)}
-                                className="
-        w-10
-        h-10
-        rounded-full
-        bg-slate-100
-        hover:bg-slate-200
-        text-xl
-        transition
-    "
-                            >
-                                ×
-</button>
-
-                        </div>
-
-                        <div className="space-y-3 mb-6">
-
-                            <p>
-                                <strong>Order ID:</strong>
-                                {" "}
-                                {selectedOrder.orderNumber}
-                            </p>
-
-                            <p>
-                                <strong>Status:</strong>
-                                {" "}
-                                {selectedOrder.status}
-                            </p>
-
-                            <p>
-                                <strong>Payment Status:</strong>
-                                {" "}
-                                {selectedOrder.paymentStatus}
-                            </p>
-
-                            <p>
-                                <strong>Payment Method:</strong>
-                                {" "}
-                                {selectedOrder.paymentMethod}
-                            </p>
-
-                            <p>
-                                <strong>Order Date:</strong>
-                                {" "}
-                                {new Date(
-                                    selectedOrder.createdAt
-                                ).toLocaleString()}
-                            </p>
-
-                            <p>
-                                <strong>Customer:</strong>
-                                {" "}
-                                {selectedOrder.customerName}
-                            </p>
-
-                            <p>
-                                <strong>Phone:</strong>
-                                {" "}
-                                {selectedOrder.phone}
-                            </p>
-
-                            <p>
-                                <strong>Delivery Address:</strong>
-                                {" "}
-                                {selectedOrder.address},
-        {" "}
-                                {selectedOrder.city},
-        {" "}
-                                {selectedOrder.state}
-                                {" - "}
-                                {selectedOrder.pincode}
-                            </p>
-
-                            <p>
-                                <strong>
-                                    Refund Status:
-    </strong>
-                                {" "}
-                                {
-                                    selectedOrder.refundStatus
-                                    ||
-                                    "Not Requested"
-                                }
-                            </p>
-
-                        </div>
-
-                        <div className="border-t pt-4">
-
-                            <h3 className="font-semibold mb-3">
-                                Products
-                </h3>
-
-                            {selectedOrder.products?.map((item: any) => (
-
-                                <div
-                                    key={item.productId}
-                                    className="flex justify-between items-center py-3 border-b"
-                                >
-
-                                    <div>
-
-                                        <p className="font-medium">
-                                            {item.name}
-                                        </p>
-
-                                        <p className="text-sm text-gray-500">
-                                            Qty: {item.quantity}
-                                        </p>
-
-                                        <p className="text-sm text-gray-500">
-                                            ₹{item.price.toLocaleString()}
-                                                each
-                                                    </p>
-
-                                    </div>
-
-                                    <span className="font-semibold">
-                                        ₹{(
-                                            item.price *
-                                            item.quantity
-                                        ).toLocaleString()}
-                                    </span>
-
-                                </div>
-
-
-
-
-                            ))}
-
-                        </div>
-
-
-
-                        <div className="border-t mt-8 pt-6">
-
-                            <div className="space-y-3">
-
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span>
-                                        ₹{selectedOrder.subtotal?.toLocaleString() || 0}
-                                    </span>
-                                </div>
-
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Shipping</span>
-                                    <span>
-                                        ₹{selectedOrder.shippingCharge?.toLocaleString() || 0}
-                                    </span>
-                                </div>
-
-                                <div className="flex justify-between text-gray-600">
-                                    <span>Tax</span>
-                                    <span>
-                                        ₹{selectedOrder.tax?.toLocaleString() || 0}
-                                    </span>
-                                </div>
-
-                                <div className="flex justify-between border-t pt-4 mt-4">
-
-                                    <span className="text-xl font-bold">
-                                        Grand Total
-            </span>
-
-                                    <span className="text-2xl font-black text-[#4B1E78]">
-                                        ₹{selectedOrder.totalAmount?.toLocaleString()}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                            {(selectedOrder.status === "Order Placed" ||
-                                selectedOrder.status === "Processing") && (
-
-                                    <button
-                                        onClick={() =>
-                                            cancelOrder(selectedOrder._id)
-                                        }
-                                        className="
-                mt-6
-                w-full
-                py-3
-                rounded-xl
-                bg-red-600
-                hover:bg-red-700
-                text-white
-                font-semibold
-                transition
-            "
-                                    >
-                                        Cancel Order
-                                    </button>
-
-                                )}
-
-
-                            {
-                                selectedOrder.status === "Delivered"
-
-                                &&
-
-                                selectedOrder.refundStatus !==
-                                "Requested"
-
-                                && (
-
-                                    <div className="mt-6">
-
-                                        <button
-                                            onClick={() =>
-                                                requestRefund(
-                                                    selectedOrder._id
-                                                )
-                                            }
-                                            className="
-                    w-full
-                    bg-red-600
-                    hover:bg-red-700
-                    text-white
-                    py-3
-                    rounded-xl
-                    font-medium
-                "
-                                        >
-                                            Request Refund
-            </button>
-
-                                    </div>
-
-                                )
-                            }
-
-
-
-                        </div>
-
-
-
-                    </div>
-
-
-
-
-                </div>
-
-
-
-            )
-            }
+                <OrderDetailsModal
+                    order={selectedOrder}
+                    formatCurrency={formatCurrency}
+                    onClose={() => setSelectedOrder(null)}
+                    onCancel={() => cancelOrder(selectedOrder._id)}
+                    onRefund={() => {
+                        setRefundModalOrder(selectedOrder);
+                        setReason("");
+                    }}
+                    onExchange={() => {
+                        setExchangeModalOrder(selectedOrder);
+                        setReason("");
+                    }}
+                />
+            )}
+
+            {refundModalOrder && (
+                <ReasonModal
+                    title="Request Refund"
+                    description="Tell us why you want to request a refund for this order."
+                    reason={reason}
+                    setReason={setReason}
+                    onClose={() => {
+                        setRefundModalOrder(null);
+                        setReason("");
+                    }}
+                    onSubmit={requestRefund}
+                    submitText="Submit Refund Request"
+                />
+            )}
+
+            {exchangeModalOrder && (
+                <ReasonModal
+                    title="Request Exchange"
+                    description="Tell us why you want to request an exchange or replacement."
+                    reason={reason}
+                    setReason={setReason}
+                    onClose={() => {
+                        setExchangeModalOrder(null);
+                        setReason("");
+                    }}
+                    onSubmit={requestExchange}
+                    submitText="Submit Exchange Request"
+                />
+            )}
 
             <Footer />
+        </div>
+    );
+}
 
-        </div >
+function OrderCard({
+    order,
+    formatCurrency,
+    onView
+}: any) {
+    return (
+        <div className="bg-white border border-zinc-100 rounded-3xl overflow-hidden shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-5 border-b bg-slate-50">
+                <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-zinc-400 font-bold">
+                        Order Reference
+          </p>
+                    <p className="font-black text-zinc-950 mt-1">
+                        {order.orderNumber || order._id}
+                    </p>
+                    <p className="text-sm text-zinc-500 mt-1">
+                        {order.createdAt
+                            ? new Date(order.createdAt).toLocaleString()
+                            : "-"}
+                    </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                    <StatusBadge status={order.status} />
+                    <PaymentBadge order={order} />
+                </div>
+            </div>
+
+            <div className="px-6 py-5 border-b">
+                <div className="flex flex-wrap gap-3">
+                    {["Order Placed", "Processing", "Shipped", "Delivered"].map(
+                        (step) => {
+                            const completed =
+                                order.status === step ||
+                                order.trackingTimeline?.some(
+                                    (t: any) => t.status === step
+                                );
+
+                            return (
+                                <span
+                                    key={step}
+                                    className={`px-3 py-2 rounded-full text-xs font-bold ${completed
+                                        ? "bg-emerald-50 text-emerald-700"
+                                        : "bg-zinc-100 text-zinc-500"
+                                        }`}
+                                >
+                                    {completed ? "✓" : "○"} {step}
+                                </span>
+                            );
+                        }
+                    )}
+                </div>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+                {order.products?.slice(0, 3).map((item: any) => (
+                    <div
+                        key={item._id || item.productId}
+                        className="flex justify-between gap-4"
+                    >
+                        <div>
+                            <p className="font-bold text-zinc-800">
+                                {item.name}
+                            </p>
+                            <p className="text-sm text-zinc-500">
+                                Qty: {item.quantity}
+                            </p>
+                        </div>
+
+                        <p className="font-black">
+                            {formatCurrency(order.totalAmount)}
+                        </p>
+                    </div>
+                ))}
+
+                {order.products?.length > 3 && (
+                    <p className="text-sm text-zinc-400">
+                        + {order.products.length - 3} more items
+                    </p>
+                )}
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-5 border-t">
+                <div>
+                    <p className="text-sm text-zinc-500">
+                        Total Amount
+          </p>
+                    <p className="text-2xl font-black text-[#4B1E78]">
+                        {formatCurrency(order.totalAmount)}
+                    </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                    <button
+                        onClick={onView}
+                        className="px-5 py-3 rounded-2xl bg-[#4B1E78] text-white text-sm font-bold"
+                    >
+                        View Details
+          </button>
+
+                    <Link
+                        to={`/track-order/${order._id}`}
+                        className="px-5 py-3 rounded-2xl border border-purple-200 text-[#4B1E78] bg-white text-sm font-bold"
+                    >
+                        Track Order
+          </Link>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function OrderDetailsModal({
+    order,
+    formatCurrency,
+    onClose,
+    onCancel,
+    onRefund,
+    onExchange
+}: any) {
+    const canCancel =
+        order.status === "Order Placed" ||
+        order.status === "Processing";
+
+    const canRequestRefund =
+        order.status === "Delivered" &&
+        order.refundStatus === "Not Requested";
+
+    const canRequestExchange =
+        order.status === "Delivered" &&
+        order.exchangeStatus === "Not Requested";
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
+            <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 md:p-8 shadow-2xl">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 className="text-2xl font-black">
+                            Order Details
+            </h2>
+                        <p className="text-sm text-zinc-500 mt-1">
+                            {order.orderNumber || order._id}
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={onClose}
+                        className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-xl"
+                    >
+                        ×
+          </button>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                    <InfoCard label="Order Status" value={order.status} />
+                    <InfoCard
+                        label="Payment Method"
+                        value={order.paymentMethod}
+                    />
+                    <InfoCard
+                        label="Payment Status"
+                        value={
+                            order.paymentMethod === "COD"
+                                ? "COD Pending"
+                                : order.paymentStatus
+                        }
+                    />
+                    <InfoCard
+                        label="Shipping Status"
+                        value={order.shippingStatus || "-"}
+                    />
+                    <InfoCard
+                        label="Courier"
+                        value={order.courierName || "-"}
+                    />
+                    <InfoCard
+                        label="AWB Code"
+                        value={order.awbCode || "-"}
+                    />
+                </div>
+
+                {order.trackingUrl && (
+                    <a
+                        href={order.trackingUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex mb-6 bg-[#4B1E78] text-white px-5 py-3 rounded-2xl font-bold"
+                    >
+                        Open Courier Tracking
+                    </a>
+                )}
+
+                <div className="bg-slate-50 border border-zinc-100 rounded-2xl p-5 mb-6">
+                    <h3 className="font-black mb-3">
+                        Delivery Address
+          </h3>
+                    <p className="text-zinc-600 leading-7">
+                        {order.customerName}
+                        <br />
+                        {order.phone}
+                        <br />
+                        {order.address}, {order.city}, {order.state} - {order.pincode}
+                    </p>
+                </div>
+
+                <div className="border rounded-2xl overflow-hidden">
+                    {order.products?.map((item: any) => (
+                        <div
+                            key={item._id || item.productId}
+                            className="flex justify-between items-center p-4 border-b last:border-b-0"
+                        >
+                            <div>
+                                <p className="font-bold">
+                                    {item.name}
+                                </p>
+                                <p className="text-sm text-zinc-500">
+                                    Qty: {item.quantity} • {formatCurrency(item.price)} each
+                </p>
+                            </div>
+
+                            <p className="font-black">
+                                {formatCurrency(item.price * item.quantity)}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-6 bg-slate-50 rounded-2xl p-5">
+                    <SummaryRow label="Subtotal" value={formatCurrency(order.subtotal)} />
+                    <SummaryRow label="Shipping" value={formatCurrency(order.shippingCharge)} />
+                    <SummaryRow label="Tax" value={formatCurrency(order.tax)} />
+                    <div className="border-t mt-4 pt-4 flex justify-between">
+                        <span className="text-xl font-black">Grand Total</span>
+                        <span className="text-2xl font-black text-[#4B1E78]">
+                            {formatCurrency(order.totalAmount)}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mt-6">
+                    <InfoCard
+                        label="Refund Status"
+                        value={order.refundStatus || "Not Requested"}
+                    />
+                    <InfoCard
+                        label="Exchange Status"
+                        value={order.exchangeStatus || "Not Requested"}
+                    />
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-3 mt-6">
+                    {canCancel && (
+                        <button
+                            onClick={onCancel}
+                            className="flex-1 py-3 rounded-2xl bg-red-600 text-white font-bold"
+                        >
+                            Cancel Order
+                        </button>
+                    )}
+
+                    {canRequestRefund && (
+                        <button
+                            onClick={onRefund}
+                            className="flex-1 py-3 rounded-2xl bg-red-50 text-red-700 border border-red-100 font-bold"
+                        >
+                            Request Refund
+                        </button>
+                    )}
+
+                    {canRequestExchange && (
+                        <button
+                            onClick={onExchange}
+                            className="flex-1 py-3 rounded-2xl bg-purple-50 text-[#4B1E78] border border-purple-100 font-bold"
+                        >
+                            Request Exchange
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function ReasonModal({
+    title,
+    description,
+    reason,
+    setReason,
+    onClose,
+    onSubmit,
+    submitText
+}: any) {
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] p-4">
+            <div className="bg-white rounded-3xl w-full max-w-lg p-6 shadow-2xl">
+                <h2 className="text-xl font-black text-zinc-950">
+                    {title}
+                </h2>
+
+                <p className="text-sm text-zinc-500 mt-2">
+                    {description}
+                </p>
+
+                <textarea
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    placeholder="Enter reason..."
+                    className="mt-5 w-full border border-zinc-200 rounded-2xl px-4 py-3 min-h-[130px] outline-none focus:border-[#4B1E78]"
+                />
+
+                <div className="flex justify-end gap-3 mt-5">
+                    <button
+                        onClick={onClose}
+                        className="px-5 py-3 rounded-2xl border font-bold"
+                    >
+                        Cancel
+          </button>
+
+                    <button
+                        onClick={onSubmit}
+                        className="px-5 py-3 rounded-2xl bg-[#4B1E78] text-white font-bold"
+                    >
+                        {submitText}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function PaymentBadge({ order }: any) {
+    const isCOD = order.paymentMethod === "COD";
+    const isPaid =
+        order.paymentStatus === "Paid" ||
+        order.paymentStatus === "Completed" ||
+        order.paymentStatus === "Success";
+
+    if (isCOD) {
+        return (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 text-xs font-bold">
+                <Banknote className="w-3.5 h-3.5" />
+        COD Pending
+            </span>
+        );
+    }
+
+    return (
+        <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold ${isPaid
+                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                : "bg-red-50 text-red-700 border-red-100"
+                }`}
+        >
+            <CreditCard className="w-3.5 h-3.5" />
+            {isPaid ? "Paid" : order.paymentStatus || "Pending"}
+        </span>
+    );
+}
+
+function StatusBadge({ status }: { status: string }) {
+    const cls =
+        status === "Delivered"
+            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+            : status === "Shipped"
+                ? "bg-blue-50 text-blue-700 border-blue-100"
+                : status === "Cancelled"
+                    ? "bg-red-50 text-red-700 border-red-100"
+                    : "bg-amber-50 text-amber-700 border-amber-100";
+
+    return (
+        <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold ${cls}`}
+        >
+            <Truck className="w-3.5 h-3.5" />
+            {status}
+        </span>
+    );
+}
+
+function InfoCard({ label, value }: any) {
+    return (
+        <div className="bg-slate-50 border border-zinc-100 rounded-2xl p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-zinc-400 font-black">
+                {label}
+            </p>
+            <p className="font-bold text-zinc-800 mt-2">
+                {value || "-"}
+            </p>
+        </div>
+    );
+}
+
+function SummaryRow({ label, value }: any) {
+    return (
+        <div className="flex justify-between text-zinc-600 mb-2">
+            <span>{label}</span>
+            <span>{value}</span>
+        </div>
     );
 }

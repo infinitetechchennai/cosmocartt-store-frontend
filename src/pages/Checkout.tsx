@@ -22,7 +22,6 @@ export default function Checkout() {
     const [city, setCity] = useState("");
     const [state, setState] = useState("");
     const [pincode, setPincode] = useState("");
-    const [loading, setLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<
         "COD" | "UPI" | "CARD"
     >("COD");
@@ -69,7 +68,7 @@ export default function Checkout() {
     }
 
     const total = checkoutItems.reduce(
-        (sum, item) =>
+        (sum: number, item: any) =>
             sum +
             getDisplayPrice(
                 item,

@@ -18,6 +18,7 @@ import Wishlist from "./pages/Wishlist";
 import OrderTracking from "./pages/OrderTracking";
 import ForgotPassword from "./pages/ForgotPassword";
 import BrandsPage from "./pages/BrandsPage";
+import CMSPage from "./pages/CMSPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -69,6 +70,7 @@ export default function App() {
           }
         />
 
+
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
@@ -79,6 +81,8 @@ export default function App() {
         />
 
         <Route path="/orders" element={<Orders />} />
+
+
 
         <Route
           path="/order-success"
@@ -99,6 +103,8 @@ export default function App() {
           path="/brands"
           element={<BrandsPage />}
         />
+
+        <Route path="/:slug" element={<CMSPage />} />
 
       </Routes>
     </>

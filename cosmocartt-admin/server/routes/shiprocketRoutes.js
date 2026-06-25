@@ -285,7 +285,84 @@ router.get(
                     }
                 );
 
-            res.json(response.data);
+            const awbData =
+                response.data;
+
+            const awbInfo =
+                awbData.response?.data || {};
+
+            const order =
+                await Order.findOne({
+                    shipmentId:
+                        String(req.params.shipmentId)
+                });
+
+            if (
+                awbData.awb_assign_status !== 1
+            ) {
+
+                if (order) {
+
+                    order.shippingStatus =
+                        "AWB Failed";
+
+                    order.trackingTimeline.push({
+                        status:
+                            awbData.message ||
+                            awbInfo.awb_assign_error ||
+                            "AWB Assignment Failed",
+                        date:
+                            new Date().toISOString()
+                    });
+
+                    await order.save();
+
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    mode: "live",
+                    message:
+                        awbData.message ||
+                        awbInfo.awb_assign_error ||
+                        "AWB assignment failed",
+                    order,
+                    awbData
+                });
+
+            }
+
+            if (order) {
+
+                order.awbCode =
+                    awbInfo.awb_code || "";
+
+                order.courierName =
+                    awbInfo.courier_name || "";
+
+                order.trackingUrl =
+                    awbInfo.awb_code
+                        ? `https://shiprocket.co/tracking/${awbInfo.awb_code}`
+                        : "";
+
+                order.shippingStatus =
+                    "AWB Assigned";
+
+                order.trackingTimeline.push({
+                    status: "AWB Assigned",
+                    date: new Date().toISOString()
+                });
+
+                await order.save();
+
+            }
+
+            res.json({
+                success: true,
+                mode: "live",
+                order,
+                awbData
+            });
 
         } catch (error) {
 

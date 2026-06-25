@@ -22,19 +22,19 @@ export default function Cart() {
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const priceOf = (item: any) => {
-  return Number(
-    getDisplayPrice(item, user) ||
-    item.retailPrice ||
-    item.price ||
-    0
-  );
-};
+    return Number(
+      getDisplayPrice(item, user) ||
+      item.retailPrice ||
+      item.price ||
+      0
+    );
+  };
 
   const subtotal = cartItems.reduce(
-  (sum: number, item: any) =>
-    sum + priceOf(item) * item.quantity,
-  0
-);
+    (sum: number, item: any) =>
+      sum + item.retailPrice * item.quantity,
+    0
+  );
 
   const shipping = subtotal > 0 ? 0 : 0;
   const discount = 0;
@@ -44,12 +44,12 @@ export default function Cart() {
   const recommendPerPage = 4;
 
   const recommendedProducts = products.filter(
-  (product: any) =>
-    !cartItems.some(
-      (item: any) =>
-        (item._id || item.id) === (product._id || product.id)
-    )
-);
+    (product: any) =>
+      !cartItems.some(
+        (item: any) =>
+          (item._id || item.id) === (product._id || product.id)
+      )
+  );
 
   const recommendTotalPages = Math.ceil(
     recommendedProducts.length / recommendPerPage
@@ -343,10 +343,10 @@ export default function Cart() {
                 <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
                   <img
                     src={
-  product.images?.[0]?.startsWith("http")
-    ? product.images[0]
-    : `http://localhost:5000${product.images?.[0] || ""}`
-}
+                      product.images?.[0]?.startsWith("http")
+                        ? product.images[0]
+                        : `http://localhost:5000${product.images?.[0] || ""}`
+                    }
                     alt={product.name}
                     className="h-36 object-contain group-hover:scale-110 transition-all duration-300"
                   />
