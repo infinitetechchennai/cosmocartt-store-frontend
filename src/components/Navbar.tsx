@@ -25,6 +25,23 @@ export default function Navbar() {
   const [search, setSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("India");
+  const countries = [
+  "India",
+  "United States",
+  "United Kingdom",
+  "Canada",
+  "Australia",
+  "Germany",
+  "France",
+  "Singapore",
+  "United Arab Emirates",
+  "Malaysia",
+  "Sri Lanka",
+  "Japan",
+  "China",
+  "South Korea",
+];
   const searchSuggestions = [
     "iPhone",
     "iPhone Case",
@@ -307,19 +324,87 @@ export default function Navbar() {
         </div>
 
 
-        <div className="hidden lg:flex items-center gap-2 text-[#4B1E78] ml-6">
-          <MapPin size={22} />
+        <div className="hidden lg:block relative group ml-6">
+  <button
+    className="
+      flex
+      items-center
+      gap-2
+      text-[#4B1E78]
+      hover:text-[#6F2DBD]
+      transition-all
+      duration-300
+    "
+  >
+    <MapPin size={22} />
 
-          <div>
-            <p className="text-xs text-gray-500">
-              Deliver to
-        </p>
+    <div className="text-left">
+      <p className="text-xs text-gray-500">
+        Deliver to
+      </p>
 
-            <p className="font-semibold">
-              India
-        </p>
-          </div>
-        </div>
+      <p className="font-semibold">
+        {selectedCountry}
+      </p>
+    </div>
+
+    <ChevronDown size={15} />
+  </button>
+
+  <div
+    className="
+      absolute
+      top-full
+      left-0
+      mt-3
+      w-64
+      max-h-80
+      overflow-y-auto
+      bg-white
+      rounded-2xl
+      shadow-2xl
+      border
+      border-slate-200
+      p-3
+      z-[99999]
+
+      opacity-0
+      invisible
+      translate-y-2
+      group-hover:opacity-100
+      group-hover:visible
+      group-hover:translate-y-0
+      transition-all
+      duration-300
+    "
+  >
+    {countries.map((country) => (
+      <button
+        key={country}
+        type="button"
+        onClick={() => setSelectedCountry(country)}
+        className={`
+          w-full
+          text-left
+          px-4
+          py-3
+          rounded-xl
+          text-sm
+          font-semibold
+          transition-all
+          duration-200
+          ${
+            selectedCountry === country
+              ? "bg-[#4B1E78] text-white"
+              : "text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
+          }
+        `}
+      >
+        {country}
+      </button>
+    ))}
+  </div>
+</div>
 
 
 
