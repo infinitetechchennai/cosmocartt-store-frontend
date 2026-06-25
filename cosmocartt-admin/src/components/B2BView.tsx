@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import {
   Search,
@@ -15,7 +16,7 @@ export default function B2BView() {
     const loadData = async () => {
       try {
         const customersRes = await fetch(
-          "http://localhost:5000/api/customers"
+          apiPath("/api/customers")
         );
 
         const customersData = await customersRes.json();
@@ -31,7 +32,7 @@ export default function B2BView() {
         setB2bClients(b2bOnly);
 
         const ordersRes = await fetch(
-          "http://localhost:5000/api/orders"
+          apiPath("/api/orders")
         );
 
         const ordersData = await ordersRes.json();
@@ -85,7 +86,7 @@ export default function B2BView() {
   ) => {
     try {
       await fetch(
-        `http://localhost:5000/api/customers/${id}`,
+        `${API_URL}/api/customers/${id}`,
         {
           method: "PUT",
           headers: {
@@ -194,7 +195,7 @@ export default function B2BView() {
               {filteredClients.map((client) => {
                 const gstUrl = client.gstCertificate?.startsWith("http")
                   ? client.gstCertificate
-                  : `http://localhost:5000${client.gstCertificate}`;
+                  : `${API_URL}${client.gstCertificate}`;
 
                 return (
                   <tr

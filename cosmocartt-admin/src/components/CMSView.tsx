@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import StatusBanner from "./StatusBanner";
 
@@ -99,7 +100,7 @@ export default function CMSView() {
         try {
             setLoading(true);
 
-            const res = await fetch("http://localhost:5000/api/cms");
+            const res = await fetch(apiPath("/api/cms"));
             const data = await res.json();
 
             if (data.success) {
@@ -207,7 +208,7 @@ export default function CMSView() {
 
         try {
             const res = await fetch(
-                `http://localhost:5000/api/cms/${selectedCMS.key}`,
+                `${API_URL}/api/cms/${selectedCMS.key}`,
                 {
                     method: "PUT",
                     headers: {

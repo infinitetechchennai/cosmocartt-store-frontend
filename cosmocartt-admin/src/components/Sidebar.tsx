@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import {
   BarChart2,
   Users,
@@ -196,7 +197,7 @@ export default function Sidebar({
                   );
 
                   fetch(
-                    `http://localhost:5000/api/users/${user._id}`,
+                    `${API_URL}/api/users/${user._id}`,
                     {
                       method: "PUT",
                       headers: {

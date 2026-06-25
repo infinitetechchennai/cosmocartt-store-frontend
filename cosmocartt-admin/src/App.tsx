@@ -1,3 +1,4 @@
+import { apiPath } from "./config/api";
 import Login from "./components/Login";
 import SettingsView from "./components/SettingsView";
 import { useState, useEffect } from "react";
@@ -55,7 +56,7 @@ export default function App() {
   const [products, setProducts] =
     useState<Product[]>([]);
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(apiPath("/api/products"))
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -79,7 +80,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/orders")
+    fetch(apiPath("/api/orders"))
       .then((res) => res.json())
       .then((data) => {
         console.log("ORDERS FROM API:", data.orders);

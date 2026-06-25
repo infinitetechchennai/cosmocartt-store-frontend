@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState } from "react";
 import { Product } from "../types";
 import { Search, Plus, Trash2, Edit2, Check, RefreshCw } from "lucide-react";
@@ -196,7 +197,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       });
 
       const res = await fetch(
-        "http://localhost:5000/api/products",
+        apiPath("/api/products"),
         {
           method: "POST",
           body: formData,
@@ -260,7 +261,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/products/${editProduct._id}`,
+        `${API_URL}/api/products/${editProduct._id}`,
         {
           method: "PUT",
           headers: {
@@ -294,7 +295,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/products/${product._id}`,
+        `${API_URL}/api/products/${product._id}`,
         {
           method: "PUT",
           headers: {
@@ -356,7 +357,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/products/${id}`,
+        `${API_URL}/api/products/${id}`,
         {
           method: "DELETE",
         }
@@ -461,7 +462,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       await Promise.all(
         selectedProducts.map((id) =>
           fetch(
-            `http://localhost:5000/api/products/${id}`,
+            `${API_URL}/api/products/${id}`,
             {
               method: "DELETE",
             }
@@ -560,7 +561,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
                   const response =
                     await fetch(
-                      "http://localhost:5000/api/products/import",
+                      apiPath("/api/products/import"),
                       {
                         method: "POST",
                         body: formData,
@@ -736,7 +737,7 @@ Skipped: ${data.skipped}`
 
                     <td className="px-6 py-4">
                       <img
-                        src={`http://localhost:5000${item.images?.[0]}`}
+                        src={`${API_URL}${item.images?.[0]}`}
                         alt={item.name}
                         className="w-12 h-12 object-cover rounded-lg border"
                       />

@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import {
     Megaphone,
@@ -39,7 +40,7 @@ export default function CampaignsView() {
         try {
             setCampaignLoading(true);
 
-            const res = await fetch("http://localhost:5000/api/campaigns");
+            const res = await fetch(apiPath("/api/campaigns"));
             const data = await res.json();
 
             if (data.success) {
@@ -73,7 +74,7 @@ export default function CampaignsView() {
         }
 
         try {
-            const res = await fetch("http://localhost:5000/api/campaigns", {
+            const res = await fetch(apiPath("/api/campaigns"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -116,7 +117,7 @@ export default function CampaignsView() {
     const updateCampaignStatus = async (campaign: any, status: string) => {
         try {
             const res = await fetch(
-                `http://localhost:5000/api/campaigns/${campaign._id}`,
+                `${API_URL}/api/campaigns/${campaign._id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -166,7 +167,7 @@ export default function CampaignsView() {
 
         try {
             const res = await fetch(
-                `http://localhost:5000/api/campaigns/${deleteCampaignId}`,
+                `${API_URL}/api/campaigns/${deleteCampaignId}`,
                 {
                     method: "DELETE"
                 }

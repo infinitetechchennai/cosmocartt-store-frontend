@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import {
   AreaChart,
   Area,
@@ -177,7 +178,7 @@ export default function DashboardView({
 
         const res =
           await fetch(
-            "http://localhost:5000/api/reports/summary"
+            apiPath("/api/reports/summary")
           );
 
         const data =

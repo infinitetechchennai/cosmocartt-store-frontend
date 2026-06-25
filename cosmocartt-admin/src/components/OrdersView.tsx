@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState } from "react";
 import { Order } from "../types";
 import {
@@ -53,7 +54,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
       console.log("STEP 1");
 
       const response = await fetch(
-        `http://localhost:5000/api/shiprocket/create-shipment/${orderId}`
+        `${API_URL}/api/shiprocket/create-shipment/${orderId}`
       );
 
       console.log("STEP 2");
@@ -95,7 +96,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
       const ordersResponse =
         await fetch(
-          "http://localhost:5000/api/orders"
+          apiPath("/api/orders")
         );
 
       const ordersData =
@@ -140,7 +141,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
     try {
 
       const response = await fetch(
-        `http://localhost:5000/api/orders/${id}`,
+        `${API_URL}/api/orders/${id}`,
         {
           method: "PUT",
           headers: {
@@ -178,7 +179,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
       const response =
         await fetch(
-          `http://localhost:5000/api/orders/cancel/${id}`,
+          `${API_URL}/api/orders/cancel/${id}`,
           {
             method: "PUT"
           }
@@ -221,7 +222,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
       const response =
         await fetch(
-          `http://localhost:5000/api/orders/${id}`,
+          `${API_URL}/api/orders/${id}`,
           {
             method: "DELETE"
           }
@@ -275,7 +276,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
           .map(async (id) => {
 
             await fetch(
-              `http://localhost:5000/api/shiprocket/create-shipment/${id}`
+              `${API_URL}/api/shiprocket/create-shipment/${id}`
             );
 
           })
@@ -284,7 +285,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
       const ordersResponse =
         await fetch(
-          "http://localhost:5000/api/orders"
+          apiPath("/api/orders")
         );
 
       const ordersData =
@@ -330,7 +331,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
       deletableIds.map(async (id) => {
 
         await fetch(
-          `http://localhost:5000/api/orders/${id}`,
+          `${API_URL}/api/orders/${id}`,
           {
             method: "DELETE"
           }
@@ -1052,7 +1053,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
                   >
 
                     <img
-                      src={`http://localhost:5000${product.images?.[0]}`}
+                      src={`${API_URL}${product.images?.[0]}`}
                       alt={product.name}
                       className="
 w-24
@@ -1245,7 +1246,7 @@ bg-white
               <button
                 onClick={() =>
                   window.open(
-                    `http://localhost:5000/api/invoice/${selectedOrder._id}`,
+                    `${API_URL}/api/invoice/${selectedOrder._id}`,
                     "_blank"
                   )
                 }

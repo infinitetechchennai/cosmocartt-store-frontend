@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import { Shuffle } from "lucide-react";
 import StatusBanner from "./StatusBanner";
@@ -17,7 +18,7 @@ export default function ExchangesView() {
         try {
             setExchangeLoading(true);
 
-            const res = await fetch("http://localhost:5000/api/orders");
+            const res = await fetch(apiPath("/api/orders"));
             const data = await res.json();
 
             if (data.success) {
@@ -53,7 +54,7 @@ export default function ExchangesView() {
     ) => {
         try {
             const res = await fetch(
-                `http://localhost:5000/api/orders/${orderId}/exchange-decision`,
+                `${API_URL}/api/orders/${orderId}/exchange-decision`,
                 {
                     method: "PUT",
                     headers: {

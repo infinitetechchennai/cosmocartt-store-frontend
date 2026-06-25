@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState, useEffect, FormEvent } from "react";
 import { User } from "../types";
 import {
@@ -56,7 +57,7 @@ export default function UsersView({
       try {
 
         const usersRes = await fetch(
-          "http://localhost:5000/api/users"
+          apiPath("/api/users")
         );
 
         const usersData = await usersRes.json();
@@ -64,7 +65,7 @@ export default function UsersView({
         setUsers(usersData);
 
         const customersRes = await fetch(
-          "http://localhost:5000/api/customers"
+          apiPath("/api/customers")
         );
 
         const customersData = await customersRes.json();
@@ -151,7 +152,7 @@ export default function UsersView({
     try {
 
       const res = await fetch(
-        `http://localhost:5000/api/customers/${id}`,
+        `${API_URL}/api/customers/${id}`,
         {
           method: "PUT",
 
@@ -215,7 +216,7 @@ export default function UsersView({
 
             fetch(
 
-              `http://localhost:5000/api/customers/${id}`,
+              `${API_URL}/api/customers/${id}`,
 
               {
 
@@ -288,8 +289,8 @@ export default function UsersView({
       const res = await fetch(
 
         isCustomer
-          ? `http://localhost:5000/api/customers/${user._id}`
-          : `http://localhost:5000/api/users/${user._id}`,
+          ? `${API_URL}/api/customers/${user._id}`
+          : `${API_URL}/api/users/${user._id}`,
 
         {
 
@@ -385,8 +386,8 @@ export default function UsersView({
       const res = await fetch(
 
         isCustomer
-          ? `http://localhost:5000/api/customers/${editingUser._id}`
-          : `http://localhost:5000/api/users/${editingUser._id}`,
+          ? `${API_URL}/api/customers/${editingUser._id}`
+          : `${API_URL}/api/users/${editingUser._id}`,
 
         {
 
@@ -469,8 +470,8 @@ export default function UsersView({
       const res = await fetch(
 
         isCustomer
-          ? `http://localhost:5000/api/customers/${id}`
-          : `http://localhost:5000/api/users/${id}`,
+          ? `${API_URL}/api/customers/${id}`
+          : `${API_URL}/api/users/${id}`,
 
         {
           method: "DELETE"
@@ -506,7 +507,7 @@ export default function UsersView({
     try {
 
       const res = await fetch(
-        "http://localhost:5000/api/users",
+        apiPath("/api/users"),
         {
           method: "POST",
 
@@ -1175,7 +1176,7 @@ export default function UsersView({
                             <button
                               onClick={() =>
                                 window.open(
-                                  `http://localhost:5000/uploads/gst/${user.gstCertificate}`,
+                                  `${API_URL}/uploads/gst/${user.gstCertificate}`,
                                   "_blank"
                                 )
                               }

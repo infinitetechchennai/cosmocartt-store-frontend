@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState, useEffect } from "react";
 import StatusBanner from "./StatusBanner";
 import {
@@ -55,7 +56,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
       try {
         const res =
           await fetch(
-            "http://localhost:5000/api/orders"
+            apiPath("/api/orders")
           );
 
         const data =
@@ -94,7 +95,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
       try {
         const res =
           await fetch(
-            "http://localhost:5000/api/orders"
+            apiPath("/api/orders")
           );
 
         const data =
@@ -139,7 +140,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
       try {
         const res =
           await fetch(
-            "http://localhost:5000/api/orders"
+            apiPath("/api/orders")
           );
 
         const data =
@@ -188,7 +189,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
       try {
         const res =
           await fetch(
-            "http://localhost:5000/api/reports/summary"
+            apiPath("/api/reports/summary")
           );
 
         const data =
@@ -219,7 +220,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     try {
       const res =
         await fetch(
-          `http://localhost:5000/api/orders/${orderId}/refund-decision`,
+          `${API_URL}/api/orders/${orderId}/refund-decision`,
           {
             method: "PUT",
             headers: {
@@ -262,7 +263,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
     try {
       const res =
         await fetch(
-          `http://localhost:5000/api/orders/${orderId}/exchange-decision`,
+          `${API_URL}/api/orders/${orderId}/exchange-decision`,
           {
             method: "PUT",
             headers: {
@@ -334,7 +335,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
             <button
               onClick={() => {
                 window.location.href =
-                  "http://localhost:5000/api/reports/orders.csv";
+                  apiPath("/api/reports/orders.csv");
               }}
               className="bg-black text-white py-2 px-4 rounded-xl text-xs font-semibold hover:bg-zinc-800 transition-colors"
             >
@@ -355,7 +356,7 @@ export default function OtherViews({ tab }: OtherViewsProps) {
             <button
               onClick={() => {
                 window.location.href =
-                  "http://localhost:5000/api/reports/refunds-exchanges.csv";
+                  apiPath("/api/reports/refunds-exchanges.csv");
               }}
               className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 py-2 px-4 rounded-xl text-xs font-semibold transition-colors"
             >
