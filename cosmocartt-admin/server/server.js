@@ -35,7 +35,8 @@ const allowedOrigins = [
   "https://cosmocartt-tau.vercel.app",
   "https://www.cosmocartt.com",
   "https://cosmocartt.com",
-  "https://admin.cosmocartt.com"
+  "https://admin.cosmocartt.com",
+  "https://cosmocartt-admin.vercel.app"
 ];
 
 app.use(
