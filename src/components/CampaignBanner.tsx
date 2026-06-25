@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 
 export default function CampaignBanner() {
@@ -7,7 +8,7 @@ export default function CampaignBanner() {
         const loadCampaign = async () => {
             try {
                 const res = await fetch(
-                    "http://localhost:5000/api/campaigns/active/home"
+                    apiPath("/api/campaigns/active/home")
                 );
 
                 const data = await res.json();

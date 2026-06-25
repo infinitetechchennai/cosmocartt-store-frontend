@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -29,7 +30,7 @@ export default function OrderSuccess() {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/api/orders");
+        const res = await fetch(apiPath("/api/orders"));
         const data = await res.json();
 
         if (data.success) {

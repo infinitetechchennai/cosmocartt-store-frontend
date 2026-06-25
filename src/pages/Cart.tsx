@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
@@ -155,7 +156,7 @@ export default function Cart() {
                     <div className="flex flex-col md:flex-row gap-5">
                       <div className="h-40 md:h-36 md:w-36 rounded-[26px] bg-gradient-to-br from-slate-50 to-purple-50 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
                         <img
-                          src={`http://localhost:5000${item.images?.[0]}`}
+                          src={`${API_URL}${item.images?.[0]}`}
                           alt={item.name}
                           className="h-28 object-contain hover:scale-110 transition-transform duration-300"
                         />
@@ -345,7 +346,7 @@ export default function Cart() {
                     src={
                       product.images?.[0]?.startsWith("http")
                         ? product.images[0]
-                        : `http://localhost:5000${product.images?.[0] || ""}`
+                        : `${API_URL}${product.images?.[0] || ""}`
                     }
                     alt={product.name}
                     className="h-36 object-contain group-hover:scale-110 transition-all duration-300"

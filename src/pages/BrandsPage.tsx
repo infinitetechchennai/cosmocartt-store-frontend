@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Sparkles, ArrowRight, Search, ShieldCheck, Truck, RotateCcw } from "lucide-react";
@@ -24,7 +25,7 @@ export default function BrandsPage() {
   const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(apiPath("/api/products"))
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) return;

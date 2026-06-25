@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -202,7 +203,7 @@ export default function Register() {
             }
 
             const response = await fetch(
-                "http://localhost:5000/api/customers/register",
+                apiPath("/api/customers/register"),
                 {
                     method: "POST",
                     body: formData

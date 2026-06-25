@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
@@ -57,7 +58,7 @@ export default function Products() {
             setSelectedSubcategory(subcategory);
         }
 
-        fetch("http://localhost:5000/api/products")
+        fetch(apiPath("/api/products"))
             .then((res) => res.json())
             .then((data) => {
                 console.log("API RESPONSE:", data);

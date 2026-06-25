@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
@@ -21,7 +22,7 @@ export default function BackcaseModels() {
     useEffect(() => {
 
         fetch(
-            "http://localhost:5000/api/products"
+            apiPath("/api/products")
         )
             .then(res => res.json())
             .then(data => {

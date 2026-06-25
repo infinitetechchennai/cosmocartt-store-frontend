@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
@@ -10,7 +11,7 @@ export default function FeaturedProducts() {
   const productsPerPage = 4;
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(apiPath("/api/products"))
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {

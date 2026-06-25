@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Sparkles, ArrowRight } from "lucide-react";
@@ -15,7 +16,7 @@ export default function Brands() {
   useEffect(() => {
 
     fetch(
-      "http://localhost:5000/api/products"
+      apiPath("/api/products")
     )
       .then(res => res.json())
       .then(data => {

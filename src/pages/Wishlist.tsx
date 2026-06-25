@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useWishlist } from "../context/WishlistContext";
@@ -116,7 +117,7 @@ export default function Wishlist() {
                       </span>
 
                       <img
-                        src={`http://localhost:5000${product.images?.[0]}`}
+                        src={`${API_URL}${product.images?.[0]}`}
                         alt={product.name}
                         className="h-40 object-contain group-hover:scale-110 transition-transform duration-500"
                       />
@@ -277,7 +278,7 @@ export default function Wishlist() {
               >
                 <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
                   <img
-                    src={`http://localhost:5000${product.images?.[0]}`}
+                    src={`${API_URL}${product.images?.[0]}`}
                     alt={product.name}
                     className="h-36 object-contain group-hover:scale-110 transition-all duration-300"
                   />

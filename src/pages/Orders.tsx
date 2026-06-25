@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
@@ -42,7 +43,7 @@ export default function Orders() {
             }
 
             const res = await fetch(
-                `http://localhost:5000/api/orders/user/${user._id}`
+                `${API_URL}/api/orders/user/${user._id}`
             );
 
             const data = await res.json();
@@ -76,7 +77,7 @@ export default function Orders() {
     const cancelOrder = async (orderId: string) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/orders/cancel/${orderId}`,
+                `${API_URL}/api/orders/cancel/${orderId}`,
                 {
                     method: "PUT"
                 }
@@ -133,7 +134,7 @@ export default function Orders() {
 
         try {
             const response = await fetch(
-                `http://localhost:5000/api/orders/${refundModalOrder._id}/request-refund`,
+                `${API_URL}/api/orders/${refundModalOrder._id}/request-refund`,
                 {
                     method: "PUT",
                     headers: {
@@ -191,7 +192,7 @@ export default function Orders() {
 
         try {
             const response = await fetch(
-                `http://localhost:5000/api/orders/${exchangeModalOrder._id}/request-exchange`,
+                `${API_URL}/api/orders/${exchangeModalOrder._id}/request-exchange`,
                 {
                     method: "PUT",
                     headers: {

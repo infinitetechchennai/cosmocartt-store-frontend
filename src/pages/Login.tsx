@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -111,7 +112,7 @@ export default function Login() {
                                     setLoading(true);
 
                                     const response = await fetch(
-                                        "http://localhost:5000/api/customers/login",
+                                        apiPath("/api/customers/login"),
                                         {
                                             method: "POST",
                                             headers: {

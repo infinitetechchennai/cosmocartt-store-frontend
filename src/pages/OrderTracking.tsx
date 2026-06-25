@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
@@ -9,7 +10,7 @@ export default function OrderTracking() {
     const [order, setOrder] = useState<any>(null);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/orders")
+        fetch(apiPath("/api/orders"))
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {

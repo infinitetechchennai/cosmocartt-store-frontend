@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -28,7 +29,7 @@ export default function CMSPage() {
                 const key = pageMap[slug || ""] || slug;
 
                 const res = await fetch(
-                    `http://localhost:5000/api/cms/${key}`
+                    `${API_URL}/api/cms/${key}`
                 );
 
                 const data = await res.json();

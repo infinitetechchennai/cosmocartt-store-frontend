@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -144,8 +145,8 @@ export default function ProductDetails() {
 
                 const productUrl =
                     isMongoId
-                        ? `http://localhost:5000/api/products/${id}`
-                        : `http://localhost:5000/api/products/slug/${id}`;
+                        ? `${API_URL}/api/products/${id}`
+                        : `${API_URL}/api/products/slug/${id}`;
 
                 const res =
                     await fetch(productUrl);
@@ -190,7 +191,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/reviews/product/${product._id}`
+                        `${API_URL}/api/reviews/product/${product._id}`
                     );
 
                 const data =
@@ -230,7 +231,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/products/related/${product._id}`
+                        `${API_URL}/api/products/related/${product._id}`
                     );
 
                 const data =
@@ -266,7 +267,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/products/seo/${product._id}`
+                        `${API_URL}/api/products/seo/${product._id}`
                     );
 
                 const data =
@@ -377,7 +378,7 @@ export default function ProductDetails() {
                 sku: product.sku,
                 image: product.images?.map(
                     (img: string) =>
-                        `http://localhost:5000${img}`
+                        `${API_URL}${img}`
                 ),
                 description:
                     product.description || product.name,
@@ -443,7 +444,7 @@ export default function ProductDetails() {
 
             const res =
                 await fetch(
-                    "http://localhost:5000/api/reviews",
+                    apiPath("/api/reviews"),
                     {
                         method: "POST",
                         headers: {
@@ -602,7 +603,7 @@ export default function ProductDetails() {
                                             }`}
                                     >
                                         <img
-                                            src={`http://localhost:5000${img}`}
+                                            src={`${API_URL}${img}`}
                                             alt={`${product.name} view ${index + 1}`}
                                             className="w-full h-full object-cover"
                                         />
@@ -656,7 +657,7 @@ export default function ProductDetails() {
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
+                                    src={`${API_URL}${selectedImage || product.images?.[0] || ""}`}
                                     alt={product.name}
                                     className="
 w-full
@@ -713,7 +714,7 @@ p-4
                                         }`}
                                 >
                                     <img
-                                        src={`http://localhost:5000${img}`}
+                                        src={`${API_URL}${img}`}
                                         alt={`${product.name} view ${index + 1}`}
                                         className="w-full h-full object-cover"
                                     />
@@ -743,7 +744,7 @@ pointer-events-none
         "
                             >
                                 <img
-                                    src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
+                                    src={`${API_URL}${selectedImage || product.images?.[0] || ""}`}
                                     alt="Zoom Preview"
                                     className="w-full h-full object-cover"
                                     style={{
@@ -1402,7 +1403,7 @@ pointer-events-none
                                     >
                                         <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
                                             <img
-                                                src={`http://localhost:5000${item.images?.[0]}`}
+                                                src={`${API_URL}${item.images?.[0]}`}
                                                 alt={item.name}
                                                 className="w-full h-full object-contain p-2"
                                             />

@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
@@ -215,7 +216,7 @@ export default function Checkout() {
                 console.log("ORDER DATA:", orderData);
 
                 const response = await fetch(
-                    "http://localhost:5000/api/orders",
+                    apiPath("/api/orders"),
                     {
                         method: "POST",
                         headers: {
@@ -273,7 +274,7 @@ export default function Checkout() {
             try {
 
                 const paymentResponse = await fetch(
-                    "http://localhost:5000/api/payment/create-order",
+                    apiPath("/api/payment/create-order"),
                     {
                         method: "POST",
                         headers: {
@@ -324,7 +325,7 @@ export default function Checkout() {
 
                             const verifyResponse =
                                 await fetch(
-                                    "http://localhost:5000/api/payment/verify",
+                                    apiPath("/api/payment/verify"),
                                     {
                                         method: "POST",
                                         headers: {
@@ -360,7 +361,7 @@ export default function Checkout() {
 
                             const orderResponse =
                                 await fetch(
-                                    "http://localhost:5000/api/orders",
+                                    apiPath("/api/orders"),
                                     {
                                         method: "POST",
                                         headers: {
@@ -756,7 +757,7 @@ export default function Checkout() {
 
                                     {/* IMAGE */}
                                     <img
-                                        src={`http://localhost:5000${item.images?.[0]}`}
+                                        src={`${API_URL}${item.images?.[0]}`}
                                         alt={item.name}
                                         className="w-14 h-14 object-cover rounded-lg border"
                                     />
