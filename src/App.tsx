@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -20,9 +20,21 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOtp from "./pages/VerifyOtp";
 import BrandsPage from "./pages/BrandsPage";
 import CMSPage from "./pages/CMSPage";
+import { useAuth } from "./context/AuthContext";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+
+function PublicOnlyRoute({ children }: { children: JSX.Element }) {
+  const { user } = useAuth();
+
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
 
 export default function App() {
   return (
@@ -72,15 +84,15 @@ export default function App() {
         />
 
 
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
 
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
 
-        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/verify-otp" element={<PublicOnlyRoute><VerifyOtp /></PublicOnlyRoute>} />
 
         <Route
           path="/forgot-password"
-          element={<ForgotPassword />}
+          element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>}
         />
 
         <Route path="/orders" element={<Orders />} />

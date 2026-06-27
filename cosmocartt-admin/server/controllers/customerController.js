@@ -316,8 +316,8 @@ export const loginCustomer = async (req, res) => {
         if (!customer.emailVerified) {
             return res.status(403).json({
                 success: false,
-                requiresOtp: true,
-                message: "Please verify your email before login",
+                requiresOtp: false,
+                message: "Please verify your email from the registration OTP before login.",
                 customer: safeCustomer(customer)
             });
         }
@@ -568,3 +568,5 @@ export const resetCustomerPassword = async (req, res) => {
         });
     }
 };
+
+
