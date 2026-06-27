@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { useState, useEffect, useMemo } from "react";
-import { Search, Package, X } from "lucide-react";
+import { Search, Package, X, SlidersHorizontal } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { categories } from "../data/categories";
 
@@ -20,6 +20,7 @@ export default function Products() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showMobileFilters, setShowMobileFilters] = useState(false);
 
     const LOAD_STEP = 24;
 
@@ -190,19 +191,19 @@ export default function Products() {
         <div className="min-h-screen bg-[#F7F5FB]">
             <Navbar />
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-10">
-                <section className="relative bg-gradient-to-r from-[#1E0B3A] via-[#3D1766] to-[#6F2DBD] rounded-[2rem] p-6 sm:p-8 mb-8 text-white shadow-2xl border border-white/10 overflow-hidden">
+            <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-5 sm:pt-10 pb-10">
+                <section className="relative bg-gradient-to-r from-[#1E0B3A] via-[#3D1766] to-[#6F2DBD] rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-8 mb-5 sm:mb-8 text-white shadow-2xl border border-white/10 overflow-hidden">
                     <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
                     <div className="absolute -bottom-24 left-1/2 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl" />
 
                     <div className="relative z-10">
                         <p className="text-purple-200">Home / Products</p>
 
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black mt-2 leading-tight">
+                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black mt-2 leading-tight">
                             Discover Products
             </h1>
 
-                        <p className="mt-3 text-purple-100 text-lg">
+                        <p className="mt-3 text-purple-100 text-sm sm:text-lg">
                             Explore premium products at the best prices.
             </p>
 
@@ -224,8 +225,18 @@ export default function Products() {
                     </div>
                 </section>
 
+                <div className="lg:hidden mb-4">
+                    <button
+                        onClick={() => setShowMobileFilters(true)}
+                        className="w-full flex items-center justify-center gap-2 bg-white border border-purple-100 rounded-2xl py-3 font-black text-[#4B1E78] shadow-sm"
+                    >
+                        <SlidersHorizontal size={18} />
+                        Filters & Sort
+                    </button>
+                </div>
+
                 <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-                    <aside className="lg:col-span-1">
+                    <aside className="hidden lg:block lg:col-span-1">
                         <div className="lg:sticky lg:top-24 space-y-5">
                             <div className="bg-white rounded-3xl shadow-lg border border-purple-100 overflow-hidden">
                                 <div className="p-5 border-b border-slate-100">
@@ -363,7 +374,7 @@ export default function Products() {
                     </aside>
 
                     <section className="lg:col-span-3">
-                        <div className="bg-white rounded-3xl p-4 mb-6 shadow-lg border border-purple-100 flex gap-4 flex-wrap items-center justify-between">
+                        <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 mb-5 sm:mb-6 shadow-lg border border-purple-100 flex gap-3 sm:gap-4 flex-wrap items-center justify-between">
                             <div className="relative w-full md:flex-1">
                                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
 
@@ -375,7 +386,7 @@ export default function Products() {
                                         setSearch(e.target.value);
                                         setVisibleCount(LOAD_STEP);
                                     }}
-                                    className="w-full pl-14 pr-5 py-4 rounded-2xl bg-white border border-purple-200 shadow-sm focus:ring-4 focus:ring-[#6F2DBD]/20 focus:border-[#6F2DBD] outline-none font-medium transition-all"
+                                    className="w-full pl-12 sm:pl-14 pr-4 sm:pr-5 py-3.5 sm:py-4 rounded-2xl bg-white border border-purple-200 shadow-sm focus:ring-4 focus:ring-[#6F2DBD]/20 focus:border-[#6F2DBD] outline-none font-medium transition-all text-sm sm:text-base"
                                 />
                             </div>
 
@@ -466,7 +477,7 @@ export default function Products() {
                                     Products
                 </p>
 
-                                <h2 className="text-3xl font-black text-slate-900">
+                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
                                     Explore Collection
                 </h2>
                             </div>
@@ -497,7 +508,7 @@ export default function Products() {
                                     />
                                 </div>
 
-                                <h2 className="text-3xl font-black text-slate-900">
+                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
                                     No Products Found
                 </h2>
 
@@ -514,7 +525,7 @@ export default function Products() {
                             </div>
                         ) : (
                             <>
-                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
                                     {visibleProducts.map((product) => (
                                         <ProductCard key={product._id} product={product} />
                                     ))}
@@ -536,6 +547,156 @@ export default function Products() {
                         )}
                     </section>
                 </section>
+            {showMobileFilters && (
+                <div className="fixed inset-0 z-[99999] lg:hidden">
+                    <div
+                        className="absolute inset-0 bg-black/50"
+                        onClick={() => setShowMobileFilters(false)}
+                    />
+
+                    <div className="absolute left-0 top-0 h-full w-[88%] max-w-sm bg-[#F7F5FB] shadow-2xl overflow-y-auto p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-black text-slate-900">
+                                Filters
+                            </h3>
+
+                            <button
+                                onClick={() => setShowMobileFilters(false)}
+                                className="w-10 h-10 rounded-full bg-white border flex items-center justify-center"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div className="bg-white rounded-3xl shadow-lg border border-purple-100 overflow-hidden">
+                                <div className="p-5 border-b border-slate-100">
+                                    <h3 className="font-black text-xl text-slate-900">
+                                        Categories
+                                    </h3>
+                                </div>
+
+                                <div className="p-3 space-y-2 max-h-[360px] overflow-y-auto">
+                                    {categories.map((cat) => (
+                                        <button
+                                            key={cat.name}
+                                            onClick={() => {
+                                                setSelectedCategory(selectedCategory === cat.name ? "" : cat.name);
+                                                setSelectedSubcategory("");
+                                                setVisibleCount(LOAD_STEP);
+                                            }}
+                                            className={`w-full flex items-center justify-between text-left px-4 py-3 rounded-2xl text-sm font-bold transition-all ${selectedCategory === cat.name
+                                                ? "bg-[#4B1E78] text-white shadow-md"
+                                                : "text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
+                                                }`}
+                                        >
+                                            <span>{cat.name}</span>
+                                            <span>›</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {selectedCategory && (
+                                <div className="bg-white rounded-3xl shadow-lg border border-purple-100 overflow-hidden">
+                                    <div className="p-5 border-b border-slate-100">
+                                        <h3 className="font-black text-xl text-slate-900">
+                                            Subcategories
+                                        </h3>
+                                    </div>
+
+                                    <div className="p-3 space-y-2 max-h-[300px] overflow-y-auto">
+                                        {activeSubcategories.map((sub) => (
+                                            <button
+                                                key={sub}
+                                                onClick={() => {
+                                                    setSelectedSubcategory(selectedSubcategory === sub ? "" : sub);
+                                                    setVisibleCount(LOAD_STEP);
+                                                }}
+                                                className={`w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${selectedSubcategory === sub
+                                                    ? "bg-[#4B1E78] text-white shadow-md"
+                                                    : "bg-slate-50 text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
+                                                    }`}
+                                            >
+                                                {sub}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="bg-white rounded-3xl shadow-lg border border-purple-100 overflow-hidden">
+                                <div className="p-5 border-b border-slate-100">
+                                    <h3 className="font-black text-xl text-slate-900">Brands</h3>
+                                </div>
+
+                                <div className="p-3 space-y-2 max-h-[300px] overflow-y-auto">
+                                    {availableBrands.map((brand) => (
+                                        <label
+                                            key={brand}
+                                            className="flex items-center gap-3 cursor-pointer px-3 py-2 rounded-xl hover:bg-purple-50 transition-all"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedBrands.includes(brand)}
+                                                onChange={() => toggleBrand(brand)}
+                                                className="accent-[#4B1E78]"
+                                            />
+                                            <span className="text-sm font-semibold text-slate-700">
+                                                {brand}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {availableModels.length > 0 && (
+                                <div className="bg-white rounded-3xl shadow-lg border border-purple-100 overflow-hidden">
+                                    <div className="p-5 border-b border-slate-100">
+                                        <h3 className="font-black text-xl text-slate-900">
+                                            Models
+                                        </h3>
+                                    </div>
+
+                                    <div className="p-3 space-y-2 max-h-[300px] overflow-y-auto">
+                                        {availableModels.map((model) => (
+                                            <label
+                                                key={model}
+                                                className="flex items-center gap-3 cursor-pointer px-3 py-2 rounded-xl hover:bg-purple-50 transition-all"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedModels.includes(model)}
+                                                    onChange={() => toggleModel(model)}
+                                                    className="accent-[#4B1E78]"
+                                                />
+                                                <span className="text-sm font-semibold text-slate-700">
+                                                    {model}
+                                                </span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={resetFilters}
+                                className="w-full bg-white text-red-500 border border-red-100 py-3 rounded-2xl font-bold hover:bg-red-50 hover:border-red-200 transition-all shadow-sm"
+                            >
+                                Clear Filters
+                            </button>
+
+                            <button
+                                onClick={() => setShowMobileFilters(false)}
+                                className="w-full bg-[#4B1E78] text-white py-3 rounded-2xl font-black shadow-lg"
+                            >
+                                Apply Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             </main>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
@@ -546,7 +707,7 @@ export default function Products() {
                                 Recommended
               </p>
 
-                            <h2 className="text-3xl font-black text-slate-900">
+                            <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
                                 Products You May Like
               </h2>
 
