@@ -4,9 +4,14 @@ import {
     getCustomers,
     registerCustomer,
     loginCustomer,
+    verifyCustomerOtp,
+    resendCustomerOtp,
+    forgotCustomerPassword,
+    resetCustomerPassword,
     updateCustomer,
     deleteCustomer
 } from "../controllers/customerController.js";
+
 import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
@@ -18,6 +23,14 @@ router.post(
     upload.single("gstCertificate"),
     registerCustomer
 );
+
+router.post("/verify-otp", verifyCustomerOtp);
+
+router.post("/resend-otp", resendCustomerOtp);
+
+router.post("/forgot-password", forgotCustomerPassword);
+
+router.post("/reset-password", resetCustomerPassword);
 
 router.post("/login", loginCustomer);
 

@@ -7,12 +7,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Login() {
 
     const { login } = useAuth();
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -34,8 +35,10 @@ export default function Login() {
         if (!email.trim()) {
             newErrors.email = "Email is required";
             valid = false;
-        } else if (!email.endsWith("@gmail.com")) {
-            newErrors.email = "Only Gmail addresses are allowed";
+        } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+        ) {
+            newErrors.email = "Please enter a valid email address";
             valid = false;
         }
 
@@ -129,6 +132,15 @@ export default function Login() {
 
                                     if (!data.success) {
 
+                                        if (data.requiresOtp) {
+
+                                            window.location.href =
+                                                `/verify-otp?email=${encodeURIComponent(email)}`;
+
+                                            return;
+
+                                        }
+
                                         setErrors({
                                             email: "",
                                             password:
@@ -143,7 +155,7 @@ export default function Login() {
 
                                     login(data.customer);
 
-                                    window.location.reload();
+                                    navigate("/");
 
                                 } catch (error) {
 

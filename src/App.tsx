@@ -17,6 +17,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Wishlist from "./pages/Wishlist";
 import OrderTracking from "./pages/OrderTracking";
 import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOtp from "./pages/VerifyOtp";
 import BrandsPage from "./pages/BrandsPage";
 import CMSPage from "./pages/CMSPage";
 
@@ -74,6 +75,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
+
+        <Route path="/verify-otp" element={<VerifyOtp />} />
 
         <Route
           path="/forgot-password"

@@ -217,11 +217,9 @@ export default function Register() {
                 return;
             }
 
-            setShowSuccess(true);
-
-            setTimeout(() => {
-                navigate("/login");
-            }, 2000);
+            navigate(
+                `/verify-otp?email=${encodeURIComponent(email)}`
+            );
 
         } catch (error) {
 

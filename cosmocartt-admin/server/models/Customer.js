@@ -26,20 +26,35 @@ const customerSchema = new mongoose.Schema(
             default: false
         },
 
+        emailOtp: {
+            type: String,
+            default: ""
+        },
+
+        emailOtpExpiry: {
+            type: Date
+        },
+
+        emailOtpAttempts: {
+            type: Number,
+            default: 0
+        },
+
         verificationStatus: {
             type: String,
-            enum: [
-                "Pending",
-                "Verified",
-                "Rejected",
-                null
-            ],
+            enum: ["Pending", "Verified", "Rejected", null],
             default: null
         },
 
         status: {
             type: String,
             default: "Active"
+        },
+
+        authProvider: {
+            type: String,
+            enum: ["local", "google", "github"],
+            default: "local"
         },
 
         businessName: String,
