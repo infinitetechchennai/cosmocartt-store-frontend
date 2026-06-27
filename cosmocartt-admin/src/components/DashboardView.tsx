@@ -9,7 +9,9 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  BarChart,
+  Bar
 } from "recharts";
 import {
   ShoppingCart,
@@ -17,7 +19,10 @@ import {
   RefreshCw,
   Layers,
   ShieldAlert,
-  Zap
+  Zap,
+  CreditCard,
+  Package,
+  TrendingUp
 } from "lucide-react";
 import {
   TimeFilter,
@@ -37,129 +42,49 @@ interface DashboardViewProps {
   setTimeFilter: (filter: TimeFilter) => void;
 }
 
+const RANGE_MAP: Record<TimeFilter, string> = {
+  Today: "day",
+  Weekly: "week",
+  Monthly: "month",
+  All: "all"
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  "Order Placed": "#f59e0b",
+  Processing: "#3b82f6",
+  Shipped: "#8b5cf6",
+  Delivered: "#10b981",
+  Cancelled: "#ef4444"
+};
+
+const PAYMENT_COLORS = [
+  "#111827",
+  "#6d28d9",
+  "#2563eb",
+  "#059669",
+  "#f59e0b",
+  "#ef4444"
+];
+
 export default function DashboardView({
   orders,
   users,
-  stockAlerts = [],
-  bestSellers = [],
   timeFilter,
   setTimeFilter
 }: DashboardViewProps) {
+  const [reportData, setReportData] = useState<any>(null);
+  const [loadingReport, setLoadingReport] = useState(false);
 
   const formatRupee = (num: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
-      maximumFractionDigits: 1
-    }).format(num);
+      maximumFractionDigits: 0
+    }).format(Number(num || 0));
   };
 
-  const totalRevenueVal =
-    orders
-      .filter(
-        (o: any) =>
-          o.status !== "Cancelled"
-      )
-      .reduce(
-        (sum: number, o: any) =>
-          sum + (o.totalAmount || 0),
-        0
-      );
-
-  const [reportSummary, setReportSummary] =
-    useState<any>(null);
-
-  const totalOrdersVal =
-    orders.length;
-
-  const totalUsersVal =
-    users.length;
-
-  const pendingOrdersVal =
-    orders.filter(
-      (o: any) =>
-        o.status === "Order Placed" ||
-        o.status === "Processing"
-    ).length;
-
-  const pendingRefundsVal =
-    orders.filter(
-      (o: any) =>
-        o.refundStatus === "Requested"
-    ).length;
-
-  const pendingExchangesVal =
-    orders.filter(
-      (o: any) =>
-        o.exchangeStatus === "Requested"
-    ).length;
-
-  const activeOrders =
-    orders.filter(
-      (o: any) =>
-        o.status !== "Cancelled"
-    );
-
-  const b2bRevenue =
-    reportSummary?.b2bRevenue || 0;
-
-  const b2cRevenue =
-    reportSummary?.b2cRevenue || 0;
-
-  const b2bOrders =
-    reportSummary?.b2bOrders || 0;
-
-  const b2cOrders =
-    reportSummary?.b2cOrders || 0;
-
-  const analyticsData = [
-    {
-      name: "Orders",
-      B2B: b2bOrders,
-      B2C: b2cOrders
-    },
-    {
-      name: "Revenue",
-      B2B: b2bRevenue,
-      B2C: b2cRevenue
-    }
-  ];
-
-  const currentDeliveryData = [
-    {
-      name: "Order Placed",
-      value: orders.filter((o: any) => o.status === "Order Placed").length,
-      color: "#f59e0b"
-    },
-    {
-      name: "Processing",
-      value: orders.filter((o: any) => o.status === "Processing").length,
-      color: "#3b82f6"
-    },
-    {
-      name: "Shipped",
-      value: orders.filter((o: any) => o.status === "Shipped").length,
-      color: "#8b5cf6"
-    },
-    {
-      name: "Delivered",
-      value: orders.filter((o: any) => o.status === "Delivered").length,
-      color: "#10b981"
-    },
-    {
-      name: "Cancelled",
-      value: orders.filter((o: any) => o.status === "Cancelled").length,
-      color: "#ef4444"
-    }
-  ].filter(
-    item => item.value > 0
-  );
-
-  const totalDeliveriesCount =
-    currentDeliveryData.reduce(
-      (sum, d) => sum + d.value,
-      0
-    );
+  const formatNumber = (num: number) =>
+    new Intl.NumberFormat("en-IN").format(Number(num || 0));
 
   const filterOptions: TimeFilter[] = [
     "Today",
@@ -168,41 +93,75 @@ export default function DashboardView({
     "All"
   ];
 
-  const recentOrders =
-    [...orders].slice(0, 5);
   useEffect(() => {
-
     const loadReportSummary = async () => {
-
       try {
+        setLoadingReport(true);
 
-        const res =
-          await fetch(
-            apiPath("/api/reports/summary")
-          );
+        const range = RANGE_MAP[timeFilter] || "all";
 
-        const data =
-          await res.json();
+        const res = await fetch(
+          apiPath(`/api/reports/summary?range=${range}`)
+        );
+
+        const data = await res.json();
 
         if (data.success) {
-
-          setReportSummary(
-            data.summary
-          );
-
+          setReportData(data);
         }
-
       } catch (error) {
-
         console.error(error);
-
+      } finally {
+        setLoadingReport(false);
       }
-
     };
 
     loadReportSummary();
+  }, [timeFilter]);
 
-  }, []);
+  const summary = reportData?.summary || {};
+
+  const timeline = reportData?.charts?.timeline || [];
+
+  const paymentMethods =
+    reportData?.charts?.paymentMethods || [];
+
+  const orderStatuses =
+    (reportData?.charts?.orderStatuses || []).map((item: any) => ({
+      ...item,
+      color: STATUS_COLORS[item.name] || "#71717a"
+    }));
+
+  const topBrands =
+    reportData?.charts?.topBrands || [];
+
+  const topProducts =
+    reportData?.charts?.topProducts || [];
+
+  const topCategories =
+    reportData?.charts?.topCategories || [];
+
+  const analyticsData = [
+    {
+      name: "Orders",
+      B2B: summary.b2bOrders || 0,
+      B2C: summary.b2cOrders || 0
+    },
+    {
+      name: "Revenue",
+      B2B: summary.b2bRevenue || 0,
+      B2C: summary.b2cRevenue || 0
+    }
+  ];
+
+  const totalDeliveryCount =
+    orderStatuses.reduce(
+      (sum: number, item: any) => sum + Number(item.value || 0),
+      0
+    );
+
+  const recentOrders =
+    [...orders].slice(0, 5);
 
   return (
     <div id="dashboard-view-container" className="space-y-6">
@@ -215,14 +174,13 @@ export default function DashboardView({
           </h1>
 
           <p className="text-sm text-zinc-500 mt-1">
-            Live operational overview.
+            Live operational overview from real orders, customers and payments.
           </p>
         </div>
 
-        <div className="flex items-center border border-zinc-200 bg-white rounded-xl p-1 text-sm font-semibold shadow-xs">
+        <div className="flex items-center border border-zinc-200 bg-white rounded-xl p-1 text-sm font-semibold shadow-sm overflow-x-auto">
 
           {filterOptions.map((filter) => {
-
             const isActive =
               timeFilter === filter;
 
@@ -233,7 +191,7 @@ export default function DashboardView({
                 onClick={() =>
                   setTimeFilter(filter)
                 }
-                className={`px-4 py-1.5 rounded-lg transition-all duration-200 ${isActive
+                className={`px-4 py-1.5 rounded-lg transition-all duration-200 whitespace-nowrap ${isActive
                   ? "bg-black text-white shadow-sm"
                   : "text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50"
                   }`}
@@ -241,24 +199,33 @@ export default function DashboardView({
                 {filter}
               </button>
             );
-
           })}
 
         </div>
 
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {loadingReport && (
+        <div className="bg-blue-50 border border-blue-100 text-blue-700 rounded-xl px-4 py-3 text-sm font-semibold">
+          Refreshing analytics...
+        </div>
+      )}
 
-        <div id="kpi-total-revenue" className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-sm">
           <div className="text-left space-y-1">
             <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">
-              Total Revenue
+              Revenue
             </span>
 
             <span className="text-2xl font-bold text-zinc-900 tracking-tight">
-              {formatRupee(totalRevenueVal)}
+              {formatRupee(summary.totalRevenue || 0)}
             </span>
+
+            <p className="text-xs text-zinc-400">
+              AOV: {formatRupee(summary.averageOrderValue || 0)}
+            </p>
           </div>
 
           <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center shadow-sm select-none">
@@ -268,15 +235,19 @@ export default function DashboardView({
           </div>
         </div>
 
-        <div id="kpi-total-orders" className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs">
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-sm">
           <div className="text-left space-y-1">
             <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">
-              Total Orders
+              Orders
             </span>
 
             <span className="text-2xl font-bold text-zinc-900 tracking-tight">
-              {totalOrdersVal}
+              {formatNumber(summary.totalOrders || 0)}
             </span>
+
+            <p className="text-xs text-zinc-400">
+              Paid: {formatNumber(summary.paidOrders || 0)}
+            </p>
           </div>
 
           <div className="w-12 h-12 rounded-xl bg-purple-500 flex items-center justify-center shadow-sm">
@@ -284,15 +255,19 @@ export default function DashboardView({
           </div>
         </div>
 
-        <div id="kpi-total-users" className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs">
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-sm">
           <div className="text-left space-y-1">
             <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">
-              Total Users
+              Customers
             </span>
 
             <span className="text-2xl font-bold text-zinc-900 tracking-tight">
-              {totalUsersVal}
+              {formatNumber(summary.totalCustomers || users.length)}
             </span>
+
+            <p className="text-xs text-zinc-400">
+              New: {formatNumber(summary.newCustomers || 0)}
+            </p>
           </div>
 
           <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center shadow-sm">
@@ -300,19 +275,23 @@ export default function DashboardView({
           </div>
         </div>
 
-        <div id="kpi-pending-orders" className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-xs">
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 flex justify-between items-center shadow-sm">
           <div className="text-left space-y-1">
             <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider block">
-              Pending Orders
+              Pending
             </span>
 
             <span className="text-2xl font-bold text-zinc-900 tracking-tight">
-              {pendingOrdersVal}
+              {formatNumber(summary.pendingOrders || 0)}
             </span>
+
+            <p className="text-xs text-zinc-400">
+              Refunds {summary.refunds || 0} • Exchanges {summary.exchanges || 0}
+            </p>
           </div>
 
           <div className="w-12 h-12 rounded-xl bg-amber-500 flex items-center justify-center shadow-sm">
-            <ShoppingCart className="w-[22px] h-[22px] text-white" />
+            <ShieldAlert className="w-[22px] h-[22px] text-white" />
           </div>
         </div>
 
@@ -320,30 +299,26 @@ export default function DashboardView({
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <div id="card-b2b-b2c-analytics" className="lg:col-span-8 bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between shadow-xs">
+        <div className="lg:col-span-8 bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
 
-          <div className="flex items-center justify-between pb-4">
-            <h3 className="font-bold text-zinc-900 text-base">
-              B2B vs B2C Analytics
-            </h3>
+          <div className="flex items-center justify-between pb-4 gap-4">
+            <div>
+              <h3 className="font-bold text-zinc-900 text-base">
+                Revenue & Orders Trend
+              </h3>
 
-            <div className="flex items-center gap-3 text-xs font-semibold">
-              <span className="flex items-center gap-1 text-blue-600">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
-                B2B Sales
-              </span>
-
-              <span className="flex items-center gap-1 text-purple-600">
-                <span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span>
-                B2C Sales
-              </span>
+              <p className="text-xs text-zinc-400 mt-1">
+                Based on selected {timeFilter.toLowerCase()} range.
+              </p>
             </div>
+
+            <TrendingUp className="w-5 h-5 text-blue-500" />
           </div>
 
-          <div className="h-[300px] w-full">
+          <div className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                data={analyticsData}
+                data={timeline}
                 margin={{
                   top: 10,
                   right: 10,
@@ -352,13 +327,13 @@ export default function DashboardView({
                 }}
               >
                 <defs>
-                  <linearGradient id="b2bColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  <linearGradient id="revenueColor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                   </linearGradient>
 
-                  <linearGradient id="b2cColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                  <linearGradient id="ordersColor" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.25} />
                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
@@ -366,7 +341,7 @@ export default function DashboardView({
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
 
                 <XAxis
-                  dataKey="name"
+                  dataKey="label"
                   axisLine={false}
                   tickLine={false}
                   tick={{
@@ -386,28 +361,28 @@ export default function DashboardView({
 
                 <Tooltip
                   formatter={(value: any, name: any) => [
-                    typeof value === "number"
-                      ? value.toLocaleString("en-IN")
-                      : value,
-                    name
+                    name === "revenue"
+                      ? formatRupee(Number(value || 0))
+                      : formatNumber(Number(value || 0)),
+                    name === "revenue" ? "Revenue" : "Orders"
                   ]}
                 />
 
                 <Area
                   type="monotone"
-                  dataKey="B2B"
-                  stroke="#3b82f6"
+                  dataKey="revenue"
+                  stroke="#2563eb"
                   fillOpacity={1}
-                  fill="url(#b2bColor)"
+                  fill="url(#revenueColor)"
                   strokeWidth={3}
                 />
 
                 <Area
                   type="monotone"
-                  dataKey="B2C"
+                  dataKey="orders"
                   stroke="#8b5cf6"
                   fillOpacity={1}
-                  fill="url(#b2cColor)"
+                  fill="url(#ordersColor)"
                   strokeWidth={3}
                 />
               </AreaChart>
@@ -416,12 +391,18 @@ export default function DashboardView({
 
         </div>
 
-        <div id="card-delivery-status" className="lg:col-span-4 bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs">
+        <div className="lg:col-span-4 bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
 
           <div className="flex items-center justify-between pb-4">
-            <h3 className="font-bold text-zinc-900 text-base">
-              Delivery Status
-            </h3>
+            <div>
+              <h3 className="font-bold text-zinc-900 text-base">
+                Order Status
+              </h3>
+
+              <p className="text-xs text-zinc-400 mt-1">
+                Current status split.
+              </p>
+            </div>
 
             <Zap className="w-5 h-5 text-amber-500" />
           </div>
@@ -430,7 +411,7 @@ export default function DashboardView({
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={currentDeliveryData}
+                  data={orderStatuses}
                   cx="50%"
                   cy="50%"
                   innerRadius={58}
@@ -438,7 +419,7 @@ export default function DashboardView({
                   paddingAngle={3}
                   dataKey="value"
                 >
-                  {currentDeliveryData.map((entry) => (
+                  {orderStatuses.map((entry: any) => (
                     <Cell
                       key={entry.name}
                       fill={entry.color}
@@ -452,7 +433,7 @@ export default function DashboardView({
 
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span className="text-2xl font-bold text-zinc-900">
-                {totalDeliveriesCount}
+                {formatNumber(totalDeliveryCount)}
               </span>
 
               <span className="text-xs text-zinc-400 font-semibold uppercase">
@@ -462,13 +443,13 @@ export default function DashboardView({
           </div>
 
           <div className="space-y-2 mt-4">
-            {currentDeliveryData.length === 0 && (
+            {orderStatuses.length === 0 && (
               <p className="text-sm text-zinc-400 text-center">
-                No delivery data yet.
+                No order status data.
               </p>
             )}
 
-            {currentDeliveryData.map((item) => (
+            {orderStatuses.map((item: any) => (
               <div
                 key={item.name}
                 className="flex items-center justify-between text-xs"
@@ -494,9 +475,139 @@ export default function DashboardView({
 
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <div className="lg:col-span-5 bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-zinc-900">
+                B2B vs B2C
+              </h3>
+              <p className="text-xs text-zinc-400 mt-1">
+                Real order and revenue split.
+              </p>
+            </div>
+            <Group className="w-5 h-5 text-purple-500" />
+          </div>
+
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={analyticsData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value: any, name: any, props: any) => {
+                    const label = props?.payload?.name;
+                    return [
+                      label === "Revenue"
+                        ? formatRupee(Number(value || 0))
+                        : formatNumber(Number(value || 0)),
+                      name
+                    ];
+                  }}
+                />
+                <Bar dataKey="B2B" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="B2C" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="lg:col-span-3 bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <CreditCard className="w-5 h-5 text-zinc-500" />
+            <h3 className="font-bold text-zinc-900">
+              Payments
+            </h3>
+          </div>
+
+          <div className="space-y-3">
+            {paymentMethods.length === 0 && (
+              <p className="text-sm text-zinc-400">
+                No payment data.
+              </p>
+            )}
+
+            {paymentMethods.map((item: any, index: number) => (
+              <div key={item.name}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="font-medium text-zinc-600">
+                    {item.name}
+                  </span>
+                  <span className="font-bold text-zinc-900">
+                    {item.value}
+                  </span>
+                </div>
+
+                <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        (Number(item.value || 0) /
+                          Math.max(
+                            1,
+                            paymentMethods.reduce(
+                              (sum: number, p: any) => sum + Number(p.value || 0),
+                              0
+                            )
+                          )) *
+                          100
+                      )}%`,
+                      backgroundColor:
+                        PAYMENT_COLORS[index % PAYMENT_COLORS.length]
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="lg:col-span-4 bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <Package className="w-5 h-5 text-zinc-500" />
+            <h3 className="font-bold text-zinc-900">
+              Top Brands
+            </h3>
+          </div>
+
+          <div className="space-y-3">
+            {topBrands.length === 0 && (
+              <p className="text-sm text-zinc-400">
+                No brand data.
+              </p>
+            )}
+
+            {topBrands.slice(0, 6).map((brand: any) => (
+              <div
+                key={brand.name}
+                className="flex justify-between border-b border-zinc-100 pb-2"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {brand.name}
+                  </p>
+                  <p className="text-xs text-zinc-400">
+                    Qty {brand.quantity || 0}
+                  </p>
+                </div>
+
+                <p className="text-sm font-bold text-zinc-900">
+                  {formatRupee(brand.revenue || 0)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs">
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Layers className="w-5 h-5 text-zinc-500" />
 
@@ -541,7 +652,7 @@ export default function DashboardView({
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs">
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <RefreshCw className="w-5 h-5 text-red-500" />
 
@@ -550,18 +661,16 @@ export default function DashboardView({
             </h3>
           </div>
 
-          <div className="space-y-3">
-            <p className="text-3xl font-bold text-zinc-900">
-              {pendingRefundsVal}
-            </p>
+          <p className="text-3xl font-bold text-zinc-900">
+            {summary.refunds || 0}
+          </p>
 
-            <p className="text-sm text-zinc-500">
-              Pending customer refund approvals.
-            </p>
-          </div>
+          <p className="text-sm text-zinc-500 mt-3">
+            Refund requests in selected range.
+          </p>
         </div>
 
-        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-xs">
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <ShieldAlert className="w-5 h-5 text-amber-500" />
 
@@ -570,14 +679,84 @@ export default function DashboardView({
             </h3>
           </div>
 
-          <div className="space-y-3">
-            <p className="text-3xl font-bold text-zinc-900">
-              {pendingExchangesVal}
-            </p>
+          <p className="text-3xl font-bold text-zinc-900">
+            {summary.exchanges || 0}
+          </p>
 
-            <p className="text-sm text-zinc-500">
-              Pending customer exchange approvals.
-            </p>
+          <p className="text-sm text-zinc-500 mt-3">
+            Exchange requests in selected range.
+          </p>
+        </div>
+
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <h3 className="font-bold text-zinc-900 mb-4">
+            Top Products
+          </h3>
+
+          <div className="space-y-3">
+            {topProducts.slice(0, 8).map((product: any) => (
+              <div
+                key={product.name}
+                className="flex justify-between border-b border-zinc-100 pb-2"
+              >
+                <div className="pr-4">
+                  <p className="text-sm font-semibold text-zinc-900 line-clamp-1">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-zinc-400">
+                    Qty {product.quantity || 0}
+                  </p>
+                </div>
+
+                <p className="text-sm font-bold text-zinc-900 whitespace-nowrap">
+                  {formatRupee(product.revenue || 0)}
+                </p>
+              </div>
+            ))}
+
+            {topProducts.length === 0 && (
+              <p className="text-sm text-zinc-400">
+                No product data.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white border border-zinc-200 rounded-2xl p-6 shadow-sm">
+          <h3 className="font-bold text-zinc-900 mb-4">
+            Top Categories
+          </h3>
+
+          <div className="space-y-3">
+            {topCategories.slice(0, 8).map((category: any) => (
+              <div
+                key={category.name}
+                className="flex justify-between border-b border-zinc-100 pb-2"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {category.name}
+                  </p>
+                  <p className="text-xs text-zinc-400">
+                    Qty {category.quantity || 0}
+                  </p>
+                </div>
+
+                <p className="text-sm font-bold text-zinc-900">
+                  {formatRupee(category.revenue || 0)}
+                </p>
+              </div>
+            ))}
+
+            {topCategories.length === 0 && (
+              <p className="text-sm text-zinc-400">
+                No category data.
+              </p>
+            )}
           </div>
         </div>
 

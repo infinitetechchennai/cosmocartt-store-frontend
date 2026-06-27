@@ -6,7 +6,9 @@ const customerSchema = new mongoose.Schema(
 
         email: {
             type: String,
-            unique: true
+            unique: true,
+            lowercase: true,
+            trim: true
         },
 
         phone: String,
@@ -19,14 +21,20 @@ const customerSchema = new mongoose.Schema(
             default: "b2c"
         },
 
+        emailVerified: {
+            type: Boolean,
+            default: false
+        },
+
         verificationStatus: {
             type: String,
             enum: [
                 "Pending",
                 "Verified",
-                "Rejected"
+                "Rejected",
+                null
             ],
-            default: "Pending"
+            default: null
         },
 
         status: {
@@ -56,6 +64,20 @@ const customerSchema = new mongoose.Schema(
         timestamps: true
     }
 );
+
+customerSchema.pre("save", function (next) {
+    if (this.customerType === "b2b") {
+        if (!this.verificationStatus) {
+            this.verificationStatus = "Pending";
+        }
+    }
+
+    if (this.customerType === "b2c") {
+        this.verificationStatus = null;
+    }
+
+    next();
+});
 
 export default mongoose.model(
     "Customer",

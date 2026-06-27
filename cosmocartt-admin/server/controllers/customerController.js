@@ -29,9 +29,16 @@ export const registerCustomer = async (req, res) => {
 
     try {
 
+        const email = String(req.body.email || "").toLowerCase().trim();
+
+        const customerType =
+            req.body.customerType === "b2b"
+                ? "b2b"
+                : "b2c";
+
         const existingCustomer =
             await Customer.findOne({
-                email: req.body.email
+                email
             });
 
         if (existingCustomer) {
@@ -54,6 +61,17 @@ export const registerCustomer = async (req, res) => {
 
                 ...req.body,
 
+                email,
+
+                customerType,
+
+                verificationStatus:
+                    customerType === "b2b"
+                        ? "Pending"
+                        : null,
+
+                emailVerified: false,
+
                 gstCertificate:
                     req.file
                         ? req.file.filename
@@ -65,7 +83,19 @@ export const registerCustomer = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            customer
+            customer: {
+                _id: customer._id,
+                name: customer.name,
+                email: customer.email,
+                phone: customer.phone,
+                customerType: customer.customerType,
+                emailVerified: customer.emailVerified,
+                verificationStatus:
+                    customer.customerType === "b2b"
+                        ? customer.verificationStatus
+                        : null,
+                status: customer.status
+            }
         });
 
     } catch (error) {
@@ -92,10 +122,25 @@ export const loginCustomer = async (req, res) => {
 
         const customer =
             await Customer.findOne({
-                email
+                email: String(email || "").toLowerCase().trim()
             });
 
         if (!customer) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Invalid credentials"
+            });
+
+        }
+
+        const validPassword =
+            await bcrypt.compare(
+                password,
+                customer.password
+            );
+
+        if (!validPassword) {
 
             return res.status(400).json({
                 success: false,
@@ -130,22 +175,11 @@ export const loginCustomer = async (req, res) => {
 
         }
 
-        const validPassword =
-            await bcrypt.compare(
-                password,
-                customer.password
-            );
-
-        if (!validPassword) {
-
-            return res.status(400).json({
-                success: false,
-                message: "Invalid credentials"
-            });
-
-        }
-
         customer.lastLogin = new Date();
+
+        if (customer.customerType === "b2c") {
+            customer.verificationStatus = null;
+        }
 
         await customer.save();
 
@@ -156,8 +190,11 @@ export const loginCustomer = async (req, res) => {
                 name: customer.name,
                 email: customer.email,
                 customerType: customer.customerType,
+                emailVerified: customer.emailVerified || false,
                 verificationStatus:
-                    customer.verificationStatus
+                    customer.customerType === "b2b"
+                        ? customer.verificationStatus
+                        : null
             }
         });
 
@@ -178,10 +215,23 @@ export const updateCustomer = async (req, res) => {
 
     try {
 
+        const updateData = { ...req.body };
+
+        if (updateData.customerType === "b2c") {
+            updateData.verificationStatus = null;
+        }
+
+        if (
+            updateData.customerType === "b2b" &&
+            !updateData.verificationStatus
+        ) {
+            updateData.verificationStatus = "Pending";
+        }
+
         const updatedCustomer =
             await Customer.findByIdAndUpdate(
                 req.params.id,
-                req.body,
+                updateData,
                 { new: true }
             ).select("-password");
 

@@ -47,6 +47,8 @@ router.post("/", async (req, res) => {
             products
         } = req.body;
 
+        const enrichedProducts = [];
+
         for (const item of products) {
 
             const product =
@@ -76,6 +78,55 @@ router.post("/", async (req, res) => {
                 });
 
             }
+
+            enrichedProducts.push({
+                productId:
+                    product._id.toString(),
+
+                name:
+                    product.name,
+
+                image:
+                    product.images?.[0] ||
+                    item.image ||
+                    "",
+
+                quantity:
+                    Number(item.quantity || 1),
+
+                price:
+                    Number(item.price || product.retailPrice || 0),
+
+                brand:
+                    product.brand || "",
+
+                model:
+                    product.model || "",
+
+                category:
+                    product.category || "",
+
+                subcategory:
+                    product.subcategory || "",
+
+                sku:
+                    product.sku || item.sku || "",
+
+                hsnCode:
+                    product.hsnCode || "",
+
+                gstPercentage:
+                    product.gstPercentage || 18,
+
+                sellerId:
+                    product.sellerId || "ADMIN",
+
+                sellerName:
+                    product.sellerName || "CosmoCartt",
+
+                sellerGSTIN:
+                    product.sellerGSTIN || ""
+            });
 
         }
 
@@ -148,6 +199,9 @@ router.post("/", async (req, res) => {
         const order = new Order({
 
             ...req.body,
+
+            products:
+                enrichedProducts,
 
             orderNumber:
                 `CC-${String(nextNumber)
