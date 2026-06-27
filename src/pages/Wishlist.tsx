@@ -17,6 +17,7 @@ import {
   Sparkles,
   Truck,
 } from "lucide-react";
+import { getImageUrl } from "../utils/imageUrl";
 
 export default function Wishlist() {
   const { wishlistItems, removeFromWishlist } = useWishlist();
@@ -117,7 +118,7 @@ export default function Wishlist() {
                       </span>
 
                       <img
-                        src={`${API_URL}${product.images?.[0]}`}
+                        src={getImageUrl(product.images?.[0])}
                         alt={product.name}
                         className="h-40 object-contain group-hover:scale-110 transition-transform duration-500"
                       />
@@ -278,7 +279,7 @@ export default function Wishlist() {
               >
                 <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
                   <img
-                    src={`${API_URL}${product.images?.[0]}`}
+                    src={getImageUrl(product.images?.[0])}
                     alt={product.name}
                     className="h-36 object-contain group-hover:scale-110 transition-all duration-300"
                   />

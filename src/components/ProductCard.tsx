@@ -12,6 +12,18 @@ interface ProductCardProps {
     product: any;
 }
 
+const getProductImage = (image?: string) => {
+    if (!image) {
+        return "https://via.placeholder.com/400x400?text=No+Image";
+    }
+
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+        return image;
+    }
+
+    return `${API_URL}${image}`;
+};
+
 export default function ProductCard({
     product,
 }: ProductCardProps) {
@@ -69,9 +81,7 @@ export default function ProductCard({
                     <div className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition duration-1000" />
 
                     <img
-                        src={`${API_URL}${product.images?.[0]}` ||
-                            "https://via.placeholder.com/400x400?text=No+Image"
-                        }
+                        src={getProductImage(product.images?.[0])}
                         alt={product.name}
                         className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />

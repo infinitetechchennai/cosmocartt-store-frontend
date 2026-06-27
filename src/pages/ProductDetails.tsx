@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import {
     getDisplayPrice
 } from "../utils/pricing";
+import { getImageUrl } from "../utils/imageUrl";
 
 export default function ProductDetails() {
 
@@ -378,7 +379,7 @@ export default function ProductDetails() {
                 sku: product.sku,
                 image: product.images?.map(
                     (img: string) =>
-                        `${API_URL}${img}`
+                        getImageUrl(img)
                 ),
                 description:
                     product.description || product.name,
@@ -603,7 +604,7 @@ export default function ProductDetails() {
                                             }`}
                                     >
                                         <img
-                                            src={`${API_URL}${img}`}
+                                            src={getImageUrl(img)}
                                             alt={`${product.name} view ${index + 1}`}
                                             className="w-full h-full object-cover"
                                         />
@@ -657,7 +658,7 @@ export default function ProductDetails() {
                                 }}
                             >
                                 <img
-                                    src={`${API_URL}${selectedImage || product.images?.[0] || ""}`}
+                                    src={getImageUrl(selectedImage || product.images?.[0])}
                                     alt={product.name}
                                     className="
 w-full
@@ -714,7 +715,7 @@ p-4
                                         }`}
                                 >
                                     <img
-                                        src={`${API_URL}${img}`}
+                                        src={getImageUrl(img)}
                                         alt={`${product.name} view ${index + 1}`}
                                         className="w-full h-full object-cover"
                                     />
@@ -744,7 +745,7 @@ pointer-events-none
         "
                             >
                                 <img
-                                    src={`${API_URL}${selectedImage || product.images?.[0] || ""}`}
+                                    src={getImageUrl(selectedImage || product.images?.[0])}
                                     alt="Zoom Preview"
                                     className="w-full h-full object-cover"
                                     style={{
@@ -1403,7 +1404,7 @@ pointer-events-none
                                     >
                                         <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
                                             <img
-                                                src={`${API_URL}${item.images?.[0]}`}
+                                                src={getImageUrl(item.images?.[0])}
                                                 alt={item.name}
                                                 className="w-full h-full object-contain p-2"
                                             />

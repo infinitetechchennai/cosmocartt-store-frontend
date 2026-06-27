@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getDisplayPrice } from "../utils/pricing";
+import { getImageUrl } from "../utils/imageUrl";
 
 declare global {
     interface Window {
@@ -757,7 +758,7 @@ export default function Checkout() {
 
                                     {/* IMAGE */}
                                     <img
-                                        src={`${API_URL}${item.images?.[0]}`}
+                                        src={getImageUrl(item.images?.[0])}
                                         alt={item.name}
                                         className="w-14 h-14 object-cover rounded-lg border"
                                     />
