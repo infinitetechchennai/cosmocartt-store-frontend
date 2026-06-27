@@ -221,18 +221,32 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
         });
       }
 
-      const data = await res.json();
+      const text = await res.text();
 
-      if (data.success) {
+      let data: any = {};
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = {
+          success: false,
+          message: text
+        };
+      }
+
+      console.log("UPDATE PRODUCT STATUS:", res.status);
+      console.log("UPDATE PRODUCT RESPONSE:", data);
+
+      if (res.ok && data.success) {
         setProducts(products.map((p) => (p._id === editProduct._id ? data.product : p)));
         setEditProduct(null);
         setEditProductFiles([]);
       } else {
-        alert(data.message || "Failed to update product");
+        alert(data.message || `Failed to update product. Status: ${res.status}`);
       }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update product");
+    } catch (err: any) {
+      console.error("UPDATE PRODUCT FRONTEND ERROR:", err);
+      alert(err?.message || "Failed to update product");
     }
   };
 
