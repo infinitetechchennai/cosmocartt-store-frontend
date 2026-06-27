@@ -28,7 +28,7 @@ const getSubcategoryLink = (categoryName: string, sub: string) => {
 
 export default function CategoryNavbar() {
   return (
-    <div className="bg-white border-b border-slate-200">
+    <div className="hidden lg:block bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center gap-8 h-14">
 

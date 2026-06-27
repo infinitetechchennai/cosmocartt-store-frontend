@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
+import { categories } from "../data/categories";
 import {
   Search,
   ShoppingCart,
@@ -23,6 +24,7 @@ export default function Navbar() {
 
   const [search, setSearch] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+const [expandedCategory, setExpandedCategory] = useState("");
 
   const navigate = useNavigate();
 
@@ -36,16 +38,16 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="h-16 sm:h-20 flex items-center justify-between gap-3">
+        <div className="min-h-[64px] sm:min-h-[80px] py-2 flex items-center justify-between gap-2">
           <Link to="/" className="flex items-center shrink-0">
             <img
               src={logo}
               alt="CosmoCartt"
-              className="h-16 sm:h-20 lg:h-24 w-auto object-contain"
+              className="h-12 sm:h-16 lg:h-24 w-auto object-contain"
             />
           </Link>
 
-          <div className="hidden md:flex flex-1 max-w-2xl items-center border-2 border-purple-300 rounded-2xl overflow-hidden shadow-[0_0_14px_rgba(168,85,247,0.28)]">
+          <div className="hidden lg:flex flex-1 max-w-3xl items-center border-2 border-purple-300 rounded-2xl overflow-hidden shadow-[0_0_14px_rgba(168,85,247,0.28)]">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -141,7 +143,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="md:hidden pb-3">
+        <div className="lg:hidden pb-3 px-1">
           <div className="flex items-center border border-purple-200 rounded-2xl overflow-hidden bg-white">
             <input
               value={search}
@@ -170,7 +172,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
           />
 
-          <div className="absolute right-0 top-0 h-full w-[82%] max-w-sm bg-white shadow-2xl p-5">
+          <div className="absolute right-0 top-0 h-full w-[88%] max-w-[360px] bg-white shadow-2xl p-5">
             <div className="flex items-center justify-between border-b pb-4">
               <img src={logo} alt="CosmoCartt" className="h-16 w-auto object-contain" />
 
@@ -182,13 +184,67 @@ export default function Navbar() {
               </button>
             </div>
 
-            <div className="py-5 space-y-3 text-[#4B1E78] font-bold">
+            <div className="py-6 space-y-4 text-[#4B1E78] font-bold">
+              <div className="space-y-2">
+
+                {categories.map((category)=>(
+
+                  <div key={category.name} className="border rounded-xl overflow-hidden">
+
+                    <button
+                      onClick={()=>
+                        setExpandedCategory(
+                          expandedCategory===category.name
+                          ? ""
+                          : category.name
+                        )
+                      }
+                      className="w-full flex items-center justify-between px-4 py-3 bg-purple-50 font-semibold"
+                    >
+                      {category.name}
+                      <ChevronDown
+                        size={18}
+                        className={
+                          expandedCategory===category.name
+                          ? "rotate-180 transition"
+                          : "transition"
+                        }
+                      />
+                    </button>
+
+                    {expandedCategory===category.name && (
+
+                      <div className="bg-white">
+
+                        {category.subcategories.map((sub)=>(
+
+                          <Link
+                            key={sub}
+                            to={`/products?category=${encodeURIComponent(category.name)}&subcategory=${encodeURIComponent(sub)}`}
+                            onClick={()=>setMobileOpen(false)}
+                            className="block px-6 py-3 border-t text-sm hover:bg-slate-50"
+                          >
+                            {sub}
+                          </Link>
+
+                        ))}
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                ))}
+
+              </div>
+
               <Link
                 onClick={() => setMobileOpen(false)}
                 to="/products"
                 className="block px-4 py-3 rounded-xl bg-purple-50"
               >
-                Products
+                View All Products
               </Link>
 
               <Link
