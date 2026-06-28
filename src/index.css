@@ -9,6 +9,24 @@
   color: #4B1E78;
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .trending-swiper .swiper-button-prev::after,
 .trending-swiper .swiper-button-next::after {
   font-size: 30px;

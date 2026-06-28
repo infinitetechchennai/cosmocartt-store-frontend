@@ -5,8 +5,6 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { categories } from "../data/categories";
-
-
 import {
   Search,
   ShoppingCart,
@@ -18,55 +16,74 @@ import {
   UserRoundPlus,
   Package,
   Menu,
-  X
+  X,
+  LogOut,
 } from "lucide-react";
+
+const countries = [
+  "India",
+  "United States",
+  "United Kingdom",
+  "Canada",
+  "Australia",
+  "Germany",
+  "Singapore",
+  "United Arab Emirates",
+];
+
+const searchSuggestions = [
+  "iPhone",
+  "iPhone Case",
+  "Samsung Case",
+  "OnePlus Case",
+  "TV Remote",
+  "AC Remote",
+  "Mobile Back Cover",
+  "Clear Case",
+  "Shockproof Case",
+  "Silicone Case",
+];
+
+const getSubcategoryLink = (categoryName: string, sub: string) => {
+  const name = sub.toLowerCase();
+
+  if (
+    categoryName === "Mobile Accessories" &&
+    (name.includes("case") || name.includes("cover") || name.includes("backcase"))
+  ) {
+    return "/backcase-brands";
+  }
+
+  return `/products?category=${encodeURIComponent(
+    categoryName
+  )}&subcategory=${encodeURIComponent(sub)}`;
+};
 
 export default function Navbar() {
   const { cartItems } = useCart();
   const { wishlistItems } = useWishlist();
+  const { user, logout } = useAuth();
+
   const [search, setSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("India");
-
-  const countries = [
-    "India",
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Australia",
-    "Germany",
-    "Singapore",
-    "United Arab Emirates",
-  ];
   const [mobileOpen, setMobileOpen] = useState(false);
-  const searchSuggestions = [
-    "iPhone",
-    "iPhone Case",
-    "Samsung Case",
-    "OnePlus Case",
-    "TV Remote",
-    "AC Remote",
-    "Mobile Back Cover",
-    "Clear Case",
-    "Shockproof Case",
-    "Silicone Case",
-  ];
+  const [expandedMobileCategory, setExpandedMobileCategory] = useState("");
 
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = () => {
     if (!search.trim()) return;
-
-    navigate(
-      `/products?search=${encodeURIComponent(search)}`
-    );
+    navigate(`/products?search=${encodeURIComponent(search.trim())}`);
+    setShowSuggestions(false);
+    setMobileOpen(false);
   };
+
   const filteredSuggestions = search.trim()
     ? searchSuggestions.filter((item) =>
-      item.toLowerCase().startsWith(search.toLowerCase())
-    )
+        item.toLowerCase().startsWith(search.toLowerCase())
+      )
     : searchSuggestions.slice(0, 6);
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -76,112 +93,35 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-
-      <div className="hidden lg:flex max-w-[1600px] mx-auto px-8 h-24 items-center justify-between">
-
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center"
-        >
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+      {/* DESKTOP NAVBAR */}
+      <div className="hidden lg:flex max-w-[1600px] mx-auto px-6 h-24 items-center gap-5">
+        <Link to="/" className="flex items-center shrink-0">
           <img
             src={logo}
             alt="CosmoCartt"
-            className="
-        h-24
-        md:h-32
-        w-auto
-        object-contain
-        
-        hover:scale-105
-        transition-all
-        duration-300
-    "
+            className="h-24 xl:h-28 w-auto object-contain hover:scale-105 transition-all duration-300"
           />
         </Link>
 
-        {/* Search */}
-        <div
-          className="
-                        hidden
-                        md:flex
-                        items-center
-                        bg-white
-                        rounded-2xl
-                       w-[640px] xl:w-[760px] 2xl:w-[820px]
-                        h-12
-                       pl-6
-                        border-2
-                        border-purple-400
-                        shadow-[0_0_20px_rgba(168,85,247,0.6)]
-                    "
-        >
-
-          <div className="relative group">
-            <button
-              className="
-            bg-transparent
-            text-gray-700
-            border-r
-            pr-4
-            mr-4
-            font-medium
-            cursor-pointer
-        "
-            >
+        <div className="flex flex-1 max-w-[820px] 2xl:max-w-[900px] items-center bg-white rounded-2xl h-12 pl-5 border-2 border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.35)]">
+          <div className="relative group shrink-0">
+            <button className="bg-transparent text-gray-700 border-r pr-4 mr-4 font-medium cursor-pointer whitespace-nowrap">
               All Categories ▾
-    </button>
-
+            </button>
 
             <div
               onMouseLeave={() => setHoveredCategory("")}
-              className={`
-        absolute
-        top-full
-        left-0
-        mt-2
-        bg-white
-        rounded-2xl
-        shadow-2xl
-        border
-        opacity-0
-        invisible
-        group-hover:opacity-100
-        group-hover:visible
-        transition-all
-        duration-200
-        z-50
-        flex
-        overflow-hidden
-       ${hoveredCategory ? "w-[590px]" : "w-72"}
-    `}
+              className={`absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-2xl border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 flex overflow-hidden ${
+                hoveredCategory ? "w-[590px]" : "w-72"
+              }`}
             >
-              {/* Categories */}
-              <div
-                className={`
-        w-72
-        bg-white
-        ${hoveredCategory ? "border-r" : ""}
-    `}
-              >
+              <div className={`w-72 bg-white ${hoveredCategory ? "border-r" : ""}`}>
                 {categories.map((cat) => (
                   <div
                     key={cat.name}
-                    onMouseEnter={() =>
-                      setHoveredCategory(cat.name)
-                    }
-                    className="
-                    flex
-                    items-center
-                    justify-between
-                    px-4
-                    py-3
-                    cursor-pointer
-                    hover:bg-purple-50
-                    hover:text-[#4B1E78]
-                    font-medium
-                "
+                    onMouseEnter={() => setHoveredCategory(cat.name)}
+                    className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-purple-50 hover:text-[#4B1E78] font-medium"
                   >
                     <span>{cat.name}</span>
                     <span>›</span>
@@ -201,24 +141,8 @@ export default function Navbar() {
                       ?.subcategories.map((sub) => (
                         <Link
                           key={sub}
-                          to={
-                            sub === "Cases & Covers"
-                              ? "/backcase-brands"
-                              : `/products?category=${encodeURIComponent(
-                                hoveredCategory
-                              )}&subcategory=${encodeURIComponent(sub)}`
-                          }
-                          className="
-                            block
-                            bg-white
-                            rounded-lg
-                            px-3
-                            py-2
-                            text-sm
-                            hover:bg-purple-50
-                            hover:text-[#4B1E78]
-                            transition-all
-                        "
+                          to={getSubcategoryLink(hoveredCategory, sub)}
+                          className="block bg-white rounded-lg px-3 py-2 text-sm hover:bg-purple-50 hover:text-[#4B1E78] transition-all"
                         >
                           {sub}
                         </Link>
@@ -229,64 +153,31 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <input
               type="text"
               placeholder="Search products..."
               value={search}
               onFocus={() => setShowSuggestions(true)}
-              onBlur={() => {
-                setTimeout(() => {
-                  setShowSuggestions(false);
-                }, 150);
-              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setShowSuggestions(true);
               }}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch();
-                  setShowSuggestions(false);
-                }
+                if (e.key === "Enter") handleSearch();
               }}
               className="w-full text-base outline-none text-gray-700"
             />
 
             {showSuggestions && filteredSuggestions.length > 0 && (
-              <div
-                className="
-        absolute
-        top-full
-        left-0
-        mt-4
-        w-full
-        bg-white
-        rounded-2xl
-        shadow-2xl
-        border
-        border-purple-100
-        overflow-hidden
-        z-[99999]
-      "
-              >
+              <div className="absolute top-full left-0 mt-4 w-full bg-white rounded-2xl shadow-2xl border border-purple-100 overflow-hidden z-[99999]">
                 {filteredSuggestions.map((item) => (
                   <button
                     key={item}
                     type="button"
                     onMouseDown={() => handleSuggestionClick(item)}
-                    className="
-            w-full
-            text-left
-            px-5
-            py-3
-            text-sm
-            font-medium
-            text-slate-700
-            hover:bg-purple-50
-            hover:text-[#4B1E78]
-            transition-all
-          "
+                    className="w-full text-left px-5 py-3 text-sm font-medium text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78] transition-all"
                   >
                     {item}
                   </button>
@@ -295,440 +186,122 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="flex items-center h-12 -mr-6">
-            <div className="w-px h-8 bg-purple-200"></div>
-
-            <button
-              onClick={handleSearch}
-              className="
-            h-12
-           w-12
-            bg-[#4B1E78]
-            hover:bg-[#6F2DBD]
-            rounded-r-2xl
-            flex
-            items-center
-            justify-center
-            transition-all
-            duration-300
-        "
-            >
-              <Search
-                size={24}
-                className="text-white"
-              />
-            </button>
-          </div>
-        </div>
-
-
-        <div className="hidden xl:block relative group ml-5">
           <button
-            type="button"
-            className="flex items-center gap-2 text-[#4B1E78] hover:text-[#6F2DBD] transition-all max-w-[150px]"
+            onClick={handleSearch}
+            className="h-12 w-12 bg-[#4B1E78] hover:bg-[#6F2DBD] rounded-r-2xl flex items-center justify-center transition-all duration-300 shrink-0"
           >
-            <MapPin size={21} className="shrink-0" />
-
-            <div className="text-left min-w-0">
-              <p className="text-xs text-gray-500 leading-none">
-                Deliver to
-              </p>
-
-              <p className="font-semibold truncate max-w-[100px]">
-                {selectedCountry}
-              </p>
-            </div>
-
-            <ChevronDown size={14} className="shrink-0 group-hover:rotate-180 transition-transform" />
+            <Search size={23} className="text-white" />
           </button>
+        </div>
 
-          <div className="absolute top-full left-0 mt-3 w-64 max-h-80 overflow-y-auto bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 z-[99999] opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-300">
-            {countries.map((country) => (
-              <button
-                key={country}
-                type="button"
-                onClick={() => setSelectedCountry(country)}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                  selectedCountry === country
-                    ? "bg-[#4B1E78] text-white"
-                    : "text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
-                }`}
-              >
-                {country}
-              </button>
-            ))}
+        <div className="hidden xl:flex items-center gap-1 shrink-0 -mr-2">
+          <MapPin size={18} className="text-[#4B1E78]" />
+
+          <div className="leading-tight">
+            <p className="text-[11px] text-gray-500">Deliver to</p>
+
+            <select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              className="bg-transparent text-sm font-semibold text-[#4B1E78] outline-none cursor-pointer max-w-[78px] pr-0"
+            >
+              {countries.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-
-
-        {/* Right Side */}
-        <div className="flex items-center gap-5 text-[#4B1E78]">
-          {/* Divider */}
-          <div className="w-px h-10 bg-purple-200"></div>
-
-
-
+        <nav className="flex items-center gap-4 text-[#4B1E78] shrink-0">
           {!user ? (
             <>
               <Link
                 to="/login"
-                className="
-    group
-    relative
-    flex
-    items-center
-    gap-2
-    text-lg
-    font-medium
-    text-[#4B1E78]
-    hover:text-[#6F2DBD]
-    hover:scale-105
-    transition-all
-    duration-300
-  "
+                className="group flex items-center gap-2 text-base font-medium hover:text-[#6F2DBD] hover:scale-105 transition-all duration-300"
               >
-                <User
-                  size={20}
-                  className="
-      group-hover:-translate-y-1
-      transition-transform
-      duration-300
-    "
-                />
-
-                <span className="relative">
-                  Login
-
-    <span
-                    className="
-        absolute
-        left-0
-        -bottom-1
-        h-[2px]
-        w-0
-        bg-[#6F2DBD]
-        group-hover:w-full
-        transition-all
-        duration-300
-      "
-                  />
-                </span>
+                <User size={19} />
+                <span>Login</span>
               </Link>
 
               <Link
                 to="/register"
-                className="
-    group
-    relative
-    flex
-    items-center
-    gap-2
-    text-lg
-    font-medium
-    text-[#4B1E78]
-    hover:text-[#6F2DBD]
-    hover:scale-105
-    transition-all
-    duration-300
-  "
+                className="group flex items-center gap-2 text-base font-medium hover:text-[#6F2DBD] hover:scale-105 transition-all duration-300"
               >
-                <UserRoundPlus
-                  size={20}
-                  className="
-      group-hover:-translate-y-1
-      transition-transform
-      duration-300
-    "
-                />
-
-                <span className="relative">
-                  Register
-
-    <span
-                    className="
-        absolute
-        left-0
-        -bottom-1
-        h-[2px]
-        w-0
-        bg-[#6F2DBD]
-        group-hover:w-full
-        transition-all
-        duration-300
-      "
-                  />
-                </span>
+                <UserRoundPlus size={19} />
+                <span>Register</span>
               </Link>
             </>
           ) : (
             <>
-              <div className="relative group">
+              <Link
+                to="/orders"
+                className="group flex items-center gap-2 text-base font-medium hover:text-[#6F2DBD] hover:scale-105 transition-all duration-300"
+              >
+                <ClipboardList size={19} />
+                <span>Orders</span>
+              </Link>
 
-                <button
-                  className="
-        flex
-        items-center
-        gap-2
-        font-medium
-        text-[#4B1E78]
-    "
-                >
-                  <User size={18} />
-
-                  <div className="text-left">
-                    <p className="text-xs text-slate-500">
-                      Hello, {user.name}
-                    </p>
-
-                    <p className="font-semibold">
-                      My Account
-    </p>
-                  </div>
-
-                  <ChevronDown size={16} />
-                </button>
-
-                <div
-                  className="
-        absolute
-        right-0
-        top-full
-        w-56
-        bg-white
-        rounded-2xl
-        shadow-xl
-        border
-        border-slate-200
-        overflow-hidden
-        z-50
-        opacity-0
-        invisible
-        group-hover:opacity-100
-        group-hover:visible
-        transition-all
-        duration-200
-    "
-                >
-
-                  <div className="px-4 py-3 border-b">
-                    <p className="font-semibold">
-                      {user.name}
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      {user.email}
-                    </p>
-                  </div>
-
-                  <Link
-                    to="/orders"
-                    className="
-            flex
-            items-center
-            gap-3
-            px-4
-            py-3
-            hover:bg-slate-50
-            text-[#4B1E78]
-        "
-                  >
-                    <ClipboardList size={18} />
-                    <span>My Orders</span>
-                  </Link>
-
-                  <Link
-                    to="/wishlist"
-                    className="
-            flex
-            items-center
-            gap-3
-            px-4
-            py-3
-            hover:bg-slate-50
-            text-[#4B1E78]
-        "
-                  >
-                    <Heart size={18} />
-                    <span>Wishlist</span>
-                  </Link>
-
-                  <div className="border-t"></div>
-
-                  <button
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
-                    className="
-            w-full
-            text-left
-            px-4
-            py-3
-            hover:bg-red-50
-            text-red-600
-        "
-                  >
-                    Logout
-    </button>
-
-                </div>
-
-              </div>
-
-
+              <button
+                onClick={logout}
+                className="group flex items-center gap-2 text-base font-medium hover:text-red-600 hover:scale-105 transition-all duration-300"
+              >
+                <LogOut size={19} />
+                <span>Logout</span>
+              </button>
             </>
           )}
 
           <Link
             to="/products"
-            className="
-    group
-    relative
-    flex
-    items-center
-    gap-2
-    text-lg
-    font-medium
-    text-[#4B1E78]
-    hover:text-[#6F2DBD]
-    hover:scale-105
-    transition-all
-    duration-300
-  "
+            className="group flex items-center gap-2 text-base font-medium hover:text-[#6F2DBD] hover:scale-105 transition-all duration-300"
           >
-            <Package
-              size={20}
-              className="
-      group-hover:-translate-y-1
-      transition-transform
-      duration-300
-    "
-            />
-
-            <div>
-
-              <p className="relative font-semibold">
-                Products
-
-      <span
-                  className="
-          absolute
-          left-0
-          -bottom-1
-          h-[2px]
-          w-0
-          bg-[#6F2DBD]
-          group-hover:w-full
-          transition-all
-          duration-300
-        "
-                />
-              </p>
-            </div>
+            <Package size={19} />
+            <span>Products</span>
           </Link>
 
-
-
-          <Link
-            to="/wishlist"
-            className="
-        relative
-        hover:scale-110
-        transition-all
-        duration-300
-    "
-          >
-            <Heart size={28} />
-
-            <span
-              className="
-            absolute
-            -top-2
-            -right-2
-            bg-pink-500
-            text-white
-            text-xs
-            h-5
-            w-5
-            rounded-full
-            flex
-            items-center
-            justify-center
-            font-bold
-        "
-            >
+          <Link to="/wishlist" className="relative hover:text-[#6F2DBD] transition">
+            <Heart size={23} />
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
               {wishlistItems.length}
             </span>
-
           </Link>
 
-          {/* Divider */}
-          <div className="w-px h-10 bg-purple-200"></div>
-
-          <Link
-            to="/cart"
-            className="relative hover:scale-110 transition-all duration-300"
-          >
-            <ShoppingCart size={30} />
-
-            <span
-              className="
-                absolute
-                -top-2
-                -right-2
-                bg-red-500
-                text-white
-                text-xs
-                h-5
-                w-5
-                rounded-full
-                flex
-                items-center
-                justify-center
-                font-bold
-            "
-            >
+          <Link to="/cart" className="relative hover:text-[#6F2DBD] transition">
+            <ShoppingCart size={24} />
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
               {cartItems.length}
             </span>
           </Link>
-
-        </div>
-
+        </nav>
       </div>
 
-      <div className="lg:hidden px-3 py-2">
+      {/* MOBILE NAVBAR */}
+      <div className="lg:hidden px-3 py-2 bg-white">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center">
-            <img
-              src={logo}
-              alt="CosmoCartt"
-              className="h-14 w-auto object-contain"
-            />
+          <Link to="/" className="flex items-center shrink-0">
+            <img src={logo} alt="CosmoCartt" className="h-14 w-auto object-contain" />
           </Link>
 
           <div className="flex items-center gap-3 text-[#4B1E78]">
             <Link to="/wishlist" className="relative">
               <Heart size={22} />
-              {wishlistItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
-                  {wishlistItems.length}
-                </span>
-              )}
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
+                {wishlistItems.length}
+              </span>
             </Link>
 
             <Link to="/cart" className="relative">
               <ShoppingCart size={23} />
-              {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
-                  {cartItems.length}
-                </span>
-              )}
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
+                {cartItems.length}
+              </span>
             </Link>
 
             <button
               onClick={() => setMobileOpen(true)}
-              className="w-10 h-10 rounded-xl border border-purple-100 flex items-center justify-center"
+              className="w-10 h-10 rounded-xl border border-purple-100 flex items-center justify-center bg-purple-50"
             >
               <Menu size={24} />
             </button>
@@ -740,26 +313,14 @@ export default function Navbar() {
             type="text"
             placeholder="Search products..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setShowSuggestions(true);
-            }}
+            onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-                setMobileOpen(false);
-              }
+              if (e.key === "Enter") handleSearch();
             }}
             className="flex-1 px-4 py-3 outline-none text-sm"
           />
 
-          <button
-            onClick={() => {
-              handleSearch();
-              setMobileOpen(false);
-            }}
-            className="px-4 py-3 bg-[#4B1E78] text-white"
-          >
+          <button onClick={handleSearch} className="px-4 py-3 bg-[#4B1E78] text-white">
             <Search size={20} />
           </button>
         </div>
@@ -772,13 +333,9 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
           />
 
-          <div className="absolute right-0 top-0 h-full w-[86%] max-w-sm bg-white shadow-2xl p-5 overflow-y-auto">
-            <div className="flex items-center justify-between border-b pb-4">
-              <img
-                src={logo}
-                alt="CosmoCartt"
-                className="h-14 w-auto object-contain"
-              />
+          <div className="absolute right-0 top-0 h-full w-[88%] max-w-sm bg-white shadow-2xl overflow-y-auto">
+            <div className="px-5 py-4 flex items-center justify-between border-b">
+              <img src={logo} alt="CosmoCartt" className="h-14 w-auto object-contain" />
 
               <button
                 onClick={() => setMobileOpen(false)}
@@ -788,35 +345,99 @@ export default function Navbar() {
               </button>
             </div>
 
-            <div className="py-5 space-y-3 text-[#4B1E78] font-bold">
-              <Link onClick={() => setMobileOpen(false)} to="/products" className="block px-4 py-3 rounded-xl bg-purple-50">
-                Products
-                            </Link>
+            <div className="p-5 space-y-3 text-[#4B1E78] font-bold">
+              <Link
+                onClick={() => setMobileOpen(false)}
+                to="/products"
+                className="block px-4 py-3 rounded-xl bg-purple-50"
+              >
+                All Products
+              </Link>
 
-              <Link onClick={() => setMobileOpen(false)} to="/orders" className="block px-4 py-3 rounded-xl bg-purple-50">
+              {categories.map((category) => (
+                <div key={category.name} className="border rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedMobileCategory(
+                        expandedMobileCategory === category.name ? "" : category.name
+                      )
+                    }
+                    className="w-full flex items-center justify-between px-4 py-3 bg-purple-50 text-left"
+                  >
+                    <span>{category.name}</span>
+                    <ChevronDown
+                      size={17}
+                      className={
+                        expandedMobileCategory === category.name
+                          ? "rotate-180 transition-transform"
+                          : "transition-transform"
+                      }
+                    />
+                  </button>
+
+                  {expandedMobileCategory === category.name && (
+                    <div className="bg-white">
+                      {category.subcategories.map((sub) => (
+                        <Link
+                          key={sub}
+                          to={getSubcategoryLink(category.name, sub)}
+                          onClick={() => setMobileOpen(false)}
+                          className="block px-6 py-3 border-t text-sm text-slate-700"
+                        >
+                          {sub}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <Link
+                onClick={() => setMobileOpen(false)}
+                to="/orders"
+                className="block px-4 py-3 rounded-xl bg-purple-50"
+              >
                 Orders
-                            </Link>
+              </Link>
 
-              <Link onClick={() => setMobileOpen(false)} to="/wishlist" className="block px-4 py-3 rounded-xl bg-purple-50">
+              <Link
+                onClick={() => setMobileOpen(false)}
+                to="/wishlist"
+                className="block px-4 py-3 rounded-xl bg-purple-50"
+              >
                 Wishlist
-                            </Link>
+              </Link>
 
-              <Link onClick={() => setMobileOpen(false)} to="/cart" className="block px-4 py-3 rounded-xl bg-purple-50">
+              <Link
+                onClick={() => setMobileOpen(false)}
+                to="/cart"
+                className="block px-4 py-3 rounded-xl bg-purple-50"
+              >
                 Cart
-                            </Link>
+              </Link>
 
               {!user ? (
                 <>
-                  <Link onClick={() => setMobileOpen(false)} to="/login" className="block px-4 py-3 rounded-xl border">
+                  <Link
+                    onClick={() => setMobileOpen(false)}
+                    to="/login"
+                    className="block px-4 py-3 rounded-xl border"
+                  >
                     Login
-                                    </Link>
+                  </Link>
 
-                  <Link onClick={() => setMobileOpen(false)} to="/register" className="block px-4 py-3 rounded-xl bg-[#4B1E78] text-white text-center">
+                  <Link
+                    onClick={() => setMobileOpen(false)}
+                    to="/register"
+                    className="block px-4 py-3 rounded-xl bg-[#4B1E78] text-white text-center"
+                  >
                     Register
-                                    </Link>
+                  </Link>
                 </>
               ) : (
                 <button
+                  type="button"
                   onClick={() => {
                     setMobileOpen(false);
                     logout();
@@ -830,7 +451,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-
     </header>
   );
 }
