@@ -47,7 +47,7 @@ export default function Home() {
       <QuickLinks />
 
       {/* HERO SLIDER */}
-      <div className="max-w-7xl mx-auto px-4 mt-4 relative">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 mt-3 sm:mt-4 relative overflow-hidden">
         <Swiper
           modules={[
             Autoplay,
@@ -63,16 +63,17 @@ export default function Home() {
           }}
           pagination={{
             clickable: true,
+            dynamicBullets: true,
           }}
           loop={true}
           grabCursor={true}
-          className="rounded-3xl overflow-hidden shadow-2xl home-swiper"
+          className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl home-swiper"
         >
           <SwiperSlide>
             <img
               src={mobileBanner}
               alt="Mobile Cases"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[210px] sm:h-[330px] md:h-[420px] lg:h-[500px] object-cover"
             />
           </SwiperSlide>
 
@@ -80,7 +81,7 @@ export default function Home() {
             <img
               src={tvBanner}
               alt="TV Remote"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[210px] sm:h-[330px] md:h-[420px] lg:h-[500px] object-cover"
             />
           </SwiperSlide>
 
@@ -88,7 +89,7 @@ export default function Home() {
             <img
               src={acBanner}
               alt="AC Remote"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[210px] sm:h-[330px] md:h-[420px] lg:h-[500px] object-cover"
             />
           </SwiperSlide>
         </Swiper>
@@ -96,7 +97,7 @@ export default function Home() {
 
       {/* <Categories /> */}
 
-      <CampaignBanner />
+      <div className="px-3 sm:px-0"><CampaignBanner /></div>
 
       <TrendingProducts />
 

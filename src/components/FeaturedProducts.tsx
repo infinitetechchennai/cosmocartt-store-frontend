@@ -98,80 +98,44 @@ export default function FeaturedProducts() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-3 mt-12">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 sm:px-4 py-2 rounded-xl border border-purple-200 bg-white text-[#4B1E78] text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            ‹
+          </button>
 
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="
-                w-11
-                h-11
-                rounded-full
-                bg-white
-                border
-                border-slate-200
-                shadow-md
-                flex
-                items-center
-                justify-center
-                hover:bg-purple-50
-                hover:text-[#4B1E78]
-                transition-all
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
-            >
-              <ChevronLeft size={20} />
-            </button>
-
-            {[...Array(totalPages)].map((_, index) => (
+          {[1, currentPage - 1, currentPage, currentPage + 1, totalPages]
+            .filter((page, index, arr) =>
+              page >= 1 &&
+              page <= totalPages &&
+              arr.indexOf(page) === index
+            )
+            .map((page) => (
               <button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                className={`
-                  w-11
-                  h-11
-                  rounded-full
-                  font-bold
-                  transition-all
-                  duration-300
-                  ${
-                    currentPage === index + 1
-                      ? "bg-[#4B1E78] text-white shadow-lg shadow-purple-500/40"
-                      : "bg-white text-slate-700 border border-slate-200 hover:bg-purple-100"
-                  }
-                `}
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`min-w-9 h-9 px-3 rounded-xl text-sm font-black transition-all ${
+                  currentPage === page
+                    ? "bg-[#4B1E78] text-white shadow"
+                    : "bg-white text-[#4B1E78] border border-purple-100 hover:bg-purple-50"
+                }`}
               >
-                {index + 1}
+                {page}
               </button>
             ))}
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="
-                w-11
-                h-11
-                rounded-full
-                bg-white
-                border
-                border-slate-200
-                shadow-md
-                flex
-                items-center
-                justify-center
-                hover:bg-purple-50
-                hover:text-[#4B1E78]
-                transition-all
-                disabled:opacity-40
-                disabled:cursor-not-allowed
-              "
-            >
-              <ChevronRight size={20} />
-            </button>
-
-          </div>
-        )}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 sm:px-4 py-2 rounded-xl border border-purple-200 bg-white text-[#4B1E78] text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            ›
+          </button>
+        </div>
+      )}
 
       </div>
     </section>

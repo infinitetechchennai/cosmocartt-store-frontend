@@ -15,364 +15,65 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section
-      style={{
-        minHeight: "500px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "90px 30px",
-        background: "#ffffff",
-        fontFamily:
-          "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          maxWidth: "680px",
-          padding: "78px 65px",
-          overflow: "hidden",
-          textAlign: "center",
-          borderRadius: "42px",
+    <section className="bg-white px-3 sm:px-6 py-12 sm:py-20 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full max-w-[680px] overflow-hidden text-center rounded-[28px] sm:rounded-[42px] px-5 py-10 sm:px-16 sm:py-20 bg-gradient-to-br from-[#25064d] via-[#34106a] to-[#7a37dd] shadow-[0_25px_60px_rgba(50,10,100,0.14)]">
+        <div className="absolute inset-0 rounded-[28px] sm:rounded-[42px] bg-gradient-to-br from-white/20 via-white/5 to-transparent border border-white/10 pointer-events-none" />
+        <div className="absolute w-52 h-52 rounded-full -right-12 -top-14 bg-white/10 blur-3xl pointer-events-none" />
 
-          background: `
-            linear-gradient(
-              135deg,
-              #25064d 0%,
-              #34106a 28%,
-              #5220a4 68%,
-              #7a37dd 100%
-            )
-          `,
-
-          boxShadow: `
-            0 25px 60px rgba(50,10,100,0.14)
-          `,
-
-          animation: "floatCard 8s ease-in-out infinite",
-        }}
-      >
-        {/* Glass coating */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: "42px",
-
-            background: `
-              linear-gradient(
-                135deg,
-                rgba(255,255,255,0.18) 0%,
-                rgba(255,255,255,0.06) 22%,
-                rgba(255,255,255,0.02) 45%,
-                transparent 100%
-              )
-            `,
-
-            border: "1px solid rgba(255,255,255,0.14)",
-
-            boxShadow: `
-              inset 0 1px 0 rgba(255,255,255,0.28),
-              inset 0 -1px 0 rgba(255,255,255,0.02)
-            `,
-
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Reflection streak */}
-        <div
-          style={{
-            position: "absolute",
-            width: "330px",
-            height: "180px",
-            top: "-40px",
-            left: "-30px",
-            transform: "rotate(-18deg)",
-
-            background: `
-              linear-gradient(
-                90deg,
-                rgba(255,255,255,0.20),
-                transparent
-              )
-            `,
-
-            filter: "blur(22px)",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Glow orb */}
-        <div
-          style={{
-            position: "absolute",
-            width: "220px",
-            height: "220px",
-            borderRadius: "50%",
-            right: "-50px",
-            top: "-60px",
-
-            background: `
-              radial-gradient(
-                circle,
-                rgba(255,255,255,0.10),
-                transparent
-              )
-            `,
-
-            filter: "blur(40px)",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Badge */}
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 18px",
-            borderRadius: "999px",
-            background: "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            marginBottom: "30px",
-            color: "#ffffff",
-            fontSize: "11px",
-            fontWeight: 600,
-            letterSpacing: "0.14em",
-          }}
-        >
-          <span
-            style={{
-              width: "6px",
-              height: "6px",
-              borderRadius: "50%",
-              background: "#ffffff",
-              opacity: 0.9,
-            }}
-          />
+        <div className="relative z-10 inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white/10 border border-white/10 mb-6 sm:mb-8 text-white text-[10px] sm:text-xs font-bold tracking-[0.14em]">
+          <span className="w-1.5 h-1.5 rounded-full bg-white opacity-90" />
           EXCLUSIVE OFFERS
         </div>
 
-        {/* Heading */}
-        <h2
-          style={{
-            position: "relative",
-            zIndex: 2,
-            color: "#ffffff",
-            fontSize: "clamp(36px,4vw,52px)",
-            lineHeight: 1.05,
-            letterSpacing: "-0.06em",
-            fontWeight: 700,
-            marginBottom: "18px",
-          }}
-        >
+        <h2 className="relative z-10 text-white text-3xl sm:text-5xl font-bold leading-tight tracking-tight">
           The best deals,
           <br />
-          <span
-            style={{
-              color: "rgba(255,255,255,0.96)",
-              fontWeight: 600,
-            }}
-          >
+          <span className="text-white/95 font-semibold">
             before everyone else.
           </span>
         </h2>
 
-        {/* Description */}
-        <p
-          style={{
-            position: "relative",
-            zIndex: 2,
-            maxWidth: "430px",
-            margin: "0 auto 42px",
-            fontSize: "15px",
-            lineHeight: 1.7,
-            color: "rgba(255,255,255,0.75)",
-          }}
-        >
+        <p className="relative z-10 max-w-md mx-auto mt-4 sm:mt-5 mb-7 sm:mb-10 text-white/75 text-sm sm:text-base leading-7">
           Get early access to launches, flash sales, and members-only offers —
           straight to your inbox.
         </p>
 
         {!submitted ? (
-          <div style={{ position: "relative", zIndex: 2 }}>
-            {/* WHITE GLASS INPUT CONTAINER */}
-            <div
-              style={{
-                display: "flex",
-                padding: "6px",
-                borderRadius: "24px",
-
-                background: `
-                  linear-gradient(
-                    180deg,
-                    rgba(255,255,255,0.98) 0%,
-                    rgba(248,248,252,0.95) 100%
-                  )
-                `,
-
-                border: `1px solid ${
-                  error
-                    ? "rgba(255,120,120,0.35)"
-                    : "rgba(255,255,255,0.75)"
-                }`,
-
-                boxShadow: `
-                  inset 0 1px 0 rgba(255,255,255,1),
-                  inset 0 -1px 0 rgba(220,220,230,0.7),
-                  0 6px 20px rgba(20,10,50,0.08)
-                `,
-
-                marginBottom: "16px",
-              }}
-            >
-              {/* INPUT */}
+          <div className="relative z-10">
+            <div className={`flex flex-col sm:flex-row gap-3 sm:gap-2 rounded-2xl sm:rounded-[24px] bg-white p-2 border ${error ? "border-red-300" : "border-white/70"} shadow-inner`}>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && handleSubscribe()
-                }
+                onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
                 placeholder="Enter your email address"
-                style={{
-                  flex: 1,
-                  background: "transparent",
-                  border: "none",
-                  padding: "16px 20px",
-                  color: "#2b2b2b",
-                  fontSize: "15px",
-                  outline: "none",
-                }}
+                className="w-full flex-1 bg-transparent border-none px-4 py-3 text-sm sm:text-base text-slate-800 outline-none"
               />
 
-              {/* PREMIUM PURPLE GLASS BUTTON */}
               <button
                 onClick={handleSubscribe}
-                style={{
-                  padding: "16px 30px",
-                  borderRadius: "18px",
-                  border: "1px solid rgba(255,255,255,0.18)",
-
-                  background: `
-                    linear-gradient(
-                      180deg,
-                      rgba(122,55,221,0.95) 0%,
-                      rgba(82,32,164,0.95) 100%
-                    )
-                  `,
-
-                  boxShadow: `
-                    inset 0 1px 0 rgba(255,255,255,0.22),
-                    inset 0 -1px 0 rgba(0,0,0,0.08),
-                    0 8px 18px rgba(70,20,140,0.28)
-                  `,
-
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-
-                  color: "#ffffff",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all .25s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform =
-                    "translateY(-2px) scale(1.02)";
-                  e.currentTarget.style.filter = "brightness(1.08)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform =
-                    "translateY(0px) scale(1)";
-                  e.currentTarget.style.filter = "brightness(1)";
-                }}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-[18px] bg-gradient-to-b from-[#7a37dd] to-[#5220a4] text-white text-sm font-bold shadow-[0_8px_18px_rgba(70,20,140,0.28)]"
               >
                 Subscribe
               </button>
             </div>
 
-            <p
-              style={{
-                color: "rgba(255,255,255,0.50)",
-                fontSize: "12px",
-              }}
-            >
+            <p className="mt-4 text-white/50 text-xs">
               No spam, ever. Unsubscribe anytime.
             </p>
           </div>
         ) : (
-          <div
-            style={{
-              position: "relative",
-              zIndex: 2,
-              color: "#ffffff",
-            }}
-          >
-            <div
-              style={{
-                width: "56px",
-                height: "56px",
-                margin: "0 auto 14px",
-
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-
-                borderRadius: "50%",
-
-                background: "rgba(255,255,255,0.10)",
-
-                border: "1px solid rgba(255,255,255,0.12)",
-
-                fontSize: "22px",
-              }}
-            >
+          <div className="relative z-10 text-white">
+            <div className="w-14 h-14 mx-auto mb-4 flex items-center justify-center rounded-full bg-white/10 border border-white/10 text-2xl">
               ✓
             </div>
-
-            <p
-              style={{
-                fontSize: "18px",
-                fontWeight: 600,
-              }}
-            >
-              You're all set!
-            </p>
-
-            <p
-              style={{
-                marginTop: "8px",
-                fontSize: "13px",
-                color: "rgba(255,255,255,0.65)",
-              }}
-            >
+            <p className="text-lg font-semibold">You're all set!</p>
+            <p className="mt-2 text-sm text-white/65">
               Watch your inbox for exclusive deals.
             </p>
           </div>
         )}
       </div>
-
-      <style>{`
-        input::placeholder{
-          color: rgba(100,100,110,0.75);
-        }
-
-        @keyframes floatCard {
-          0%,100% { 
-            transform: translateY(0px); 
-          }
-          50% { 
-            transform: translateY(-6px); 
-          }
-        }
-      `}</style>
     </section>
   );
 }

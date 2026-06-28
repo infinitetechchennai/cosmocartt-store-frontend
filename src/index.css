@@ -164,3 +164,254 @@ input::-webkit-credentials-auto-fill-button {
 input::-webkit-textfield-decoration-container {
     display: none !important;
 }
+
+/* HOME HERO RESPONSIVE FIX */
+.home-swiper .swiper-button-next,
+.home-swiper .swiper-button-prev {
+  color: white;
+  transform: scale(0.85);
+}
+
+.home-swiper .swiper-pagination-bullet {
+  background: white;
+  opacity: 0.65;
+}
+
+.home-swiper .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #6F2DBD;
+}
+
+@media (max-width: 640px) {
+  .home-swiper .swiper-button-next,
+  .home-swiper .swiper-button-prev {
+    display: none;
+  }
+
+  .home-swiper .swiper-pagination {
+    bottom: 8px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+/* =========================
+   COSMOCARTT MOBILE SAFETY FIX
+   Desktop untouched
+========================= */
+
+@media (max-width: 1023px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  header {
+    max-width: 100vw;
+  }
+
+  main,
+  section,
+  footer {
+    max-width: 100vw;
+  }
+
+  .home-swiper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .home-swiper img {
+    width: 100%;
+    object-position: center;
+  }
+
+  .swiper-pagination {
+    max-width: 100%;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    max-width: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-swiper {
+    border-radius: 18px !important;
+  }
+
+  .home-swiper img {
+    height: 210px !important;
+  }
+
+  .home-swiper .swiper-button-next,
+  .home-swiper .swiper-button-prev {
+    display: none !important;
+  }
+
+  .home-swiper .swiper-pagination {
+    bottom: 6px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet {
+    width: 7px !important;
+    height: 7px !important;
+  }
+}
+
+\n
+/* COSMOCARTT SWIPER RESPONSIVE PAGINATION */
+.home-swiper {
+  position: relative;
+}
+
+.home-swiper .swiper-button-next,
+.home-swiper .swiper-button-prev {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  color: #ffffff !important;
+}
+
+.home-swiper .swiper-button-next::after,
+.home-swiper .swiper-button-prev::after {
+  font-size: 22px !important;
+  font-weight: 900;
+}
+
+.home-swiper .swiper-pagination {
+  bottom: 14px !important;
+}
+
+.home-swiper .swiper-pagination-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  background: #ffffff !important;
+  opacity: 0.7 !important;
+}
+
+.home-swiper .swiper-pagination-bullet-active {
+  width: 28px !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  background: #7C3AED !important;
+}
+
+@media (max-width: 640px) {
+  .home-swiper .swiper-button-next,
+  .home-swiper .swiper-button-prev {
+    display: none !important;
+  }
+
+  .home-swiper .swiper-pagination {
+    bottom: 7px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet-active {
+    width: 20px !important;
+  }
+}
+
+
+/* COSMOCARTT CLEAN PAGINATION FINAL */
+.home-swiper .swiper-pagination {
+  bottom: 12px !important;
+}
+
+.home-swiper .swiper-pagination-bullet {
+  width: 7px !important;
+  height: 7px !important;
+  margin: 0 4px !important;
+  opacity: 0.55 !important;
+  background: #ffffff !important;
+}
+
+.home-swiper .swiper-pagination-bullet-active {
+  width: 16px !important;
+  height: 7px !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  background: #8B5CF6 !important;
+}
+
+@media (max-width: 640px) {
+  .home-swiper .swiper-pagination {
+    bottom: 6px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet {
+    width: 5px !important;
+    height: 5px !important;
+    margin: 0 3px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet-active {
+    width: 12px !important;
+    height: 5px !important;
+  }
+}
+
+
+/* COSMOCARTT FINAL COMPACT SWIPER PAGINATION */
+.home-swiper .swiper-pagination {
+  bottom: 10px !important;
+}
+
+.home-swiper .swiper-pagination-bullet {
+  width: 6px !important;
+  height: 6px !important;
+  margin: 0 3px !important;
+  opacity: 0.45 !important;
+  background: #ffffff !important;
+}
+
+.home-swiper .swiper-pagination-bullet-active {
+  width: 14px !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  background: #8B5CF6 !important;
+}
+
+.home-swiper .swiper-pagination-bullets-dynamic {
+  transform: translateX(-50%) scale(0.82) !important;
+}
+
+@media (max-width: 640px) {
+  .home-swiper .swiper-pagination {
+    bottom: 5px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet {
+    width: 4px !important;
+    height: 4px !important;
+    margin: 0 2px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullet-active {
+    width: 10px !important;
+    height: 4px !important;
+  }
+
+  .home-swiper .swiper-pagination-bullets-dynamic {
+    transform: translateX(-50%) scale(0.72) !important;
+  }
+}

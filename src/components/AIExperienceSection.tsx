@@ -4,118 +4,42 @@ export default function AIExperienceSection() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const videoSrc = "src/assets/cosmocartt_video.mp4";
+  const videoSrc = "/src/assets/cosmocartt_video.mp4";
 
   const handlePlay = () => {
     if (!videoRef.current) return;
-
     videoRef.current.play();
     setIsPlaying(true);
   };
 
   return (
-    <section
-      style={{
-        minHeight: "720px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "110px 30px",
-        background: "#ffffff",
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "1350px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "70px",
-          alignItems: "center",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        <div>
-          <div
-            style={{
-              display: "inline-flex",
-              padding: "8px 18px",
-              borderRadius: "999px",
-              background: "#f3e8ff",
-              color: "#7a37dd",
-              fontSize: "11px",
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              marginBottom: "28px",
-            }}
-          >
+    <section className="bg-white overflow-hidden py-12 sm:py-16 lg:py-28 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div className="text-center lg:text-left">
+          <div className="inline-flex px-4 py-2 rounded-full bg-purple-100 text-[#7a37dd] text-[10px] sm:text-xs font-black tracking-[0.14em] mb-5 sm:mb-7">
             AI PRODUCT EXPERIENCE
           </div>
 
-          <h2
-            style={{
-              color: "#0f172a",
-              fontSize: "clamp(42px,5vw,68px)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.05em",
-              fontWeight: 800,
-              marginBottom: "22px",
-            }}
-          >
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight text-slate-900">
             Experience Products
             <br />
-            <span style={{ color: "#7a37dd" }}>
-              Before You Buy.
-            </span>
+            <span className="text-[#7a37dd]">Before You Buy.</span>
           </h2>
 
-          <p
-            style={{
-              fontSize: "17px",
-              lineHeight: 1.8,
-              color: "#64748b",
-              maxWidth: "520px",
-              marginBottom: "35px",
-            }}
-          >
+          <p className="mt-4 sm:mt-6 text-sm sm:text-lg leading-7 sm:leading-8 text-slate-500 max-w-xl mx-auto lg:mx-0">
             Watch immersive product demonstrations and preview product details
             before making a confident purchase.
           </p>
 
           <button
             onClick={handlePlay}
-            style={{
-              padding: "17px 34px",
-              borderRadius: "18px",
-              border: "none",
-              background:
-                "linear-gradient(180deg, #7a37dd 0%, #5220a4 100%)",
-              color: "#ffffff",
-              fontSize: "15px",
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 12px 30px rgba(80,20,180,0.25)",
-            }}
+            className="mt-6 sm:mt-8 px-7 sm:px-9 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-b from-[#7a37dd] to-[#5220a4] text-white text-sm sm:text-base font-bold shadow-[0_12px_30px_rgba(80,20,180,0.25)]"
           >
             Watch Demo
           </button>
         </div>
 
-        <div
-          style={{
-            position: "relative",
-            height: "460px",
-            borderRadius: "36px",
-            overflow: "hidden",
-            background: "#050505",
-            border: "1px solid rgba(122,55,221,0.18)",
-            boxShadow: "0 35px 90px rgba(80,20,180,0.18)",
-          }}
-        >
+        <div className="relative h-[230px] sm:h-[360px] lg:h-[460px] rounded-[22px] sm:rounded-[36px] overflow-hidden bg-black border border-purple-200 shadow-[0_25px_70px_rgba(80,20,180,0.16)]">
           <video
             ref={videoRef}
             src={videoSrc}
@@ -125,50 +49,24 @@ export default function AIExperienceSection() {
             preload="metadata"
             onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
+            className="w-full h-full object-cover block"
           />
 
           {!isPlaying && (
             <button
               onClick={handlePlay}
-              style={{
-                position: "absolute",
-                inset: 0,
-                margin: "auto",
-                width: "96px",
-                height: "96px",
-                borderRadius: "50%",
-                border: "1px solid rgba(255,255,255,0.35)",
-                background: "rgba(255,255,255,0.18)",
-                backdropFilter: "blur(12px)",
-                color: "#ffffff",
-                fontSize: "34px",
-                cursor: "pointer",
-                boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-              }}
+              className="absolute inset-0 m-auto w-16 h-16 sm:w-24 sm:h-24 rounded-full border border-white/40 bg-white/20 backdrop-blur-xl text-white text-2xl sm:text-4xl shadow-2xl"
             >
               ▶
             </button>
           )}
 
           {!isPlaying && (
-            <div
-              style={{
-                position: "absolute",
-                left: "28px",
-                bottom: "26px",
-                color: "#ffffff",
-              }}
-            >
-              <p style={{ fontWeight: 800, fontSize: "18px" }}>
+            <div className="absolute left-4 right-4 bottom-4 sm:left-7 sm:right-auto sm:bottom-6 text-white">
+              <p className="font-black text-sm sm:text-lg">
                 Interactive Product Demonstration
               </p>
-              <p style={{ opacity: 0.75, fontSize: "13px", marginTop: "4px" }}>
+              <p className="opacity-75 text-xs sm:text-sm mt-1">
                 Click to watch the experience
               </p>
             </div>
