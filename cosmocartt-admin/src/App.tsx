@@ -49,7 +49,6 @@ export default function App() {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [orders, setOrders] = useState<any[]>([]);
   useEffect(() => {
-    console.log("ADMIN ORDERS:", orders);
   }, [orders]);
   const [b2bClients, setB2bClients] = useState<B2BClient[]>(initialB2BClients);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>(initialTransactions);
@@ -83,7 +82,6 @@ export default function App() {
     fetch(apiPath("/api/orders"))
       .then((res) => res.json())
       .then((data) => {
-        console.log("ORDERS FROM API:", data.orders);
 
         if (data.success) {
           setOrders(data.orders);

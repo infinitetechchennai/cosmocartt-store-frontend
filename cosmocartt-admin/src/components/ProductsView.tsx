@@ -234,8 +234,6 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
         };
       }
 
-      console.log("UPDATE PRODUCT STATUS:", res.status);
-      console.log("UPDATE PRODUCT RESPONSE:", data);
 
       if (res.ok && data.success) {
         setProducts(products.map((p) => (p._id === editProduct._id ? data.product : p)));

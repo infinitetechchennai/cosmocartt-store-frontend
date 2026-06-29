@@ -151,9 +151,12 @@ border-purple-300/20
                       Shop Now
                     </Link>
 
-                    <button className="border border-white/30 bg-white/10 backdrop-blur-md px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition">
+                    <Link
+                      to="/products"
+                      className="border border-white/30 bg-white/10 backdrop-blur-md px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition"
+                    >
                       Explore
-                    </button>
+                    </Link>
 
 
 

@@ -48,7 +48,7 @@ export default function FeaturedCategories() {
 
                     <Link
                         key={category.name}
-                        to={`/products?category=${category.name}`}
+                        to={`/products?category=${encodeURIComponent(category.name)}`}
                         className="
                             group
                             relative

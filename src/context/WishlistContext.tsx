@@ -88,9 +88,6 @@ export const WishlistProvider = ({
                 ? `wishlist_${user._id}`
                 : "wishlist_guest";
 
-        console.log("ADD TO WISHLIST HIT");
-        console.log(user);
-        console.log(wishlistKey);
 
         localStorage.setItem(
             wishlistKey,

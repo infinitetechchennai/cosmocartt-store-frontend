@@ -136,7 +136,6 @@ export default function Checkout() {
             localStorage.getItem("user") || "{}"
         );
 
-        console.log("USER:", user);
 
 
         const orderData = {
@@ -224,7 +223,6 @@ export default function Checkout() {
 
             try {
 
-                console.log("ORDER DATA:", orderData);
 
                 const response = await fetch(
                     apiPath("/api/orders"),
@@ -239,7 +237,6 @@ export default function Checkout() {
 
                 const data = await response.json();
 
-                console.log("ORDER RESPONSE:", data);
 
                 if (!response.ok || !data.success) {
                     toast.error(data.message || "Failed to place order");
@@ -334,11 +331,6 @@ export default function Checkout() {
 
                         try {
 
-                            console.log(
-                                "RAZORPAY RESPONSE",
-                                response
-                            );
-
                             const verifyResponse =
                                 await fetch(
                                     apiPath("/api/payment/verify"),
@@ -357,11 +349,6 @@ export default function Checkout() {
                             const verifyData =
                                 await verifyResponse.json();
 
-                            console.log(
-                                "VERIFY RESPONSE",
-                                verifyData
-                            );
-
                             if (
                                 !verifyData.success
                             ) {
@@ -370,10 +357,11 @@ export default function Checkout() {
                                     "Payment verification failed"
                                 );
 
+                                setPlacingOrder(false);
+
                                 return;
                             }
 
-                            console.log("PAYMENT VERIFIED");
 
                             const orderResponse =
                                 await fetch(
@@ -401,10 +389,6 @@ export default function Checkout() {
                             const orderResult =
                                 await orderResponse.json();
 
-                            console.log(
-                                "ORDER RESPONSE",
-                                orderResult
-                            );
 
                             if (
                                 !orderResponse.ok ||
@@ -459,15 +443,6 @@ export default function Checkout() {
                     "payment.failed",
                     function (response: any) {
 
-                        console.log(
-                            "PAYMENT FAILED FULL",
-                            JSON.stringify(response, null, 2)
-                        );
-
-                        // console.log(
-                        //     "PAYMENT FAILED",
-                        //     response
-                        // );
 
                         toast.error(
                             "Payment failed. Please try again."

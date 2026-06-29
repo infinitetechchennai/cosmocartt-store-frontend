@@ -74,7 +74,6 @@ export default function UsersView({
 
       } catch (err) {
 
-        console.log(err);
 
       }
 
@@ -197,7 +196,6 @@ export default function UsersView({
 
     } catch (error) {
 
-      console.log(error);
 
     }
 
@@ -266,7 +264,6 @@ export default function UsersView({
 
     } catch (error) {
 
-      console.log(error);
 
     }
 
@@ -346,7 +343,6 @@ export default function UsersView({
 
     } catch (error) {
 
-      console.log(error);
 
     }
 
@@ -437,7 +433,6 @@ export default function UsersView({
 
     } catch (error) {
 
-      console.log(error);
 
     }
 
@@ -491,7 +486,6 @@ export default function UsersView({
 
     } catch (error) {
 
-      console.log(error);
 
     }
 
@@ -565,7 +559,6 @@ export default function UsersView({
 
     } catch (error) {
 
-      console.log(error);
 
     }
 

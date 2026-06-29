@@ -1,7 +1,6 @@
 import instagramIcon from "../assets/instagram.png";
 import youtubeIcon from "../assets/youtube.png";
 import googleIcon from "../assets/google.png";
-import githubIcon from "../assets/github.png";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import {
@@ -121,23 +120,18 @@ export default function Footer() {
                         </div>
 
                         <div className="mt-6 flex gap-3">
-                            {[
-                                { icon: instagramIcon, alt: "Instagram" },
-                                { icon: youtubeIcon, alt: "YouTube" },
-                                { icon: googleIcon, alt: "Google" },
-                                { icon: githubIcon, alt: "GitHub" }
-                            ].map((social) => (
-                                <button
-                                    key={social.alt}
-                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:bg-white/20"
-                                >
-                                    <img
-                                        src={social.icon}
-                                        alt={social.alt}
-                                        className="h-7 w-7 object-contain"
-                                    />
-                                </button>
-                            ))}
+                            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:bg-white/20">
+                                <img src={instagramIcon} alt="Instagram" className="h-7 w-7 object-contain" />
+                            </a>
+
+                            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:bg-white/20">
+                                <img src={youtubeIcon} alt="YouTube" className="h-7 w-7 object-contain" />
+                            </a>
+
+                            <a href="https://www.google.com/search?q=CosmoCartt" target="_blank" rel="noreferrer" aria-label="Google Business" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:bg-white/20">
+                                <img src={googleIcon} alt="Google" className="h-7 w-7 object-contain" />
+                            </a>
+
                         </div>
                     </div>
 

@@ -34,7 +34,7 @@ export default function Cart() {
 
   const subtotal = cartItems.reduce(
     (sum: number, item: any) =>
-      sum + item.retailPrice * item.quantity,
+      sum + priceOf(item) * item.quantity,
     0
   );
 
@@ -155,13 +155,21 @@ export default function Cart() {
                 {cartItems.map((item: any) => (
                   <div key={item._id} className="py-6">
                     <div className="flex flex-col md:flex-row gap-5">
-                      <div className="h-40 md:h-36 md:w-36 rounded-[26px] bg-gradient-to-br from-slate-50 to-purple-50 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+                      <Link
+                        to={`/product/${item.slug || item._id}`}
+                        className="h-40 md:h-36 md:w-36 rounded-[26px] bg-gradient-to-br from-slate-50 to-purple-50 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0"
+                      >
                         <img
                           src={getImageUrl(item.images?.[0])}
                           alt={item.name}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://via.placeholder.com/600x600?text=CosmoCartt";
+                          }}
                           className="h-28 object-contain hover:scale-110 transition-transform duration-300"
                         />
-                      </div>
+                      </Link>
 
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-4">
@@ -239,16 +247,13 @@ export default function Cart() {
                 Order Summary
               </h2>
 
-              <div className="mt-6 rounded-2xl border border-slate-200 p-2 flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Enter coupon code"
-                  className="flex-1 px-4 py-3 outline-none text-sm"
-                />
-
-                <button className="px-5 rounded-xl bg-slate-900 text-white font-bold hover:bg-[#4B1E78] transition-all">
-                  Apply
-                </button>
+              <div className="mt-6 rounded-2xl border border-slate-200 p-4 bg-slate-50">
+                <p className="text-sm font-bold text-slate-700">
+                  Offers & Coupons
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Campaign discounts are applied automatically when available.
+                </p>
               </div>
 
               <div className="mt-6 space-y-4 text-slate-600">
@@ -342,7 +347,10 @@ export default function Cart() {
                 key={product._id || product.id}
                 className="group bg-white rounded-[28px] border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-52 bg-slate-50 flex items-center justify-center p-6">
+                <Link
+                  to={`/product/${product.slug || product._id || product.id}`}
+                  className="h-52 bg-slate-50 flex items-center justify-center p-6"
+                >
                   <img
                     src={
                       product.images?.[0]?.startsWith("http")
@@ -350,9 +358,14 @@ export default function Cart() {
                         : getImageUrl(product.images?.[0])
                     }
                     alt={product.name}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src =
+                        "https://via.placeholder.com/600x600?text=CosmoCartt";
+                    }}
                     className="h-36 object-contain group-hover:scale-110 transition-all duration-300"
                   />
-                </div>
+                </Link>
 
                 <div className="p-5">
                   <h3 className="font-black text-slate-900 line-clamp-2 min-h-[48px]">

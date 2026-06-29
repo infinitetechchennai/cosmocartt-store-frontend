@@ -51,35 +51,18 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
     try {
 
-      console.log("STEP 1");
 
       const response = await fetch(
         `${API_URL}/api/shiprocket/create-shipment/${orderId}`
       );
 
-      console.log("STEP 2");
-
-      console.log(
-        "STATUS:",
-        response.status
-      );
-
       const text =
         await response.text();
-
-      console.log("STEP 3");
-
-      console.log(
-        "RAW RESPONSE:",
-        text
-      );
 
       const data =
         JSON.parse(text);
 
-      console.log("STEP 4");
 
-      console.log(data);
 
       if (!data.success) {
 
@@ -112,20 +95,13 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
 
 
 
-      console.log("STEP 6");
 
       alert(
         "Shipment created successfully"
       );
 
-      console.log("STEP 7");
 
     } catch (error) {
-
-      console.log(
-        "FAILED HERE"
-      );
-
       console.error(error);
 
     }

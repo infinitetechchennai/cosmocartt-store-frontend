@@ -393,13 +393,15 @@ export default function Navbar() {
                 </div>
               ))}
 
-              <Link
-                onClick={() => setMobileOpen(false)}
-                to="/orders"
-                className="block px-4 py-3 rounded-xl bg-purple-50"
-              >
-                Orders
-              </Link>
+              {user && (
+                <Link
+                  onClick={() => setMobileOpen(false)}
+                  to="/orders"
+                  className="block px-4 py-3 rounded-xl bg-purple-50"
+                >
+                  Orders
+                </Link>
+              )}
 
               <Link
                 onClick={() => setMobileOpen(false)}

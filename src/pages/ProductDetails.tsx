@@ -858,10 +858,24 @@ pointer-events-none
                             </div>
 
                             <div className="mt-5">
-                                <p className={`text-sm font-bold ${product.stock > 0 ? "text-green-700" : "text-red-600"}`}>
-                                    {product.stock > 0
-                                        ? `${product.stock} units in stock`
-                                        : "Out of stock"}
+                                <p
+                                    className={`text-sm font-black ${
+                                        product.stock <= 0
+                                            ? "text-red-600"
+                                            : product.stock <= 5
+                                                ? "text-red-600"
+                                                : product.stock <= 20
+                                                    ? "text-amber-600"
+                                                    : "text-green-700"
+                                    }`}
+                                >
+                                    {product.stock <= 0
+                                        ? "❌ Out of Stock"
+                                        : product.stock <= 5
+                                            ? `🔥 Hurry! Only ${product.stock} left`
+                                            : product.stock <= 20
+                                                ? `🟠 Only ${product.stock} left in stock`
+                                                : "✅ In Stock"}
                                 </p>
                             </div>
 
@@ -951,9 +965,9 @@ pointer-events-none
                             </div>
 
                             <div className="grid grid-cols-3 gap-3 mt-4 text-xs text-center text-zinc-500">
-                                <span>Usually dispatched in 24-48 hrs</span>
-                                <span className="border-x border-zinc-100">GST invoice supported</span>
-                                <span>COD &amp; online payment</span>
+                                <span>🚚 Delivery in 3-5 days</span>
+                                <span className="border-x border-zinc-100">🧾 GST invoice</span>
+                                <span>💳 COD &amp; online pay</span>
                             </div>
 
                         </div>

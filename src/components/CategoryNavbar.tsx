@@ -143,7 +143,7 @@ export default function CategoryNavbar() {
                   ].map((item) => (
                     <Link
                       key={item}
-                      to="/products"
+                      to={`/products?category=${encodeURIComponent(item)}`}
                       className="block hover:text-[#4B1E78]"
                     >
                       {item}
