@@ -1,7 +1,7 @@
 import { API_URL } from "../config/api";
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -159,15 +159,7 @@ export default function CMSPage() {
     }
 
     if (!page) {
-        return (
-            <PageShell>
-                <EmptyState
-                    icon={<FileText size={52} />}
-                    title="Page Not Found"
-                    text="This CMS page has not been created yet."
-                />
-            </PageShell>
-        );
+        return <Navigate to="/404" replace />;
     }
 
     if (page.status !== "Published") {

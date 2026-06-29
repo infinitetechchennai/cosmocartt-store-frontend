@@ -20,6 +20,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOtp from "./pages/VerifyOtp";
 import BrandsPage from "./pages/BrandsPage";
 import CMSPage from "./pages/CMSPage";
+import NotFound from "./pages/NotFound";
 import { useAuth } from "./context/AuthContext";
 
 import { ToastContainer } from "react-toastify";
@@ -119,7 +120,11 @@ export default function App() {
           element={<BrandsPage />}
         />
 
+        <Route path="/404" element={<NotFound />} />
+
         <Route path="/:slug" element={<CMSPage />} />
+
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </>

@@ -231,14 +231,28 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-white/10 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="border-t border-white/10 mt-8 pt-8 flex flex-col lg:flex-row items-center justify-between gap-4">
+
                     <p className="text-purple-100 text-sm">
-                        © 2026 CosmoCartt. All Rights Reserved.
-          </p>
+                        © {new Date().getFullYear()} CosmoCartt. All Rights Reserved.
+    </p>
+
+                    <p className="text-purple-100 text-sm text-center">
+                        Designed & Developed by{" "}
+                        <a
+                            href="https://infinitetechai.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-white hover:text-violet-300 transition-colors duration-300"
+                        >
+                            InfiniteTechAI
+        </a>
+                    </p>
 
                     <div className="text-purple-100 text-sm">
                         Visa • Mastercard • UPI • PayPal
-          </div>
+    </div>
+
                 </div>
             </div>
         </footer>

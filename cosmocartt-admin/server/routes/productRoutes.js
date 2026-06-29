@@ -33,6 +33,84 @@ router.post(
 );
 router.get("/", getProducts);
 
+
+router.get(
+    "/brands",
+    async (req, res) => {
+        try {
+            const brands = await Product.aggregate([
+                {
+                    $match: {
+                        status: "Active",
+                        brand: {
+                            $exists: true,
+                            $ne: ""
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        createdAt: -1
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            $toLower: {
+                                $trim: {
+                                    input: "$brand"
+                                }
+                            }
+                        },
+                        name: {
+                            $first: {
+                                $trim: {
+                                    input: "$brand"
+                                }
+                            }
+                        },
+                        productCount: {
+                            $sum: 1
+                        },
+                        image: {
+                            $first: {
+                                $arrayElemAt: [
+                                    "$images",
+                                    0
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        name: 1
+                    }
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        name: 1,
+                        productCount: 1,
+                        image: 1
+                    }
+                }
+            ]);
+
+            res.json({
+                success: true,
+                brands
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+);
+
+
 router.get(
     "/export",
     exportProductsCSV
