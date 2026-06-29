@@ -1,4 +1,4 @@
-import { API_URL, apiPath } from "../config/api";
+import { apiPath } from "../config/api";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
