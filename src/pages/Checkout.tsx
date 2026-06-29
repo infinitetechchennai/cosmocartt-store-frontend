@@ -1,12 +1,10 @@
-import { apiPath } from "../config/api";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import Footer from "../components/Footer";
 import toast from "react-hot-toast";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getDisplayPrice } from "../utils/pricing";
-import { getImageUrl } from "../utils/imageUrl";
 
 declare global {
     interface Window {
@@ -50,29 +48,104 @@ export default function Checkout() {
             : cartItems;
 
     if (checkoutItems.length === 0) {
-        return (
-            <div className="min-h-screen bg-slate-50">
-                <Navbar />
+    return (
+        <>
+            <Navbar />
 
-                <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+            <div className="bg-[#F7F3FF]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
 
-                    <h1 className="text-4xl font-bold mb-4">
-                        Your cart is empty
-                </h1>
+                    <div className="bg-gradient-to-r from-[#2B1055] via-[#4B1E78] to-[#6F2DBD] rounded-[28px] p-8 md:p-10 text-white shadow-xl mb-8">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                            <div className="flex items-center gap-5">
+                                <div className="w-20 h-20 rounded-full bg-white/15 flex items-center justify-center text-4xl">
+                                    🛒
+                                </div>
 
-                    <p className="text-zinc-500">
-                        Add products before checkout.
-                </p>
+                                <div>
+                                    <h1 className="text-3xl md:text-4xl font-extrabold">
+                                        Checkout
+                                    </h1>
+
+                                    <p className="text-purple-100 mt-2">
+                                        Complete your purchase securely
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white/10 rounded-2xl px-8 py-5 min-w-[190px]">
+                                <p className="text-purple-100 text-sm">
+                                    Cart Items
+                                </p>
+
+                                <p className="text-3xl font-extrabold">
+                                    0
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-[28px] shadow-xl border border-purple-100 p-10 md:p-16 text-center">
+                        <div className="w-28 h-28 mx-auto rounded-full bg-purple-100 flex items-center justify-center mb-6 text-5xl">
+                            🛒
+                        </div>
+
+                        <h2 className="text-3xl font-extrabold text-gray-900 mb-3">
+                            Your Cart is Empty
+                        </h2>
+
+                        <p className="text-gray-500 max-w-md mx-auto mb-8">
+                            Add products before checkout. Start shopping and your selected products will appear here.
+                        </p>
+
+                        <Link
+                            to="/products"
+                            className="inline-flex items-center gap-3 bg-[#4B1E78] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#2B1055] transition shadow-lg"
+                        >
+                            Continue Shopping
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
+                        {[
+                            ["🚚", "Fast Delivery", "Quick doorstep delivery"],
+                            ["🔒", "Secure Payments", "Safe checkout process"],
+                            ["↩️", "Easy Returns", "Hassle-free returns"],
+                            ["⭐", "Genuine Products", "Trusted quality items"],
+                        ].map((item: string[]) => (
+                            <div
+                                key={item[1]}
+                                className="group bg-white rounded-2xl p-6 shadow-md border border-purple-100 flex items-center gap-4 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-[#6F2DBD]"
+                            >
+                                <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-2xl transition-all duration-300 group-hover:bg-[#6F2DBD] group-hover:scale-110">
+                                    {item[0]}
+                                </div>
+
+                                <div>
+                                    <h3 className="font-bold text-gray-900">
+                                        {item[1]}
+                                    </h3>
+
+                                    <p className="text-sm text-gray-500">
+                                        {item[2]}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
                 </div>
+            </div>
 
+            <div className="-mt-px bg-[#F7F3FF]">
                 <Footer />
             </div>
-        );
-    }
+        </>
+    );
+}
 
     const total = checkoutItems.reduce(
-        (sum: number, item: any) =>
+        (sum, item) =>
             sum +
             getDisplayPrice(
                 item,
@@ -225,7 +298,7 @@ export default function Checkout() {
 
 
                 const response = await fetch(
-                    apiPath("/api/orders"),
+                    "http://localhost:5000/api/orders",
                     {
                         method: "POST",
                         headers: {
@@ -285,7 +358,7 @@ export default function Checkout() {
             try {
 
                 const paymentResponse = await fetch(
-                    apiPath("/api/payment/create-order"),
+                    "http://localhost:5000/api/payment/create-order",
                     {
                         method: "POST",
                         headers: {
@@ -333,7 +406,7 @@ export default function Checkout() {
 
                             const verifyResponse =
                                 await fetch(
-                                    apiPath("/api/payment/verify"),
+                                    "http://localhost:5000/api/payment/verify",
                                     {
                                         method: "POST",
                                         headers: {
@@ -365,7 +438,7 @@ export default function Checkout() {
 
                             const orderResponse =
                                 await fetch(
-                                    apiPath("/api/orders"),
+                                    "http://localhost:5000/api/orders",
                                     {
                                         method: "POST",
                                         headers: {
@@ -704,56 +777,124 @@ export default function Checkout() {
 
                         </div>
 
-                        {/* PAYMENT SECTION */}
-                        <div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-purple-100 shadow-xl">
-
-                            <div className="mb-6 pb-4 border-b border-purple-100">
+                       {/* PAYMENT SECTION */}
+<div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-purple-100 shadow-xl">
+  <div className="mb-6 pb-5 border-b border-purple-100">
     <p className="text-xs font-black text-purple-600 uppercase tracking-[0.2em]">
-        Step 2
+      Step 2
     </p>
 
-    <h2 className="text-2xl font-black text-slate-900 mt-1">
-        Payment Method
+    <h2 className="text-3xl font-black text-slate-900 mt-2">
+      Choose Payment Method
     </h2>
+
+    <p className="text-slate-500 mt-2">
+      Select a secure payment option for your order.
+    </p>
+  </div>
+
+  <div className="space-y-4">
+    {[
+      {
+        id: "COD",
+        icon: "💵",
+        title: "Cash on Delivery",
+        desc: "Pay when your order reaches your doorstep.",
+        badge: "Available",
+      },
+      {
+        id: "UPI",
+        icon: "📱",
+        title: "UPI Payment",
+        desc: "Pay using Google Pay, PhonePe, Paytm, or BHIM.",
+        badge: "Instant",
+      },
+      {
+        id: "CARD",
+        icon: "💳",
+        title: "Credit / Debit Card",
+        desc: "Pay securely using Visa, Mastercard, or RuPay.",
+        badge: "Secure",
+      },
+    ].map((method) => (
+      <label
+        key={method.id}
+        className={`relative flex cursor-pointer items-center justify-between gap-5 rounded-2xl border-2 p-5 transition-all duration-300 ${
+         paymentMethod === method.id
+  ? "border-[#6F2DBD] bg-gradient-to-r from-[#4B1E78] to-[#6F2DBD] text-white shadow-2xl"
+  : "border-gray-200 bg-white hover:border-[#6F2DBD] hover:shadow-lg"
+        }`}
+      >
+        <input
+          type="radio"
+          name="payment"
+          checked={paymentMethod === method.id}
+          onChange={() =>
+            setPaymentMethod(method.id as "COD" | "UPI" | "CARD")
+          }
+          className="hidden"
+        />
+
+        <div className="flex items-center gap-4">
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-xl text-2xl transition-all duration-300 ${
+              paymentMethod === method.id
+                ? "bg-[#6F2DBD] text-white"
+                : "bg-purple-100 text-[#6F2DBD]"
+            }`}
+          >
+            {method.icon}
+          </div>
+
+          <div>
+            <h3
+  className={`text-lg font-black ${
+    paymentMethod === method.id ? "text-white" : "text-slate-900"
+  }`}
+>
+              {method.title}
+            </h3>
+
+            <p
+  className={`mt-1 text-sm ${
+    paymentMethod === method.id
+      ? "text-purple-100"
+      : "text-slate-500"
+  }`}
+>
+              {method.desc}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span
+  className={`hidden sm:inline-flex rounded-full px-3 py-1 text-xs font-bold ${
+    paymentMethod === method.id
+      ? "bg-white text-[#6F2DBD]"
+      : "bg-purple-100 text-[#6F2DBD]"
+  }`}
+>
+            {method.badge}
+          </span>
+
+          <span
+            className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
+              paymentMethod === method.id
+                ? "border-[#6F2DBD]"
+                : "border-gray-300"
+            }`}
+          >
+            {paymentMethod === method.id && (
+              <span className="h-3 w-3 rounded-full bg-[#6F2DBD]" />
+            )}
+          </span>
+        </div>
+      </label>
+    ))}
+  </div>
 </div>
-                            <div className="space-y-3">
-
-                                <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="payment"
-                                        checked={paymentMethod === "COD"}
-                                        onChange={() => setPaymentMethod("COD")}
-                                    />
-                                    <span>Cash on Delivery</span>
-                                </label>
-
-                                <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="payment"
-                                        checked={paymentMethod === "UPI"}
-                                        onChange={() => setPaymentMethod("UPI")}
-                                    />
-                                    <span>UPI Payment</span>
-                                </label>
-
-                                <label className="flex items-center gap-3 border p-3 rounded-xl cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="payment"
-                                        checked={paymentMethod === "CARD"}
-                                        onChange={() => setPaymentMethod("CARD")}
-                                    />
-                                    <span>Credit / Debit Card</span>
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
+</div>
                     {/* ORDER SUMMARY */}
 
                     <div className="bg-white rounded-[2rem] p-6 h-fit border border-purple-100 shadow-xl space-y-5 sticky top-24">
@@ -783,7 +924,7 @@ export default function Checkout() {
 
                                     {/* IMAGE */}
                                     <img
-                                        src={getImageUrl(item.images?.[0])}
+                                        src={`http://localhost:5000${item.images?.[0]}`}
                                         alt={item.name}
                                         className="w-14 h-14 object-cover rounded-lg border"
                                     />
