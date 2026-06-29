@@ -5,10 +5,16 @@ import githubIcon from "../assets/github.png";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import {
+    ArrowRight,
+    BadgeCheck,
+    Clock3,
+    Globe2,
+    Headset,
+    Mail,
     MapPinned,
     PhoneCall,
-    Mail,
-    Headset
+    ShieldCheck,
+    Sparkles
 } from "lucide-react";
 
 const brands = [
@@ -67,130 +73,122 @@ function FooterLink({
         <Link
             to={path}
             onClick={scrollTop}
-            className="group flex items-center gap-2 text-purple-100 hover:text-white transition-all duration-300 hover:translate-x-1"
+            className="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2 text-sm text-purple-100 transition-all duration-300 hover:border-white/15 hover:bg-white/10 hover:text-white"
         >
             <span>{label}</span>
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-                →
-      </span>
+            <ArrowRight
+                size={14}
+                className="opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
+            />
         </Link>
     );
 }
 
 export default function Footer() {
     return (
-        <footer className="bg-gradient-to-br from-[#2B1055] via-[#4B1E78] to-[#6F2DBD] text-white mt-20">
-            <div className="max-w-7xl mx-auto px-6 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-9">
-                    <div className="lg:col-span-1">
-                        <Link to="/" onClick={scrollTop}>
+        <footer className="relative mt-20 overflow-hidden border-t border-white/10 bg-[#0f0520] text-white">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.16),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(139,92,246,0.2),_transparent_35%)]" />
+
+            <div className="relative mx-auto max-w-7xl px-6 py-14 lg:px-8 lg:py-16">
+                <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_0.9fr]">
+                    <div className="max-w-md">
+                        <Link to="/" onClick={scrollTop} className="inline-flex">
                             <img
                                 src={logo}
                                 alt="CosmoCartt"
-                                className="h-28 md:h-32 w-auto object-contain brightness-0 invert cursor-pointer hover:scale-105 transition-all duration-300"
+                                className="h-24 w-auto object-contain brightness-0 invert transition-all duration-300 hover:scale-105"
                             />
                         </Link>
 
-                        <p className="mt-4 text-purple-100 leading-relaxed text-sm">
-                            Your trusted destination for premium electronics, mobile
-                            accessories, remotes and smart lifestyle products.
-            </p>
+                        <p className="mt-4 text-sm leading-7 text-purple-100">
+                            Discover premium electronics, smart accessories, and lifestyle essentials crafted for everyday convenience and elevated style.
+                        </p>
 
-                        <div className="flex gap-3 mt-6">
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={instagramIcon}
-                                    alt="Instagram"
-                                    className="w-7 h-7 object-contain"
-                                />
-                            </button>
+                        <div className="mt-6 flex flex-wrap gap-2">
+                            {[
+                                "Fast Delivery",
+                                "Secure Checkout",
+                                "Trusted Support"
+                            ].map((item) => (
+                                <span
+                                    key={item}
+                                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/90"
+                                >
+                                    <BadgeCheck size={14} className="text-violet-300" />
+                                    {item}
+                                </span>
+                            ))}
+                        </div>
 
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={youtubeIcon}
-                                    alt="YouTube"
-                                    className="w-9 h-9 object-contain"
-                                />
-                            </button>
-
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={googleIcon}
-                                    alt="Google"
-                                    className="w-9 h-9 object-contain"
-                                />
-                            </button>
-
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={githubIcon}
-                                    alt="GitHub"
-                                    className="w-9 h-9 object-contain"
-                                />
-                            </button>
+                        <div className="mt-6 flex gap-3">
+                            {[
+                                { icon: instagramIcon, alt: "Instagram" },
+                                { icon: youtubeIcon, alt: "YouTube" },
+                                { icon: googleIcon, alt: "Google" },
+                                { icon: githubIcon, alt: "GitHub" }
+                            ].map((social) => (
+                                <button
+                                    key={social.alt}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:bg-white/20"
+                                >
+                                    <img
+                                        src={social.icon}
+                                        alt={social.alt}
+                                        className="h-7 w-7 object-contain"
+                                    />
+                                </button>
+                            ))}
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="font-bold text-lg mb-5">
+                        <div className="mb-5 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.24em] text-violet-200">
+                            <Sparkles size={16} />
                             Quick Links
-            </h3>
-
-                        <div className="space-y-3 text-sm">
+                        </div>
+                        <div className="space-y-1">
                             {quickLinks.map((link) => (
-                                <FooterLink
-                                    key={link.path}
-                                    label={link.label}
-                                    path={link.path}
-                                />
+                                <FooterLink key={link.path} label={link.label} path={link.path} />
                             ))}
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="font-bold text-lg mb-5">
+                        <div className="mb-5 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.24em] text-violet-200">
+                            <Globe2 size={16} />
                             Company
-            </h3>
-
-                        <div className="space-y-3 text-sm">
+                        </div>
+                        <div className="space-y-1">
                             {companyLinks.map((link) => (
-                                <FooterLink
-                                    key={link.path}
-                                    label={link.label}
-                                    path={link.path}
-                                />
+                                <FooterLink key={link.path} label={link.label} path={link.path} />
                             ))}
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="font-bold text-lg mb-5">
+                        <div className="mb-5 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.24em] text-violet-200">
+                            <Headset size={16} />
                             Customer Service
-            </h3>
-
-                        <div className="space-y-3 text-sm">
+                        </div>
+                        <div className="space-y-1">
                             {serviceLinks.map((link) => (
-                                <FooterLink
-                                    key={link.path}
-                                    label={link.label}
-                                    path={link.path}
-                                />
+                                <FooterLink key={link.path} label={link.label} path={link.path} />
                             ))}
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="font-bold text-lg mb-5">
+                        <div className="mb-5 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.24em] text-violet-200">
+                            <ShieldCheck size={16} />
                             Popular Brands
-            </h3>
-
+                        </div>
                         <div className="flex flex-wrap gap-2">
                             {brands.map((brand) => (
                                 <Link
                                     key={brand}
                                     to={`/products?brand=${encodeURIComponent(brand)}`}
                                     onClick={scrollTop}
-                                    className="px-3 py-1.5 text-xs rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 inline-block"
+                                    className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/20"
                                 >
                                     {brand}
                                 </Link>
@@ -199,46 +197,53 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="border-t border-white/10 mt-10 pt-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 text-purple-100">
-                        <div className="flex items-center gap-3 bg-white/5 rounded-2xl px-4 py-3">
-                            <MapPinned size={20} className="text-white/80 shrink-0" />
-                            <span className="text-sm font-semibold">
-                                Chennai, India
-              </span>
+                <div className="mt-10 rounded-[28px] border border-white/10 bg-white/8 p-4 shadow-[0_20px_80px_rgba(0,0,0,0.22)] backdrop-blur-sm sm:p-6">
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4">
+                            <MapPinned size={18} className="mt-0.5 shrink-0 text-violet-200" />
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-violet-200">Visit us</p>
+                                <p className="mt-1 text-sm text-white/90">Chennai, India</p>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-3 bg-white/5 rounded-2xl px-4 py-3">
-                            <PhoneCall size={20} className="text-white/80 shrink-0" />
-                            <span className="text-sm font-semibold">
-                                +91 98765 43210
-              </span>
+                        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4">
+                            <PhoneCall size={18} className="mt-0.5 shrink-0 text-violet-200" />
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-violet-200">Call support</p>
+                                <p className="mt-1 text-sm text-white/90">+91 98765 43210</p>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-3 bg-white/5 rounded-2xl px-4 py-3">
-                            <Mail size={20} className="text-white/80 shrink-0" />
-                            <span className="text-sm font-semibold">
-                                support@cosmocartt.com
-              </span>
+                        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4">
+                            <Mail size={18} className="mt-0.5 shrink-0 text-violet-200" />
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-violet-200">Email us</p>
+                                <p className="mt-1 text-sm text-white/90">support@cosmocartt.com</p>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-3 bg-white/5 rounded-2xl px-4 py-3">
-                            <Headset size={20} className="text-white/80 shrink-0" />
-                            <span className="text-sm font-semibold">
-                                24/7 Customer Support
-              </span>
+                        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/10 p-4">
+                            <Clock3 size={18} className="mt-0.5 shrink-0 text-violet-200" />
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-violet-200">Hours</p>
+                                <p className="mt-1 text-sm text-white/90">24/7 Customer Support</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="border-t border-white/10 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-purple-100 text-sm">
-                        © 2026 CosmoCartt. All Rights Reserved.
-          </p>
+                <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-between">
+                    <p className="text-sm text-purple-100">
+                        © 2026 CosmoCartt. All rights reserved.
+                    </p>
 
-                    <div className="text-purple-100 text-sm">
-                        Visa • Mastercard • UPI • PayPal
-          </div>
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-purple-100">
+                        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">Visa</span>
+                        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">Mastercard</span>
+                        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">UPI</span>
+                        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">PayPal</span>
+                    </div>
                 </div>
             </div>
         </footer>
