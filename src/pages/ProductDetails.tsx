@@ -1340,9 +1340,19 @@ pointer-events-none
                                         >
                                             <div className="flex items-center justify-between gap-4">
                                                 <div>
-                                                    <p className="font-bold text-zinc-900">
-                                                        {review.customerName}
-                                                    </p>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+
+                                                        <p className="font-bold text-zinc-900">
+                                                            {review.customerName}
+                                                        </p>
+
+                                                        {review.verifiedPurchase && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                                                                ✓ Verified Purchase
+                                                            </span>
+                                                        )}
+
+                                                    </div>
                                                     <p className="text-yellow-400 mt-1">
                                                         {"★".repeat(review.rating)}
                                                         <span className="text-zinc-200">

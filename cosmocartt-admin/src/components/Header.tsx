@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Settings, ShieldAlert, Award, LogOut, CheckCircle2 } from "lucide-react";
 
 interface HeaderProps {
@@ -21,12 +21,83 @@ export default function Header({ userName, userEmail }: HeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const notifications = [
-    { id: 1, text: "High Priority: 6 Stock Alerts triggered, items out of stock.", type: "alert", time: "10m ago" },
-    { id: 2, text: "B2B Sumit Traders Credit Approval Pending.", type: "pending", time: "1h ago" },
-    { id: 3, text: "2 Refund Requests received for Order ORD-2026-005.", type: "refund", time: "3h ago" },
-    { id: 4, text: "System Audit: Daily metrics compiled successfully.", type: "system", time: "1d ago" }
-  ];
+  const [notifications,setNotifications]=useState<any[]>([]);
+
+  useEffect(()=>{
+
+    const load=async()=>{
+
+      try{
+
+        const [ordersRes,customersRes]=await Promise.all([
+          fetch("http://localhost:5000/api/orders"),
+          fetch("http://localhost:5000/api/customers")
+        ]);
+
+        const orders=await ordersRes.json();
+        const customers=await customersRes.json();
+
+        const list:any[]=[];
+
+        (orders.orders||[]).slice(0,10).forEach((o:any)=>{
+
+          list.push({
+            id:o._id,
+            type:"order",
+            text:`New Order ${o.orderNumber} • ₹${o.totalAmount}`,
+            time:new Date(o.createdAt).toLocaleString()
+          });
+
+          if(o.refundStatus==="Requested"){
+            list.push({
+              id:o._id+"r",
+              type:"refund",
+              text:`Refund Request • ${o.orderNumber}`,
+              time:new Date(o.refundRequestedAt||o.updatedAt).toLocaleString()
+            });
+          }
+
+          if(o.exchangeStatus==="Requested"){
+            list.push({
+              id:o._id+"e",
+              type:"exchange",
+              text:`Exchange Request • ${o.orderNumber}`,
+              time:new Date(o.exchangeRequestedAt||o.updatedAt).toLocaleString()
+            });
+          }
+
+        });
+
+        (customers||[])
+        .filter((c:any)=>c.customerType==="b2b"&&c.verificationStatus==="Pending")
+        .forEach((c:any)=>{
+
+          list.push({
+            id:c._id+"b",
+            type:"pending",
+            text:`B2B Approval Pending • ${c.businessName||c.name}`,
+            time:new Date(c.createdAt).toLocaleString()
+          });
+
+        });
+
+        list.sort((a,b)=>new Date(b.time).getTime()-new Date(a.time).getTime());
+
+        setNotifications(list);
+
+      }catch(e){
+        console.error(e);
+      }
+
+    };
+
+    load();
+
+    const i=setInterval(load,30000);
+
+    return()=>clearInterval(i);
+
+  },[]);
 
   return (
     <header id="seven-dashboard-header" className="h-[64px] border-b border-slate-200 bg-white/90 backdrop-blur-md backdrop-blur-sm px-8 flex items-center justify-between z-20 shrink-0 relative">
@@ -54,7 +125,11 @@ export default function Header({ userName, userEmail }: HeaderProps) {
             className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors rounded-lg relative"
           >
             <Bell className="w-[18px] h-[18px]" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            {notifications.length>0&&(
+            <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">
+              {notifications.length}
+            </span>
+            )}
           </button>
 
           {showNotifications && (

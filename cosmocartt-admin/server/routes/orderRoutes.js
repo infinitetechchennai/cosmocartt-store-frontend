@@ -2,6 +2,11 @@ import express from "express";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Razorpay from "razorpay";
+import {
+    sendEmail,
+    buildOrderConfirmationEmail,
+    buildOrderStatusEmail
+} from "../utils/sendEmail.js";
 
 const getRazorpayInstance = () => {
 
@@ -212,6 +217,63 @@ router.post("/", async (req, res) => {
 
         console.log("ORDER SAVED:", order._id);
 
+        try {
+
+            await sendEmail({
+                to: order.email,
+                subject: `Your CosmoCartt Order ${order.orderNumber}`,
+                html: buildOrderConfirmationEmail({
+                    order
+                })
+            });
+
+        } catch (error) {
+
+            console.error(
+                "ORDER EMAIL ERROR:",
+                error
+            );
+
+        }
+        try {
+
+            if(process.env.ADMIN_EMAIL){
+
+                await sendEmail({
+
+                    to: process.env.ADMIN_EMAIL,
+
+                    subject: `🛒 New Order ${order.orderNumber}`,
+
+                    html: `
+                    <h2>New Order Received</h2>
+
+                    <p><b>Order:</b> ${order.orderNumber}</p>
+
+                    <p><b>Customer:</b> ${order.customerName}</p>
+
+                    <p><b>Email:</b> ${order.email}</p>
+
+                    <p><b>Phone:</b> ${order.phone}</p>
+
+                    <p><b>Payment:</b> ${order.paymentMethod}</p>
+
+                    <p><b>Total:</b> ₹${order.totalAmount}</p>
+                    `
+                });
+
+            }
+
+        } catch(err){
+
+            console.error(
+                "ADMIN EMAIL ERROR:",
+                err
+            );
+
+        }
+
+
         for (const item of order.products) {
 
             const product =
@@ -326,6 +388,56 @@ router.put("/:id", async (req, res) => {
         });
 
         await existingOrder.save();
+
+        try {
+
+            if (existingOrder.status === "Shipped") {
+
+                await sendEmail({
+                    to: existingOrder.email,
+                    subject: `📦 Your CosmoCartt order ${existingOrder.orderNumber} has been shipped`,
+                    html: `
+                        <h2>Your Order is on the way 🚚</h2>
+
+                        <p>Hello <b>${existingOrder.customerName}</b>,</p>
+
+                        <p>Your order <b>${existingOrder.orderNumber}</b> has been shipped.</p>
+
+                        <p>We'll notify you once it has been delivered.</p>
+
+                        <br>
+
+                        <b>Team CosmoCartt</b>
+                    `
+                });
+
+            }
+
+            if (existingOrder.status === "Delivered") {
+
+                await sendEmail({
+                    to: existingOrder.email,
+                    subject: `✅ Your CosmoCartt order ${existingOrder.orderNumber} has been delivered`,
+                    html: buildOrderStatusEmail({ order: existingOrder, status: "Delivered" })
+                    /*
+
+                        <p>Hello <b>${existingOrder.customerName}</b>,</p>
+
+                        <p>Your order <b>${existingOrder.orderNumber}</b> has been delivered successfully.</p>
+
+                        <p>Thank you for shopping with CosmoCartt ❤️</p>
+
+                        <p>We'd love your review!</p>
+                    */
+                });
+
+            }
+
+        } catch(error) {
+
+            console.error("STATUS EMAIL ERROR:", error);
+
+        }
 
         res.json({
             success: true,

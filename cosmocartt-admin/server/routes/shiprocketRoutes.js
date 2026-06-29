@@ -9,6 +9,11 @@ import {
 
 import Order from "../models/Order.js";
 
+import {
+    sendEmail,
+    buildOrderStatusEmail
+} from "../utils/sendEmail.js";
+
 const router = express.Router();
 
 const isMockMode = () =>
@@ -163,6 +168,28 @@ router.get(
             });
 
             await order.save();
+
+            try {
+                await sendEmail({
+                    to: order.email,
+                    subject: `📦 Your CosmoCartt order ${order.orderNumber} has been shipped`,
+                    html: buildOrderStatusEmail({ order, status: "Shipped" })
+                    /*
+                            <div style="max-width:650px;margin:auto;background:#fff;border-radius:18px;padding:30px">
+                                <h2 style="color:#4B1E78;margin-top:0">Your Order is on the way 🚚</h2>
+                                <p>Hello <b>${order.customerName}</b>,</p>
+                                <p>Your order <b>${order.orderNumber}</b> has been shipped successfully.</p>
+                                <p><b>Courier:</b> ${order.courierName || "Courier Partner"}</p>
+                                <p><b>AWB:</b> ${order.awbCode || "Will be updated soon"}</p>
+                                ${order.trackingUrl ? `<p><a href="${order.trackingUrl}" style="color:#4B1E78;font-weight:bold">Track your order</a></p>` : ""}
+                                <p>Thank you for shopping with CosmoCartt ❤️</p>
+                            </div>
+                        </div>
+                    */
+                });
+            } catch (error) {
+                console.error("SHIPMENT EMAIL ERROR:", error);
+            }
 
             res.json({
                 success: true,
