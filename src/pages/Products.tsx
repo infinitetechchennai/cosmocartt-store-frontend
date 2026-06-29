@@ -493,10 +493,18 @@ export default function Products() {
                         </div>
 
                         {loading ? (
-                            <div className="bg-white rounded-[2rem] p-12 text-center shadow-xl border border-purple-100">
-                                <p className="text-lg font-bold text-slate-700">
-                                    Loading products...
-                </p>
+                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
+                                {Array.from({ length: 9 }).map((_, index) => (
+                                    <div
+                                        key={index}
+                                        className="bg-white rounded-3xl p-4 border border-purple-100 shadow-sm animate-pulse"
+                                    >
+                                        <div className="h-44 sm:h-56 bg-slate-100 rounded-2xl mb-4"></div>
+                                        <div className="h-4 bg-slate-100 rounded w-2/3 mb-3"></div>
+                                        <div className="h-4 bg-slate-100 rounded w-1/2 mb-5"></div>
+                                        <div className="h-10 bg-slate-100 rounded-xl"></div>
+                                    </div>
+                                ))}
                             </div>
                         ) : filteredProducts.length === 0 ? (
                             <div className="bg-white rounded-[2rem] p-10 sm:p-14 text-center shadow-xl border border-purple-100 min-h-[280px] flex flex-col justify-center items-center">

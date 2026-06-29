@@ -6,6 +6,7 @@ import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
   const productsPerPage = 4;
@@ -18,7 +19,8 @@ export default function FeaturedProducts() {
           setProducts(data.products);
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
   const totalPages = Math.ceil(products.length / productsPerPage);
@@ -89,15 +91,33 @@ export default function FeaturedProducts() {
             animate-fadeIn
           "
         >
-          {currentProducts.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-            />
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm animate-pulse"
+                >
+                  <div className="h-56 bg-slate-100 rounded-2xl mb-5"></div>
+                  <div className="h-4 bg-slate-100 rounded w-2/3 mb-3"></div>
+                  <div className="h-4 bg-slate-100 rounded w-1/2 mb-6"></div>
+                  <div className="h-10 bg-slate-100 rounded-xl"></div>
+                </div>
+              ))
+            : currentProducts.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                />
+              ))}
         </div>
 
-        {totalPages > 1 && (
+        {!loading && products.length === 0 && (
+          <div className="mt-8 bg-white rounded-3xl border border-purple-100 shadow-sm p-10 text-center">
+            <p className="font-bold text-slate-700">No featured products available right now.</p>
+          </div>
+        )}
+
+        {!loading && totalPages > 1 && (
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <button
             onClick={() => handlePageChange(currentPage - 1)}

@@ -28,6 +28,8 @@ export default function Checkout() {
         "COD" | "UPI" | "CARD"
     >("COD");
 
+    const [placingOrder, setPlacingOrder] = useState(false);
+
     const { cartItems, clearCart } = useCart();
 
     const user =
@@ -93,6 +95,10 @@ export default function Checkout() {
 
     const handlePlaceOrder = async () => {
 
+        if (placingOrder) return;
+
+        setPlacingOrder(true);
+
         if (
             !firstName.trim() ||
             !lastName.trim() ||
@@ -104,21 +110,25 @@ export default function Checkout() {
             !pincode.trim()
         ) {
             toast.error("Please fill all required fields");
+            setPlacingOrder(false);
             return;
         }
 
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             toast.error("Enter a valid email address");
+            setPlacingOrder(false);
             return;
         }
 
         if (!/^\d{10}$/.test(phone)) {
             toast.error("Enter a valid mobile number");
+            setPlacingOrder(false);
             return;
         }
 
         if (!/^\d{6}$/.test(pincode)) {
             toast.error("Enter a valid pincode");
+            setPlacingOrder(false);
             return;
         }
 
@@ -233,6 +243,7 @@ export default function Checkout() {
 
                 if (!response.ok || !data.success) {
                     toast.error(data.message || "Failed to place order");
+                    setPlacingOrder(false);
                     return;
                 }
 
@@ -261,6 +272,8 @@ export default function Checkout() {
                 console.error("PLACE ORDER FETCH ERROR:", error);
 
                 toast.error(error.message || "Server Error");
+
+                setPlacingOrder(false);
 
             }
 
@@ -309,6 +322,8 @@ export default function Checkout() {
                             toast.error(
                                 "Payment cancelled"
                             );
+
+                            setPlacingOrder(false);
 
                         }
                     },
@@ -431,6 +446,8 @@ export default function Checkout() {
                                 "Verification Error"
                             );
 
+                            setPlacingOrder(false);
+
                         }
                     },
                 };
@@ -466,6 +483,8 @@ export default function Checkout() {
                 console.error(error);
 
                 toast.error("Payment Error");
+
+                setPlacingOrder(false);
             }
 
             return;
@@ -863,9 +882,10 @@ export default function Checkout() {
 
                         <button
                             onClick={handlePlaceOrder}
-                            className="w-full bg-gradient-to-r from-[#5B21B6] to-[#7C3AED] text-white py-4 rounded-2xl font-black shadow-lg hover:scale-[1.02] transition-all duration-300"
+                            disabled={placingOrder}
+                            className="w-full bg-gradient-to-r from-[#5B21B6] to-[#7C3AED] text-white py-4 rounded-2xl font-black shadow-lg hover:scale-[1.02] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                         >
-                            Place Order
+                            {placingOrder ? "Placing Order..." : "Place Order"}
   </button>
 
                         <p className="text-xs text-center text-gray-400 mt-2">

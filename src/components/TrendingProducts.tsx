@@ -10,6 +10,7 @@ import "swiper/css/navigation";
 
 export default function TrendingProducts() {
   const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(apiPath("/api/products"))
@@ -19,7 +20,8 @@ export default function TrendingProducts() {
           setProducts(data.products.slice(0, 10));
         }
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -49,6 +51,25 @@ export default function TrendingProducts() {
 
         {/* Slider */}
 
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm animate-pulse"
+              >
+                <div className="h-56 bg-slate-100 rounded-2xl mb-5"></div>
+                <div className="h-4 bg-slate-100 rounded w-2/3 mb-3"></div>
+                <div className="h-4 bg-slate-100 rounded w-1/2 mb-6"></div>
+                <div className="h-10 bg-slate-100 rounded-xl"></div>
+              </div>
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-purple-100 shadow-sm p-10 text-center">
+            <p className="font-bold text-slate-700">No trending products available right now.</p>
+          </div>
+        ) : (
         <Swiper
           modules={[Autoplay, Navigation]}
           navigation={true}
@@ -82,6 +103,7 @@ export default function TrendingProducts() {
             </SwiperSlide>
           ))}
         </Swiper>
+        )}
 
       </div>
     </section>

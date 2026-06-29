@@ -72,8 +72,13 @@ export default function ProductCard({
 
                     <img
                         src={getImageUrl(product.images?.[0])}
-                        alt={product.name}
-                        className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt={product.name || "CosmoCartt Product"}
+                        loading="lazy"
+                        onError={(e) => {
+                            e.currentTarget.src =
+                                "https://via.placeholder.com/600x600?text=CosmoCartt";
+                        }}
+                        className="h-72 w-full object-cover bg-slate-100 transition-transform duration-700 group-hover:scale-110"
                     />
 
                     <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
