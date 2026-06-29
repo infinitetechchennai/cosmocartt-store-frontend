@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Settings, ShieldAlert, Award, LogOut, CheckCircle2 } from "lucide-react";
+import { API_URL } from "../config/api";
 
 interface HeaderProps {
   userName: string;
@@ -30,8 +31,8 @@ export default function Header({ userName, userEmail }: HeaderProps) {
       try{
 
         const [ordersRes,customersRes]=await Promise.all([
-          fetch("http://localhost:5000/api/orders"),
-          fetch("http://localhost:5000/api/customers")
+          fetch(`${API_URL}/api/orders`),
+          fetch(`${API_URL}/api/customers`)
         ]);
 
         const orders=await ordersRes.json();
