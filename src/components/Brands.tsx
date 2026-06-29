@@ -1,14 +1,11 @@
+import { apiPath } from "../config/api";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Sparkles, ArrowRight } from "lucide-react";
 
 
 import apple from "../assets/apple.png";
-import samsung from "../assets/samsung.png";
-import sony from "../assets/sony.png";
-import dell from "../assets/dell.png";
-import hp from "../assets/hp.png";
-import asus from "../assets/asus.png";
+
 
 
 
@@ -19,20 +16,20 @@ export default function Brands() {
   useEffect(() => {
 
     fetch(
-      "http://localhost:5000/api/products"
+      apiPath("/api/products")
     )
       .then(res => res.json())
       .then(data => {
 
         if (!data.success) return;
 
-       const uniqueBrands: string[] = Array.from(
-  new Set(
-    data.products
-      .map((p: any) => p.brand)
-      .filter(Boolean)
-  )
-);
+        const uniqueBrands: string[] = Array.from(
+          new Set(
+            data.products
+              .map((p: any) => p.brand)
+              .filter(Boolean)
+          )
+        );
 
         setBrands(
           uniqueBrands.map(

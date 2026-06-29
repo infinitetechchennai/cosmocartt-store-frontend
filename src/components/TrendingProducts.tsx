@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 
@@ -11,7 +12,7 @@ export default function TrendingProducts() {
   const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(apiPath("/api/products"))
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {

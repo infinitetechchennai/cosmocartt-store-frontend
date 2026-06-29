@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import { useState } from "react";
 import { User, LogOut } from "lucide-react";
 
@@ -49,7 +50,7 @@ export default function SettingsView({
   
     const response = await fetch(
   
-      `http://localhost:5000/api/users/${user.id}`,
+      `${API_URL}/api/users/${user.id}`,
   
       {
         method: "PUT",

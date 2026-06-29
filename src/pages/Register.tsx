@@ -1,9 +1,9 @@
+import { apiPath } from "../config/api";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 export default function Register() {
@@ -202,7 +202,7 @@ export default function Register() {
             }
 
             const response = await fetch(
-                "http://localhost:5000/api/customers/register",
+                apiPath("/api/customers/register"),
                 {
                     method: "POST",
                     body: formData
@@ -216,11 +216,9 @@ export default function Register() {
                 return;
             }
 
-            setShowSuccess(true);
-
-            setTimeout(() => {
-                navigate("/login");
-            }, 2000);
+            navigate(
+                `/verify-otp?email=${encodeURIComponent(email)}`
+            );
 
         } catch (error) {
 
@@ -675,86 +673,6 @@ export default function Register() {
                                     "Create Account"
                                 )}
                             </motion.button>
-
-                            <div className="relative my-8">
-
-                                <div className="border-t border-slate-200"></div>
-
-                                <span
-                                    className="
-        absolute
-        left-1/2
-        -translate-x-1/2
-        -top-3
-        bg-white
-        px-4
-        text-xs
-        font-semibold
-        text-slate-400
-        uppercase
-        tracking-[3px]
-        "
-                                >
-                                    Continue With
-    </span>
-
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-5">
-
-                                <button
-                                    type="button"
-                                    className="
-        flex
-        items-center
-        justify-center
-        gap-3
-        h-14
-        rounded-2xl
-        border-2
-        border-slate-300
-        bg-white
-        font-semibold
-        text-[15px]
-        shadow-md
-        hover:shadow-xl
-        hover:border-slate-400
-        hover:-translate-y-1
-        transition-all
-        duration-300
-        "
-                                >
-                                    <FcGoogle size={24} />
-        Google
-    </button>
-
-                                <button
-                                    type="button"
-                                    className="
-        flex
-        items-center
-        justify-center
-        gap-3
-        h-14
-        rounded-2xl
-        border-2
-        border-slate-300
-        bg-white
-        font-semibold
-        text-[15px]
-        shadow-md
-        hover:shadow-xl
-        hover:border-slate-400
-        hover:-translate-y-1
-        transition-all
-        duration-300
-        "
-                                >
-                                    <FaGithub size={22} />
-        GitHub
-    </button>
-
-                            </div>
                             <p className="text-center text-sm text-zinc-500 mt-5">
 
                                 Already have an account?

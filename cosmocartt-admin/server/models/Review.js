@@ -28,6 +28,11 @@ const reviewSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+
+        verifiedPurchase: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

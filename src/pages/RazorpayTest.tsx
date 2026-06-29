@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 declare global {
     interface Window {
         Razorpay: any;
@@ -11,7 +12,7 @@ export default function RazorpayTest() {
         try {
 
             const response = await fetch(
-                "http://localhost:5000/api/payment/create-order",
+                apiPath("/api/payment/create-order"),
                 {
                     method: "POST",
                     headers: {

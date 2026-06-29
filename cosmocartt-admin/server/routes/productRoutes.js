@@ -200,6 +200,13 @@ router.get("/:id", getProductById);
 
 router.delete("/:id", deleteProduct);
 
-router.put("/:id", updateProduct);
+router.put(
+    "/:id",
+    productUpload.array(
+        "images",
+        6
+    ),
+    updateProduct
+);
 
 export default router;

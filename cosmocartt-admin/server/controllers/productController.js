@@ -3,6 +3,8 @@ import csv from "csv-parser";
 import { Readable } from "stream";
 import { Parser } from "json2csv";
 import fs from "fs";
+import { uploadBuffer } from "../utils/cloudinaryUpload.js";
+import { deleteImage } from "../utils/cloudinaryDelete.js";
 
 const generateSlug = (text) => {
     return text
@@ -58,11 +60,36 @@ export const createProduct = async (
 
     try {
 
-        const imagePaths =
-            req.files?.map(
-                file =>
-                    `/uploads/products/${file.filename}`
-            ) || [];
+        const imagePaths = [];
+
+        if (req.files?.length) {
+
+            for (const file of req.files) {
+
+                try {
+
+                    const uploaded =
+                        await uploadBuffer(
+                            file.buffer,
+                            "CosmoCartt/products"
+                        );
+
+                    imagePaths.push(
+                        uploaded.secure_url
+                    );
+
+                } catch (err) {
+
+                    console.error(
+                        "Cloudinary Upload Failed:",
+                        err.message
+                    );
+
+                }
+
+            }
+
+        }
 
         const slug =
             await generateUniqueSlug(
@@ -108,9 +135,14 @@ export const getProducts = async (req, res) => {
             products,
         });
     } catch (error) {
-        res.status(500).json({
+
+        console.error("UPDATE PRODUCT ERROR:", error?.message);
+        console.error(error);
+
+        return res.status(500).json({
             success: false,
-            message: error.message,
+            message: error?.message || "Update product failed",
+            stack: process.env.NODE_ENV === "production" ? undefined : error?.stack
         });
     }
 };
@@ -186,6 +218,12 @@ export const deleteProduct = async (req, res) => {
             });
         }
 
+        if (Array.isArray(product.images)) {
+            for (const image of product.images) {
+                await deleteImage(image);
+            }
+        }
+
         await Product.findByIdAndDelete(req.params.id);
 
         res.status(200).json({
@@ -207,6 +245,73 @@ export const updateProduct = async (req, res) => {
             ...req.body
         };
 
+        if (typeof updateData.existingImages === "string") {
+            try {
+                updateData.images = JSON.parse(updateData.existingImages);
+            } catch {
+                updateData.images = updateData.existingImages
+                    .split("|")
+                    .map(img => img.trim())
+                    .filter(Boolean);
+            }
+        } else if (typeof updateData.images === "string") {
+            try {
+                updateData.images = JSON.parse(updateData.images);
+            } catch {
+                updateData.images = updateData.images
+                    .split("|")
+                    .map(img => img.trim())
+                    .filter(Boolean);
+            }
+        }
+
+        delete updateData.existingImages;
+
+        if (!Array.isArray(updateData.images)) {
+            updateData.images = [];
+        }
+
+        if (req.files?.length) {
+
+            for (const file of req.files) {
+
+                try {
+
+                    const uploaded =
+                        await uploadBuffer(
+                            file.buffer,
+                            "CosmoCartt/products"
+                        );
+
+                    updateData.images.push(
+                        uploaded.secure_url
+                    );
+
+                } catch (err) {
+
+                    console.error(
+                        "Cloudinary Update Upload Failed:",
+                        err.message
+                    );
+
+                    return res.status(500).json({
+                        success: false,
+                        message:
+                            err.message ||
+                            "Cloudinary image upload failed"
+                    });
+
+                }
+
+            }
+
+        }
+
+        updateData.images =
+            updateData.images
+                .filter(Boolean)
+                .slice(0, 6);
+
         if (req.body.name) {
 
             updateData.slug =
@@ -215,6 +320,31 @@ export const updateProduct = async (req, res) => {
                     req.params.id
                 );
 
+        }
+
+        const existingProduct = await Product.findById(req.params.id);
+
+        if (!existingProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
+
+        const oldImages = Array.isArray(existingProduct.images)
+            ? existingProduct.images
+            : [];
+
+        const newImages = Array.isArray(updateData.images)
+            ? updateData.images
+            : [];
+
+        const removedImages = oldImages.filter(
+            image => !newImages.includes(image)
+        );
+
+        for (const image of removedImages) {
+            await deleteImage(image);
         }
 
         const product = await Product.findByIdAndUpdate(

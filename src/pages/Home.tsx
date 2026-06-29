@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import Categories from "../components/Categories";
 import FeaturedProducts from "../components/FeaturedProducts";
 import Brands from "../components/Brands";
 import Newsletter from "../components/Newsletter";
@@ -8,16 +7,14 @@ import AnnouncementBar from "../components/AnnouncementBar";
 import Stats from "../components/Stats";
 import PremiumBanner from "../components/PremiumBanner";
 import WhyChooseUs from "../components/WhyChooseUs";
-import Testimonials from "../components/Testimonials";
 import CategoryNavbar from "../components/CategoryNavbar";
 import QuickLinks from "../components/QuickLinks";
 import DealBanner from "../components/DealBanner";
-import FeaturedCategories from "../components/FeaturedCategories";
 import TopDeals from "../components/TopDeals";
-import FeaturesStrip from "../components/FeaturesStrip";
 import TrendingProducts from "../components/TrendingProducts";
 import CategoryShowcase from "../components/CategoryShowcase";
 import AIExperienceSection from "../components/AIExperienceSection";
+import CampaignBanner from "../components/CampaignBanner";
 
 import "swiper/css/navigation";
 
@@ -50,7 +47,7 @@ export default function Home() {
       <QuickLinks />
 
       {/* HERO SLIDER */}
-      <div className="max-w-7xl mx-auto px-4 mt-4 relative">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 mt-3 sm:mt-4 relative overflow-hidden">
         <Swiper
           modules={[
             Autoplay,
@@ -66,16 +63,17 @@ export default function Home() {
           }}
           pagination={{
             clickable: true,
+            dynamicBullets: true,
           }}
           loop={true}
           grabCursor={true}
-          className="rounded-3xl overflow-hidden shadow-2xl home-swiper"
+          className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl home-swiper"
         >
           <SwiperSlide>
             <img
               src={mobileBanner}
               alt="Mobile Cases"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[210px] sm:h-[330px] md:h-[420px] lg:h-[500px] object-cover"
             />
           </SwiperSlide>
 
@@ -83,7 +81,7 @@ export default function Home() {
             <img
               src={tvBanner}
               alt="TV Remote"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[210px] sm:h-[330px] md:h-[420px] lg:h-[500px] object-cover"
             />
           </SwiperSlide>
 
@@ -91,13 +89,15 @@ export default function Home() {
             <img
               src={acBanner}
               alt="AC Remote"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[210px] sm:h-[330px] md:h-[420px] lg:h-[500px] object-cover"
             />
           </SwiperSlide>
         </Swiper>
       </div>
 
       {/* <Categories /> */}
+
+      <div className="px-3 sm:px-0"><CampaignBanner /></div>
 
       <TrendingProducts />
 

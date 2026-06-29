@@ -42,9 +42,7 @@ router.post("/", async (req, res) => {
         const purchasedOrder =
             await Order.findOne({
                 userId: userId,
-                status: {
-                    $ne: "Cancelled"
-                },
+                status: "Delivered",
                 "products.productId": productId
             });
 
@@ -79,7 +77,8 @@ router.post("/", async (req, res) => {
             userId,
             customerName,
             rating,
-            comment
+            comment,
+            verifiedPurchase: true
         });
 
         await review.save();

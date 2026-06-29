@@ -9,6 +9,11 @@ import {
 
 import Order from "../models/Order.js";
 
+import {
+    sendEmail,
+    buildOrderStatusEmail
+} from "../utils/sendEmail.js";
+
 const router = express.Router();
 
 const isMockMode = () =>
@@ -164,6 +169,28 @@ router.get(
 
             await order.save();
 
+            try {
+                await sendEmail({
+                    to: order.email,
+                    subject: `📦 Your CosmoCartt order ${order.orderNumber} has been shipped`,
+                    html: buildOrderStatusEmail({ order, status: "Shipped" })
+                    /*
+                            <div style="max-width:650px;margin:auto;background:#fff;border-radius:18px;padding:30px">
+                                <h2 style="color:#4B1E78;margin-top:0">Your Order is on the way 🚚</h2>
+                                <p>Hello <b>${order.customerName}</b>,</p>
+                                <p>Your order <b>${order.orderNumber}</b> has been shipped successfully.</p>
+                                <p><b>Courier:</b> ${order.courierName || "Courier Partner"}</p>
+                                <p><b>AWB:</b> ${order.awbCode || "Will be updated soon"}</p>
+                                ${order.trackingUrl ? `<p><a href="${order.trackingUrl}" style="color:#4B1E78;font-weight:bold">Track your order</a></p>` : ""}
+                                <p>Thank you for shopping with CosmoCartt ❤️</p>
+                            </div>
+                        </div>
+                    */
+                });
+            } catch (error) {
+                console.error("SHIPMENT EMAIL ERROR:", error);
+            }
+
             res.json({
                 success: true,
                 mode: isMockMode() ? "mock" : "live",
@@ -285,7 +312,84 @@ router.get(
                     }
                 );
 
-            res.json(response.data);
+            const awbData =
+                response.data;
+
+            const awbInfo =
+                awbData.response?.data || {};
+
+            const order =
+                await Order.findOne({
+                    shipmentId:
+                        String(req.params.shipmentId)
+                });
+
+            if (
+                awbData.awb_assign_status !== 1
+            ) {
+
+                if (order) {
+
+                    order.shippingStatus =
+                        "AWB Failed";
+
+                    order.trackingTimeline.push({
+                        status:
+                            awbData.message ||
+                            awbInfo.awb_assign_error ||
+                            "AWB Assignment Failed",
+                        date:
+                            new Date().toISOString()
+                    });
+
+                    await order.save();
+
+                }
+
+                return res.status(400).json({
+                    success: false,
+                    mode: "live",
+                    message:
+                        awbData.message ||
+                        awbInfo.awb_assign_error ||
+                        "AWB assignment failed",
+                    order,
+                    awbData
+                });
+
+            }
+
+            if (order) {
+
+                order.awbCode =
+                    awbInfo.awb_code || "";
+
+                order.courierName =
+                    awbInfo.courier_name || "";
+
+                order.trackingUrl =
+                    awbInfo.awb_code
+                        ? `https://shiprocket.co/tracking/${awbInfo.awb_code}`
+                        : "";
+
+                order.shippingStatus =
+                    "AWB Assigned";
+
+                order.trackingTimeline.push({
+                    status: "AWB Assigned",
+                    date: new Date().toISOString()
+                });
+
+                await order.save();
+
+            }
+
+            res.json({
+                success: true,
+                mode: "live",
+                order,
+                awbData
+            });
 
         } catch (error) {
 

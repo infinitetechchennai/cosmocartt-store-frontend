@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useEffect, useState } from "react";
 import {
   Search,
@@ -25,7 +26,7 @@ export default function PaymentsView() {
       setLoading(true);
 
       try {
-        const res = await fetch("http://localhost:5000/api/orders");
+        const res = await fetch(apiPath("/api/orders"));
         const data = await res.json();
 
         if (data.success) {

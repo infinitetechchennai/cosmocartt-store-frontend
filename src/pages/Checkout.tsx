@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
@@ -5,6 +6,7 @@ import Footer from "../components/Footer";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getDisplayPrice } from "../utils/pricing";
+import { getImageUrl } from "../utils/imageUrl";
 
 declare global {
     interface Window {
@@ -22,7 +24,6 @@ export default function Checkout() {
     const [city, setCity] = useState("");
     const [state, setState] = useState("");
     const [pincode, setPincode] = useState("");
-    const [loading, setLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<
         "COD" | "UPI" | "CARD"
     >("COD");
@@ -69,7 +70,7 @@ export default function Checkout() {
     }
 
     const total = checkoutItems.reduce(
-        (sum, item) =>
+        (sum: number, item: any) =>
             sum +
             getDisplayPrice(
                 item,
@@ -216,7 +217,7 @@ export default function Checkout() {
                 console.log("ORDER DATA:", orderData);
 
                 const response = await fetch(
-                    "http://localhost:5000/api/orders",
+                    apiPath("/api/orders"),
                     {
                         method: "POST",
                         headers: {
@@ -274,7 +275,7 @@ export default function Checkout() {
             try {
 
                 const paymentResponse = await fetch(
-                    "http://localhost:5000/api/payment/create-order",
+                    apiPath("/api/payment/create-order"),
                     {
                         method: "POST",
                         headers: {
@@ -325,7 +326,7 @@ export default function Checkout() {
 
                             const verifyResponse =
                                 await fetch(
-                                    "http://localhost:5000/api/payment/verify",
+                                    apiPath("/api/payment/verify"),
                                     {
                                         method: "POST",
                                         headers: {
@@ -361,7 +362,7 @@ export default function Checkout() {
 
                             const orderResponse =
                                 await fetch(
-                                    "http://localhost:5000/api/orders",
+                                    apiPath("/api/orders"),
                                     {
                                         method: "POST",
                                         headers: {
@@ -788,7 +789,7 @@ export default function Checkout() {
 
                                     {/* IMAGE */}
                                     <img
-                                        src={`http://localhost:5000${item.images?.[0]}`}
+                                        src={getImageUrl(item.images?.[0])}
                                         alt={item.name}
                                         className="w-14 h-14 object-cover rounded-lg border"
                                     />

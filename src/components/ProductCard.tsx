@@ -1,3 +1,5 @@
+import { API_URL } from "../config/api";
+import { getImageUrl } from "../utils/imageUrl";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
@@ -10,6 +12,7 @@ import {
 interface ProductCardProps {
     product: any;
 }
+
 
 export default function ProductCard({
     product,
@@ -68,9 +71,7 @@ export default function ProductCard({
                     <div className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition duration-1000" />
 
                     <img
-                        src={`http://localhost:5000${product.images?.[0]}` ||
-                            "https://via.placeholder.com/400x400?text=No+Image"
-                        }
+                        src={getImageUrl(product.images?.[0])}
                         alt={product.name}
                         className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />

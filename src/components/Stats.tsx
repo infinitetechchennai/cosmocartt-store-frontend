@@ -34,9 +34,9 @@ const stats = [
 
 export default function Stats() {
   return (
-    <section className="pt-20 pb-10 bg-gradient-to-b from-slate-50 via-white to-slate-100">
+    <section className="pt-12 sm:pt-20 pb-8 sm:pb-10 bg-gradient-to-b from-slate-50 via-white to-slate-100 overflow-hidden">
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6">
 
         {/* Premium Heading */}
         <div className="text-center mb-10">
@@ -59,7 +59,7 @@ export default function Stats() {
           </span>
 
           <h2 className="mt-6 leading-tight">
-  <span className="block text-5xl md:text-6xl font-black text-slate-900">
+  <span className="block text-3xl sm:text-5xl md:text-6xl font-black text-slate-900">
     Premium Products.
   </span>
 
@@ -82,7 +82,7 @@ export default function Stats() {
   </span>
 </h2>
 
-          <p className="mt-6 text-lg text-slate-500 max-w-3xl mx-auto">
+          <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-500 max-w-3xl mx-auto">
             Discover premium mobile cases, TV remotes and AC remotes
             trusted by thousands of customers with fast delivery,
             quality assurance and dedicated support.
@@ -91,7 +91,7 @@ export default function Stats() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
 
           {stats.map((stat) => {
             const Icon = stat.icon;
@@ -105,7 +105,9 @@ export default function Stats() {
                   overflow-hidden
                   rounded-[28px]
                   bg-white
-                  p-8
+                  px-3
+                  py-5
+                  sm:p-8
                   text-center
                   border
                   border-slate-200
@@ -137,8 +139,10 @@ export default function Stats() {
                   className="
                     relative
                     mx-auto
-                    w-18
-                    h-18
+                    w-12
+                    h-12
+                    sm:w-18
+                    sm:h-18
                     flex
                     items-center
                     justify-center
@@ -153,7 +157,7 @@ export default function Stats() {
                   "
                 >
                   <Icon
-                    size={34}
+                    size={26}
                     className="text-white"
                   />
                 </div>
@@ -162,8 +166,10 @@ export default function Stats() {
                 <h3
                   className="
                     relative
-                    mt-6
-                    text-5xl
+                    mt-4
+                    sm:mt-6
+                    text-2xl
+                    sm:text-5xl
                     font-black
                     text-slate-900
                   "
@@ -176,8 +182,10 @@ export default function Stats() {
                   className="
                     relative
                     mt-2
-                    text-xl
+                    text-sm
+                    sm:text-xl
                     font-bold
+                    break-words
                     text-[#4B1E78]
                   "
                 >
@@ -189,8 +197,10 @@ export default function Stats() {
                   className="
                     relative
                     mt-3
-                    text-sm
+                    text-xs
+                    sm:text-sm
                     text-slate-500
+                    leading-snug
                   "
                 >
                   {stat.description}

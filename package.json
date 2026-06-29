@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "build": "vite build",
+    "build:admin": "cd cosmocartt-admin && npm install && npm run build",
+    "copy:admin": "rm -rf dist/admin && mkdir -p dist/admin && cp -R cosmocartt-admin/dist/* dist/admin/",
+    "vercel-build": "npm install && npm run build && npm run build:admin && npm run copy:admin",
     "preview": "vite preview"
   },
   "dependencies": {

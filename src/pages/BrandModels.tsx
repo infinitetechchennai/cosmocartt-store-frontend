@@ -1,3 +1,4 @@
+import { API_URL } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -16,7 +17,7 @@ export default function BrandModels() {
     useEffect(() => {
 
         fetch(
-            `http://localhost:5000/api/products/models/${brand}`
+            `${API_URL}/api/products/models/${brand}`
         )
             .then(res => res.json())
             .then(data => {

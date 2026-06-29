@@ -1,3 +1,4 @@
+import { API_URL, apiPath } from "../config/api";
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -7,6 +8,7 @@ import { toast } from "react-toastify";
 import {
     getDisplayPrice
 } from "../utils/pricing";
+import { getImageUrl } from "../utils/imageUrl";
 
 export default function ProductDetails() {
 
@@ -144,8 +146,8 @@ export default function ProductDetails() {
 
                 const productUrl =
                     isMongoId
-                        ? `http://localhost:5000/api/products/${id}`
-                        : `http://localhost:5000/api/products/slug/${id}`;
+                        ? `${API_URL}/api/products/${id}`
+                        : `${API_URL}/api/products/slug/${id}`;
 
                 const res =
                     await fetch(productUrl);
@@ -190,7 +192,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/reviews/product/${product._id}`
+                        `${API_URL}/api/reviews/product/${product._id}`
                     );
 
                 const data =
@@ -230,7 +232,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/products/related/${product._id}`
+                        `${API_URL}/api/products/related/${product._id}`
                     );
 
                 const data =
@@ -266,7 +268,7 @@ export default function ProductDetails() {
 
                 const res =
                     await fetch(
-                        `http://localhost:5000/api/products/seo/${product._id}`
+                        `${API_URL}/api/products/seo/${product._id}`
                     );
 
                 const data =
@@ -377,7 +379,7 @@ export default function ProductDetails() {
                 sku: product.sku,
                 image: product.images?.map(
                     (img: string) =>
-                        `http://localhost:5000${img}`
+                        getImageUrl(img)
                 ),
                 description:
                     product.description || product.name,
@@ -443,7 +445,7 @@ export default function ProductDetails() {
 
             const res =
                 await fetch(
-                    "http://localhost:5000/api/reviews",
+                    apiPath("/api/reviews"),
                     {
                         method: "POST",
                         headers: {
@@ -602,7 +604,7 @@ export default function ProductDetails() {
                                             }`}
                                     >
                                         <img
-                                            src={`http://localhost:5000${img}`}
+                                            src={getImageUrl(img)}
                                             alt={`${product.name} view ${index + 1}`}
                                             className="w-full h-full object-cover"
                                         />
@@ -656,7 +658,7 @@ export default function ProductDetails() {
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
+                                    src={getImageUrl(selectedImage || product.images?.[0])}
                                     alt={product.name}
                                     className="
 w-full
@@ -713,7 +715,7 @@ p-4
                                         }`}
                                 >
                                     <img
-                                        src={`http://localhost:5000${img}`}
+                                        src={getImageUrl(img)}
                                         alt={`${product.name} view ${index + 1}`}
                                         className="w-full h-full object-cover"
                                     />
@@ -743,7 +745,7 @@ pointer-events-none
         "
                             >
                                 <img
-                                    src={`http://localhost:5000${selectedImage || product.images?.[0] || ""}`}
+                                    src={getImageUrl(selectedImage || product.images?.[0])}
                                     alt="Zoom Preview"
                                     className="w-full h-full object-cover"
                                     style={{
@@ -1338,9 +1340,19 @@ pointer-events-none
                                         >
                                             <div className="flex items-center justify-between gap-4">
                                                 <div>
-                                                    <p className="font-bold text-zinc-900">
-                                                        {review.customerName}
-                                                    </p>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+
+                                                        <p className="font-bold text-zinc-900">
+                                                            {review.customerName}
+                                                        </p>
+
+                                                        {review.verifiedPurchase && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                                                                ✓ Verified Purchase
+                                                            </span>
+                                                        )}
+
+                                                    </div>
                                                     <p className="text-yellow-400 mt-1">
                                                         {"★".repeat(review.rating)}
                                                         <span className="text-zinc-200">
@@ -1402,7 +1414,7 @@ pointer-events-none
                                     >
                                         <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
                                             <img
-                                                src={`http://localhost:5000${item.images?.[0]}`}
+                                                src={getImageUrl(item.images?.[0])}
                                                 alt={item.name}
                                                 className="w-full h-full object-contain p-2"
                                             />

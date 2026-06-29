@@ -1,3 +1,4 @@
+import { apiPath } from "../config/api";
 import { useState } from "react";
 import { Lock, Mail } from "lucide-react";
 
@@ -16,7 +17,7 @@ export default function Login({ onLogin }: any) {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(apiPath("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
