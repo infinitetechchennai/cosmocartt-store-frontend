@@ -647,7 +647,7 @@ function PolicyPage({
                     <div
                         key={index}
                         id={`section-${index}`}
-                        className="rounded-[32px] bg-white border border-slate-200 p-7 md:p-8 shadow-sm hover:shadow-md transition"
+                        className="scroll-mt-40 rounded-[32px] bg-white border border-slate-200 p-7 md:p-8 shadow-sm hover:shadow-md transition"
                     >
                         <div className="flex gap-4">
                             <div className="h-11 w-11 rounded-2xl bg-[#4B1E78] text-white flex items-center justify-center font-black shrink-0">
@@ -762,6 +762,8 @@ function PolicySidebar({
     sections: any[];
     effectiveDate?: string;
 }) {
+    const [activeIndex, setActiveIndex] = useState(0);
+
     const label =
         type === "privacy"
             ? "Privacy Guide"
@@ -770,6 +772,23 @@ function PolicySidebar({
                 : type === "shipping"
                     ? "Shipping Guide"
                     : "Refund Guide";
+
+    const goToSection = (index: number) => {
+        const section = document.getElementById(`section-${index}`);
+
+        if (!section) return;
+
+        const navbarHeight = 145;
+        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+        const finalPosition = sectionTop - navbarHeight;
+
+        window.scrollTo({
+            top: finalPosition,
+            behavior: "smooth"
+        });
+
+        setActiveIndex(index);
+    };
 
     return (
         <aside className="hidden lg:block sticky top-28">
@@ -783,6 +802,7 @@ function PolicySidebar({
                         <p className="text-xs font-black text-purple-700 uppercase tracking-[0.18em]">
                             Effective
                         </p>
+
                         <p className="text-sm font-bold text-slate-700 mt-1">
                             {effectiveDate}
                         </p>
@@ -790,20 +810,28 @@ function PolicySidebar({
                 )}
 
                 <div className="mt-5 space-y-2 max-h-[480px] overflow-y-auto pr-1">
-                    {sections.slice(0, 8).map((item, index) => (
-                        <a
-                            key={index}
-                            href={`#section-${index}`}
-                            className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition ${
-                                index === 0
-                                    ? "bg-[#4B1E78] text-white"
-                                    : "text-slate-600 hover:bg-purple-50"
-                            }`}
-                        >
-                            <PackageCheck size={16} />
-                            <span className="line-clamp-1">{item.title}</span>
-                        </a>
-                    ))}
+                    {sections.map((item, index) => {
+                        const isActive = activeIndex === index;
+
+                        return (
+                            <button
+                                key={index}
+                                type="button"
+                                onClick={() => goToSection(index)}
+                                className={`w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                                    isActive
+                                        ? "bg-[#4B1E78] text-white shadow-md"
+                                        : "text-slate-600 hover:bg-purple-50 hover:text-[#4B1E78]"
+                                }`}
+                            >
+                                <PackageCheck size={16} className="shrink-0" />
+
+                                <span className="truncate">
+                                    {item.title}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
         </aside>
