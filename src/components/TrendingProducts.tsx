@@ -81,20 +81,28 @@ export default function TrendingProducts() {
             disableOnInteraction: false,
           }}
           spaceBetween={24}
+          slidesPerGroup={4}
           breakpoints={{
-            0: {
-              slidesPerView: 1,
-            },
-            640: {
-              slidesPerView: 2,
-            },
-            1024: {
-              slidesPerView: 3,
-            },
-            1280: {
-              slidesPerView: 4,
-            },
-          }}
+  0: {
+    slidesPerView: 1,
+    slidesPerGroup: 1,
+  },
+
+  640: {
+    slidesPerView: 2,
+    slidesPerGroup: 2,
+  },
+
+  1024: {
+    slidesPerView: 3,
+    slidesPerGroup: 3,
+  },
+
+  1280: {
+    slidesPerView: 4,
+    slidesPerGroup: 4,
+  },
+}}
           className="trending-swiper"
         >
           {products.map((product) => (
