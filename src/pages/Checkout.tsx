@@ -672,13 +672,14 @@ export default function Checkout() {
                             </div>
                         </section>
 
-                        <section className="rounded-[34px] bg-slate-950 p-6 md:p-8 text-white shadow-[0_25px_80px_rgba(15,23,42,0.20)]">
-                            <div className="grid sm:grid-cols-3 gap-5">
-                                <TrustBox icon={<ShieldCheck />} title="Secure Payment" text="Protected checkout" />
-                                <TrustBox icon={<Truck />} title="Fast Delivery" text="3–5 business days" />
-                                <TrustBox icon={<RotateCcw />} title="Easy Returns" text="7-day return support" />
-                            </div>
-                        </section>
+                       <section className="rounded-[34px] border border-purple-100 bg-white p-6 md:p-8 shadow-[0_20px_70px_rgba(76,29,149,0.08)]">
+    <div className="grid sm:grid-cols-4 gap-5 divide-y sm:divide-y-0 sm:divide-x divide-purple-100">
+        <TrustBox icon={<Truck />} title="Fast Delivery" text="Quick & reliable delivery" />
+        <TrustBox icon={<ShieldCheck />} title="Secure Payment" text="100% safe & secure checkout" />
+        <TrustBox icon={<RotateCcw />} title="Easy Returns" text="Hassle-free 7-day returns" />
+        <TrustBox icon={<BadgeCheck />} title="Genuine Products" text="100% original quality items" />
+    </div>
+</section>
                     </div>
 
                     <aside className="lg:sticky lg:top-24">
@@ -1153,16 +1154,16 @@ function TrustBox({
     text: string;
 }) {
     return (
-        <div className="rounded-3xl border border-white/10 bg-white/10 p-5">
-            <div className="h-12 w-12 rounded-2xl bg-white text-[#4B1E78] flex items-center justify-center">
+        <div className="p-5 text-center">
+            <div className="mx-auto h-16 w-16 rounded-full bg-purple-100 text-[#4B1E78] flex items-center justify-center">
                 {icon}
             </div>
 
-            <h3 className="mt-4 font-black">
+            <h3 className="mt-5 font-black text-[#4B1E78]">
                 {title}
             </h3>
 
-            <p className="mt-1 text-sm text-slate-300">
+            <p className="mt-2 text-sm leading-6 text-slate-500">
                 {text}
             </p>
         </div>
