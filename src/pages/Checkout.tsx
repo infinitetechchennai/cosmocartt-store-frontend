@@ -802,7 +802,7 @@ export default function Checkout() {
                             <button
                                 onClick={handlePlaceOrder}
                                 disabled={placingOrder}
-                                className="mt-5 w-full rounded-2xl bg-slate-950 px-6 py-4 font-black text-white shadow-xl transition-all hover:-translate-y-0.5 hover:bg-[#4B1E78] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+                                className="mt-5 w-full rounded-2xl bg-gradient-to-r from-[#4B1E78] via-[#6F2DBD] to-[#8B5CF6] px-6 py-4 font-black text-white shadow-lg shadow-purple-300/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-400/50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-2"
                             >
                                 {placingOrder ? (
                                     <>
