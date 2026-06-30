@@ -5,12 +5,14 @@ import Footer from "../components/Footer";
 import { useState, useEffect, useMemo } from "react";
 import { Search, Package, X, SlidersHorizontal } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { categories } from "../data/categories";
 import SEO from "../components/SEO";
 import { seoPages } from "../config/seo";
+import { useCatalog } from "../context/CatalogContext";
 
 export default function Products() {
     const [searchParams] = useSearchParams();
+    const { catalog } = useCatalog();
+    const categories = catalog;
 
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
@@ -80,10 +82,11 @@ export default function Products() {
         if (!selectedCategory) return [];
 
         return (
-            categories.find((cat) => cat.name === selectedCategory)?.subcategories ||
-            []
+            categories
+                .find((cat) => cat.name === selectedCategory)
+                ?.subcategories.map((sub) => sub.name) || []
         );
-    }, [selectedCategory]);
+    }, [selectedCategory, categories]);
 
     const filteredProducts = useMemo(() => {
         let result = products.filter((product) => {

@@ -19,6 +19,7 @@ import OrderTracking from "./pages/OrderTracking";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyOtp from "./pages/VerifyOtp";
 import BrandsPage from "./pages/BrandsPage";
+import CatalogBrowse from "./pages/CatalogBrowse";
 import CMSPage from "./pages/CMSPage";
 import NotFound from "./pages/NotFound";
 import { useAuth } from "./context/AuthContext";
@@ -52,6 +53,13 @@ export default function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/products" element={<Products />} />
+
+
+        <Route path="/catalog" element={<CatalogBrowse />} />
+        <Route path="/catalog/:category" element={<CatalogBrowse />} />
+        <Route path="/catalog/:category/:subcategory" element={<CatalogBrowse />} />
+        <Route path="/catalog/:category/:subcategory/:brand" element={<CatalogBrowse />} />
+        <Route path="/catalog/:category/:subcategory/:brand/:model" element={<CatalogBrowse />} />
 
         <Route
           path="/brand-models/:brand"

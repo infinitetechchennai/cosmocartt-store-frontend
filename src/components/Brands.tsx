@@ -1,8 +1,8 @@
 import { apiPath } from "../config/api";
-import { getImageUrl } from "../utils/imageUrl";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Sparkles, ArrowRight } from "lucide-react";
+import BrandLogo from "./BrandLogo";
 
 export default function Brands() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -12,16 +12,16 @@ export default function Brands() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          setBrands(data.brands);
+          setBrands(data.brands || []);
         }
       })
       .catch(console.error);
   }, []);
 
   return (
-    <section className="pt-6 pb-6 sm:pt-8 sm:pb-8 bg-gradient-to-b from-white via-[#faf7ff] to-white">
+    <section className="pt-4 pb-20 bg-gradient-to-b from-white via-[#faf7ff] to-white">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
           <div>
             <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#F1E8FF] text-[#4B1E78] text-sm font-black">
               <Sparkles size={16} />
@@ -54,10 +54,10 @@ export default function Brands() {
               className="group bg-white rounded-3xl border border-purple-100 p-6 hover:-translate-y-1 hover:shadow-lg transition-all"
             >
               <div className="h-24 flex items-center justify-center">
-                <img
-                  src={getImageUrl(brand.image)}
-                  alt={brand.name}
-                  className="max-h-20 object-contain group-hover:scale-105 transition"
+                <BrandLogo
+                  brandName={brand.name}
+                  fallbackImage={brand.image}
+                  className="max-h-20 max-w-[130px] object-contain group-hover:scale-110 transition"
                 />
               </div>
 
@@ -67,6 +67,16 @@ export default function Brands() {
 
               <p className="mt-2 text-center text-xs text-slate-500">
                 {brand.productCount} Products
+              </p>
+
+              {brand.minPrice > 0 && (
+                <p className="mt-1 text-center text-xs text-slate-500">
+                  Starts from ₹{Number(brand.minPrice).toLocaleString()}
+                </p>
+              )}
+
+              <p className="mt-1 text-center text-[11px] text-emerald-600 font-semibold">
+                {brand.inStockProducts || 0} items available
               </p>
             </Link>
           ))}

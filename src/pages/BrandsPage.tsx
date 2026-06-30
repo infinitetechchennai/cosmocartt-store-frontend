@@ -137,6 +137,16 @@ export default function BrandsPage() {
                     {brand.productCount} Products
                   </p>
 
+                  {brand.minPrice > 0 && (
+                    <p className="mt-1 text-xs text-slate-500">
+                      Starts from ₹{Number(brand.minPrice).toLocaleString()}
+                    </p>
+                  )}
+
+                  <p className="text-[11px] text-emerald-600 font-semibold">
+                    {brand.inStockProducts || 0} items available
+                  </p>
+
                   <p className="text-xs text-purple-700 mt-2 flex items-center justify-center gap-1 font-bold">
                     View Products
                     <ArrowRight size={14} />

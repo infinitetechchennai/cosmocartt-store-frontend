@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
-import { categories } from "../data/categories";
+import { useCatalog } from "../context/CatalogContext";
 import {
   Search,
   ShoppingCart,
@@ -45,21 +45,12 @@ const searchSuggestions = [
 ];
 
 const getSubcategoryLink = (categoryName: string, sub: string) => {
-  const name = sub.toLowerCase();
-
-  if (
-    categoryName === "Mobile Accessories" &&
-    (name.includes("case") || name.includes("cover") || name.includes("backcase"))
-  ) {
-    return "/backcase-brands";
-  }
-
-  return `/products?category=${encodeURIComponent(
-    categoryName
-  )}&subcategory=${encodeURIComponent(sub)}`;
+  return `/catalog/${encodeURIComponent(categoryName)}/${encodeURIComponent(sub)}`;
 };
 
 export default function Navbar() {
+  const { catalog } = useCatalog();
+  const categories = catalog;
   const { cartItems } = useCart();
   const { wishlistItems } = useWishlist();
   const { user, logout } = useAuth();
@@ -140,11 +131,11 @@ export default function Navbar() {
                       .find((cat) => cat.name === hoveredCategory)
                       ?.subcategories.map((sub) => (
                         <Link
-                          key={sub}
-                          to={getSubcategoryLink(hoveredCategory, sub)}
+                          key={sub.name}
+                          to={getSubcategoryLink(hoveredCategory, sub.name)}
                           className="block bg-white rounded-lg px-3 py-2 text-sm hover:bg-purple-50 hover:text-[#4B1E78] transition-all"
                         >
-                          {sub}
+                          {sub.name}
                         </Link>
                       ))}
                   </div>
