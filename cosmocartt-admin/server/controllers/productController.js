@@ -137,8 +137,36 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
     try {
-        const products = await Product.find().sort({
-            createdAt: -1,
+        const {
+            category,
+            subcategory,
+            brand,
+            model,
+            search
+        } = req.query;
+
+        const filter = {};
+
+        if (category) filter.category = category;
+        if (subcategory) filter.subcategory = subcategory;
+        if (brand) filter.brand = brand;
+        if (model) filter.model = model;
+
+        if (search) {
+            const searchRegex = new RegExp(search, "i");
+
+            filter.$or = [
+                { name: searchRegex },
+                { brand: searchRegex },
+                { model: searchRegex },
+                { category: searchRegex },
+                { subcategory: searchRegex },
+                { sku: searchRegex }
+            ];
+        }
+
+        const products = await Product.find(filter).sort({
+            createdAt: -1
         });
 
         return res.status(200).json({
@@ -147,9 +175,13 @@ export const getProducts = async (req, res) => {
             products,
         });
     } catch (error) {
+        console.error("GET PRODUCTS ERROR:", error?.message);
+        console.error(error);
+
         return res.status(500).json({
             success: false,
-            message: error.message,
+            message: error?.message || "Get products failed",
+            stack: process.env.NODE_ENV === "production" ? undefined : error?.stack
         });
     }
 };

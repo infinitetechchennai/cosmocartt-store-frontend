@@ -43,7 +43,17 @@ export default function Products() {
 
         setLoading(true);
 
-        fetch(apiPath("/api/products"))
+        const productParams = new URLSearchParams();
+
+        if (query) productParams.set("search", query);
+        if (brand) productParams.set("brand", brand);
+        if (category) productParams.set("category", category);
+        if (subcategory) productParams.set("subcategory", subcategory);
+        if (model) productParams.set("model", model);
+
+        const productQuery = productParams.toString();
+
+        fetch(apiPath(`/api/products${productQuery ? `?${productQuery}` : ""}`))
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {

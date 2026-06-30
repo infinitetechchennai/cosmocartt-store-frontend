@@ -98,7 +98,7 @@ export default function NotFound() {
 
                   <div className="mt-6 space-y-3">
                     {[
-                      ["Mobile Accessories", "/products?category=Mobile%20Accessories"],
+                      ["Mobile Accessories", "/catalog/Mobile%20Accessories"],
                       ["TV Remotes", "/products?search=TV%20Remote"],
                       ["AC Remotes", "/products?search=AC%20Remote"],
                       ["All Products", "/products"],

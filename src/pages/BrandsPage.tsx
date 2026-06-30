@@ -1,5 +1,6 @@
 import { apiPath } from "../config/api";
 import { getImageUrl } from "../utils/imageUrl";
+import BrandLogo from "../components/BrandLogo";
 import { getDisplayPrice } from "../utils/pricing";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -117,16 +118,11 @@ export default function BrandsPage() {
                   className="group rounded-[26px] p-6 text-center border border-purple-100 bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
                 >
                   <div className="h-24 mx-auto mb-4 flex items-center justify-center rounded-3xl bg-purple-50 overflow-hidden">
-                    {brand.image ? (
-                      <img
-                        src={getImageUrl(brand.image)}
-                        alt={brand.name}
-                        className="max-h-20 max-w-[120px] object-contain group-hover:scale-110 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <Tag size={42} className="text-purple-700" />
-                    )}
+                    <BrandLogo
+                      brandName={brand.name}
+                      fallbackImage={brand.image}
+                      className="max-h-20 max-w-[120px] object-contain group-hover:scale-110 transition-transform duration-300"
+                    />
                   </div>
 
                   <h3 className="font-black text-slate-900 line-clamp-1">

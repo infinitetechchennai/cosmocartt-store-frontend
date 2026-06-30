@@ -1,7 +1,7 @@
 import logo from "../assets/logo.png";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useCatalog } from "../context/CatalogContext";
@@ -31,19 +31,6 @@ const countries = [
   "United Arab Emirates",
 ];
 
-const searchSuggestions = [
-  "iPhone",
-  "iPhone Case",
-  "Samsung Case",
-  "OnePlus Case",
-  "TV Remote",
-  "AC Remote",
-  "Mobile Back Cover",
-  "Clear Case",
-  "Shockproof Case",
-  "Silicone Case",
-];
-
 const getSubcategoryLink = (categoryName: string, sub: string) => {
   return `/catalog/${encodeURIComponent(categoryName)}/${encodeURIComponent(sub)}`;
 };
@@ -71,11 +58,35 @@ export default function Navbar() {
     setMobileOpen(false);
   };
 
+  const searchSuggestions = useMemo(() => {
+    const values = new Set<string>();
+
+    categories.forEach((category) => {
+      if (category.name) values.add(category.name);
+
+      category.subcategories?.forEach((subcategory) => {
+        if (subcategory.name) values.add(subcategory.name);
+
+        subcategory.brands?.forEach((brand) => {
+          if (brand.name) values.add(brand.name);
+
+          brand.models?.forEach((model) => {
+            if (model.name) values.add(model.name);
+          });
+        });
+      });
+    });
+
+    return Array.from(values).slice(0, 40);
+  }, [categories]);
+
   const filteredSuggestions = search.trim()
-    ? searchSuggestions.filter((item) =>
-        item.toLowerCase().startsWith(search.toLowerCase())
-      )
-    : searchSuggestions.slice(0, 6);
+    ? searchSuggestions
+        .filter((item) =>
+          item.toLowerCase().includes(search.toLowerCase())
+        )
+        .slice(0, 8)
+    : searchSuggestions.slice(0, 8);
 
   const handleSuggestionClick = (suggestion: string) => {
     setSearch(suggestion);
