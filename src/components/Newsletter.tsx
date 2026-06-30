@@ -100,7 +100,7 @@ export default function NewsletterSection() {
             <div className="relative">
               <div className="absolute -inset-3 rounded-[38px] bg-gradient-to-br from-white/20 via-purple-400/20 to-fuchsia-400/20 blur-2xl" />
 
-              <div className="relative overflow-hidden rounded-[30px] sm:rounded-[38px] border border-white/15 bg-white p-5 sm:p-7 lg:p-8 shadow-[0_35px_100px_rgba(0,0,0,0.26)]">
+              <div className="relative overflow-hidden rounded-[30px] sm:rounded-[38px] border border-white/15 bg-white p-5 sm:p-7 lg:p-8">
                 <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-purple-100 blur-3xl" />
 
                 {!submitted ? (
@@ -156,7 +156,7 @@ export default function NewsletterSection() {
 
                       <button
                         type="submit"
-                        className="group flex w-full items-center justify-center gap-2 rounded-[22px] bg-gradient-to-r from-[#4B1E78] via-[#6426A3] to-[#7C3AED] px-6 py-4 font-black text-white shadow-[0_18px_45px_rgba(75,30,120,0.32)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_26px_65px_rgba(75,30,120,0.42)]"
+                        className="group flex w-full items-center justify-center gap-2 rounded-[22px] bg-gradient-to-r from-[#4B1E78] via-[#6426A3] to-[#7C3AED] px-6 py-4 font-black text-white transition-all duration-300"
                       >
                         Subscribe for Exclusive Access
                         <ArrowRight
