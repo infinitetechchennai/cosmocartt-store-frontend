@@ -6,7 +6,7 @@ import acBanner from "../assets/ac-category.jpg";
 
 export default function CategoryShowcase() {
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
+    <section className="pt-20 pb-4 bg-gradient-to-b from-white via-slate-50 to-white">
 
       <div className="max-w-7xl mx-auto px-6">
 

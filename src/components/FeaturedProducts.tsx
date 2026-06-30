@@ -216,16 +216,7 @@ export default function FeaturedProducts() {
       </button>
     </div>
 
-    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
-      Page{" "}
-      <span className="text-[#4B1E78]">
-        {currentPage}
-      </span>{" "}
-      of{" "}
-      <span className="text-slate-700">
-        {totalPages}
-      </span>
-    </p>
+    
     </div>
 )}
       </div>
