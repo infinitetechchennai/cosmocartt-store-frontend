@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function DealBanner() {
     return (
-        <section className="max-w-7xl mx-auto px-6 pt-8 pb-3">
+        <section className="max-w-7xl mx-auto px-6 pt-8 pb-5">
             <div
                 className="
                     relative

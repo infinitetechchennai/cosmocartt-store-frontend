@@ -13,7 +13,7 @@ export default function AIExperienceSection() {
   };
 
   return (
-    <section className="bg-white overflow-hidden pt-0 pb-0 px-4 sm:px-6">
+    <div className="relative h-[220px] sm:h-[330px] lg:h-[410px] rounded-[22px] sm:rounded-[36px] overflow-hidden bg-black border border-purple-200 shadow-[0_18px_45px_rgba(80,20,180,0.12)]">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
         <div className="text-center lg:text-left">
           <div className="inline-flex px-4 py-2 rounded-full bg-purple-100 text-[#7a37dd] text-[10px] sm:text-xs font-black tracking-[0.14em] mb-5 sm:mb-7">
@@ -39,7 +39,7 @@ export default function AIExperienceSection() {
           </button>
         </div>
 
-        <div className="relative h-[230px] sm:h-[360px] lg:h-[460px] rounded-[22px] sm:rounded-[36px] overflow-hidden bg-black border border-purple-200 shadow-[0_25px_70px_rgba(80,20,180,0.16)]">
+        <div className="relative h-[220px] sm:h-[330px] lg:h-[410px] rounded-[22px] sm:rounded-[36px] overflow-hidden bg-black border border-purple-200 shadow-[0_18px_45px_rgba(80,20,180,0.12)]">
           <video
             ref={videoRef}
             src={videoSrc}
