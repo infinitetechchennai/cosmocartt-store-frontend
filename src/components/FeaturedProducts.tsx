@@ -2,7 +2,12 @@ import { apiPath } from "../config/api";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+} from "lucide-react";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -33,15 +38,17 @@ export default function FeaturedProducts() {
   );
 
   const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+
     setCurrentPage(page);
   };
+
+  const paginationItems = getPaginationItems(currentPage, totalPages);
 
   return (
     <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-6">
-
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
-
           <div>
             <span className="inline-block px-5 py-2 rounded-full bg-purple-100 text-[#4B1E78] text-sm font-bold">
               TRENDING COLLECTION
@@ -77,7 +84,6 @@ export default function FeaturedProducts() {
             View All Products
             <ArrowRight size={18} />
           </Link>
-
         </div>
 
         <div
@@ -113,57 +119,85 @@ export default function FeaturedProducts() {
 
         {!loading && products.length === 0 && (
           <div className="mt-8 bg-white rounded-3xl border border-purple-100 shadow-sm p-10 text-center">
-            <p className="font-bold text-slate-700">No featured products available right now.</p>
+            <p className="font-bold text-slate-700">
+              No featured products available right now.
+            </p>
           </div>
         )}
 
         {!loading && totalPages > 1 && (
-  <div className="mt-12 flex justify-center">
-    <div className="flex items-center gap-2 rounded-full border border-purple-100 bg-white px-3 py-2 shadow-[0_15px_40px_rgba(76,29,149,0.12)]">
-
-      <button
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-[#4B1E78] transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <ChevronLeft size={18} />
-        Prev
-      </button>
-
-      {[1, currentPage - 1, currentPage, currentPage + 1, totalPages]
-        .filter((page, index, arr) =>
-          page >= 1 &&
-          page <= totalPages &&
-          arr.indexOf(page) === index
-        )
-        .map((page) => (
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`h-10 min-w-10 rounded-full px-4 text-sm font-black transition-all duration-300 ${
-              currentPage === page
-                ? "bg-gradient-to-r from-[#4B1E78] to-[#6F2DBD] text-white shadow-lg shadow-purple-300/50"
-                : "text-[#4B1E78] hover:bg-purple-50"
-            }`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 sm:px-4 py-2 rounded-xl border border-purple-200 bg-white text-[#4B1E78] text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {page}
+            ‹
           </button>
-        ))}
 
-      <button
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-[#4B1E78] transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Next
-        <ChevronRight size={18} />
-      </button>
+          {[1, currentPage - 1, currentPage, currentPage + 1, totalPages]
+            .filter((page, index, arr) =>
+              page >= 1 &&
+              page <= totalPages &&
+              arr.indexOf(page) === index
+            )
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`min-w-9 h-9 px-3 rounded-xl text-sm font-black transition-all ${
+                  currentPage === page
+                    ? "bg-[#4B1E78] text-white shadow"
+                    : "bg-white text-[#4B1E78] border border-purple-100 hover:bg-purple-50"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
 
-    </div>
-  </div>
-)}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 sm:px-4 py-2 rounded-xl border border-purple-200 bg-white text-[#4B1E78] text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            ›
+          </button>
+        </div>
+      )}
 
       </div>
     </section>
   );
+}
+
+function getPaginationItems(
+  currentPage: number,
+  totalPages: number
+): (number | "ellipsis-start" | "ellipsis-end")[] {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const pages: (number | "ellipsis-start" | "ellipsis-end")[] = [];
+
+  pages.push(1);
+
+  if (currentPage > 3) {
+    pages.push("ellipsis-start");
+  }
+
+  const startPage = Math.max(2, currentPage - 1);
+  const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+  for (let page = startPage; page <= endPage; page++) {
+    pages.push(page);
+  }
+
+  if (currentPage < totalPages - 2) {
+    pages.push("ellipsis-end");
+  }
+
+  pages.push(totalPages);
+
+  return pages;
 }
