@@ -30,7 +30,7 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="pt-8 pb-20 bg-gradient-to-b from-white via-slate-50 to-white">
+    <section className="pt-0 pb-20 bg-gradient-to-b from-white via-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="text-center mb-14">
