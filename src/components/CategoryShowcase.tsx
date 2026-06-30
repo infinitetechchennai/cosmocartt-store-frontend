@@ -34,7 +34,7 @@ export default function CategoryShowcase() {
           {/* MOBILE CASES - BIG CARD */}
 
           <Link
-            to="/backcase-brands"
+            to="/catalog/Mobile%20Accessories/Cases"
             className="
               lg:col-span-2
               relative
@@ -111,7 +111,7 @@ export default function CategoryShowcase() {
             {/* TV REMOTE */}
 
             <Link
-              to="/products"
+              to="/products?search=TV%20Remote"
               className="
                 relative
                 h-[212px]
@@ -164,7 +164,7 @@ export default function CategoryShowcase() {
             {/* AC REMOTE */}
 
             <Link
-              to="/products"
+              to="/products?search=AC%20Remote"
               className="
                 relative
                 h-[212px]

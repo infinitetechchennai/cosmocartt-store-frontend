@@ -2,9 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
-import BackcaseBrands from "./pages/BackcaseBrands";
-import BackcaseModels from "./pages/BackcaseModels";
-import BrandModels from "./pages/BrandModels";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -62,24 +59,9 @@ export default function App() {
         <Route path="/catalog/:category/:subcategory/:brand/:model" element={<CatalogBrowse />} />
 
         <Route
-          path="/brand-models/:brand"
-          element={<BrandModels />}
+          path="/product/:id"
+          element={<ProductDetails />}
         />
-
-        <Route
-          path="/backcase-brands"
-          element={<BackcaseBrands />}
-        />
-
-        <Route
-          path="/backcase-models/:brand/:model"
-          element={<BackcaseModels />}
-        />
-
-        <Route
-  path="/product/:slug"
-  element={<ProductDetails />}
-/>
 
         <Route path="/cart" element={<Cart />} />
 
