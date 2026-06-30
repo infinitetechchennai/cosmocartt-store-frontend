@@ -1,4 +1,5 @@
 import { API_URL, apiPath } from "../config/api";
+import { readCachedApiData } from "../utils/cacheRead";
 import { useState, useEffect, FormEvent } from "react";
 import { User } from "../types";
 import {
@@ -34,7 +35,9 @@ export default function UsersView({
 
   const [userTypeFilter, setUserTypeFilter] =
     useState("all");
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<any[]>(() =>
+    readCachedApiData(apiPath("/api/customers"), [])
+  );
 
   const [editName, setEditName] = useState("");
 

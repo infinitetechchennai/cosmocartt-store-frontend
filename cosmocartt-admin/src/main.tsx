@@ -1,3 +1,5 @@
+import { installFetchCache } from "./utils/installFetchCache";
+import { prefetchAdminData } from "./utils/prefetchAdminData";
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';

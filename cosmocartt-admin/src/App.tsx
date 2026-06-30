@@ -1,4 +1,5 @@
 import { apiPath } from "./config/api";
+import { readCachedApiData } from "./utils/cacheRead";
 import Login from "./components/Login";
 import SettingsView from "./components/SettingsView";
 import { useState, useEffect } from "react";
@@ -46,14 +47,20 @@ export default function App() {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("Monthly");
 
   // Real core reactive data layers
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>(() =>
+    readCachedApiData(apiPath("/api/users"), initialUsers)
+  );
+  const [orders, setOrders] = useState<any[]>(() =>
+    readCachedApiData(apiPath("/api/orders"), [])
+  );
   useEffect(() => {
   }, [orders]);
   const [b2bClients, setB2bClients] = useState<B2BClient[]>(initialB2BClients);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>(initialTransactions);
   const [products, setProducts] =
-    useState<Product[]>([]);
+    useState<Product[]>(() =>
+      readCachedApiData(apiPath("/api/products"), [])
+    );
   useEffect(() => {
     fetch(apiPath("/api/products"))
       .then((res) => res.json())
@@ -214,7 +221,71 @@ export default function App() {
         {/* Dynamic Inner views with high-contrast smooth scroll */}
         <main className="flex-1 overflow-y-auto p-8 bg-gradient-to-br from-slate-50 via-white to-red-50">
           <div className="max-w-7xl mx-auto space-y-6">
-            {renderActiveView()}
+            <div className={activeTab === "dashboard" ? "block" : "hidden"}>
+              <DashboardView
+                orders={orders}
+                users={users}
+                products={products}
+                bestSellers={bestSellers}
+                timeFilter={timeFilter}
+                setTimeFilter={setTimeFilter}
+              />
+            </div>
+
+            <div className={activeTab === "users" ? "block" : "hidden"}>
+              <UsersView
+                users={users}
+                setUsers={setUsers}
+                loggedUser={loggedUser}
+              />
+            </div>
+
+            <div className={activeTab === "b2b" ? "block" : "hidden"}>
+              <B2BView
+                b2bClients={b2bClients}
+                setB2bClients={setB2bClients}
+              />
+            </div>
+
+            <div className={activeTab === "orders" ? "block" : "hidden"}>
+              <OrdersView
+                orders={orders}
+                setOrders={setOrders}
+              />
+            </div>
+
+            <div className={activeTab === "payments" ? "block" : "hidden"}>
+              <PaymentsView
+                transactions={transactions}
+                setTransactions={setTransactions}
+              />
+            </div>
+
+            <div className={activeTab === "products" ? "block" : "hidden"}>
+              <ProductsView
+                products={products}
+                setProducts={setProducts}
+              />
+            </div>
+
+            <div className={activeTab === "settings" ? "block" : "hidden"}>
+              <SettingsView
+                loggedUser={loggedUser}
+                setLoggedUser={setLoggedUser}
+              />
+            </div>
+
+            {![
+              "dashboard",
+              "users",
+              "b2b",
+              "orders",
+              "payments",
+              "products",
+              "settings"
+            ].includes(activeTab) && (
+              <OtherViews tab={activeTab} />
+            )}
           </div>
         </main>
       </div>
