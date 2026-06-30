@@ -35,7 +35,7 @@ export default function NewsletterSection() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-[#F8F5FF] to-white px-4 sm:px-6 pt-6 sm:pt-8 pb-16 sm:pb-24">
+    <section className="relative -mb-px overflow-hidden bg-gradient-to-b from-white via-[#F8F5FF] to-white px-4 sm:px-6 pt-6 sm:pt-8 pb-0">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute left-[10%] top-16 h-72 w-72 rounded-full bg-purple-200/35 blur-3xl" />
         <div className="absolute right-[5%] bottom-10 h-80 w-80 rounded-full bg-fuchsia-200/30 blur-3xl" />
