@@ -118,44 +118,50 @@ export default function FeaturedProducts() {
         )}
 
         {!loading && totalPages > 1 && (
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-3 sm:px-4 py-2 rounded-xl border border-purple-200 bg-white text-[#4B1E78] text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            ‹
-          </button>
+  <div className="mt-12 flex justify-center">
+    <div className="flex items-center gap-2 rounded-full border border-purple-100 bg-white px-3 py-2 shadow-[0_15px_40px_rgba(76,29,149,0.12)]">
 
-          {[1, currentPage - 1, currentPage, currentPage + 1, totalPages]
-            .filter((page, index, arr) =>
-              page >= 1 &&
-              page <= totalPages &&
-              arr.indexOf(page) === index
-            )
-            .map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`min-w-9 h-9 px-3 rounded-xl text-sm font-black transition-all ${
-                  currentPage === page
-                    ? "bg-[#4B1E78] text-white shadow"
-                    : "bg-white text-[#4B1E78] border border-purple-100 hover:bg-purple-50"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+      <button
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-[#4B1E78] transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <ChevronLeft size={18} />
+        Prev
+      </button>
 
+      {[1, currentPage - 1, currentPage, currentPage + 1, totalPages]
+        .filter((page, index, arr) =>
+          page >= 1 &&
+          page <= totalPages &&
+          arr.indexOf(page) === index
+        )
+        .map((page) => (
           <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 sm:px-4 py-2 rounded-xl border border-purple-200 bg-white text-[#4B1E78] text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`h-10 min-w-10 rounded-full px-4 text-sm font-black transition-all duration-300 ${
+              currentPage === page
+                ? "bg-gradient-to-r from-[#4B1E78] to-[#6F2DBD] text-white shadow-lg shadow-purple-300/50"
+                : "text-[#4B1E78] hover:bg-purple-50"
+            }`}
           >
-            ›
+            {page}
           </button>
-        </div>
-      )}
+        ))}
+
+      <button
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-[#4B1E78] transition-all hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Next
+        <ChevronRight size={18} />
+      </button>
+
+    </div>
+  </div>
+)}
 
       </div>
     </section>
