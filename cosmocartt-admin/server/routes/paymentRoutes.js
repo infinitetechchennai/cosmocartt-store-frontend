@@ -28,6 +28,7 @@ router.post("/create-order", async (req, res) => {
 
         res.json({
             success: true,
+            key: process.env.RAZORPAY_KEY_ID,
             order
         });
 
@@ -72,7 +73,10 @@ router.post("/verify", async (req, res) => {
             razorpay_signature;
 
         res.json({
-            success: isValid
+            success: isValid,
+            verified: isValid,
+            orderId: razorpay_order_id,
+            paymentId: razorpay_payment_id
         });
 
     } catch (error) {

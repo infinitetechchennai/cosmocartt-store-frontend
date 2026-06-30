@@ -343,7 +343,7 @@ export default function Checkout() {
                 }
 
                 const options = {
-                    key: "rzp_test_SzWOSqm0kgH1d3",
+                    key: paymentData.key,
                     amount: paymentData.order.amount,
                     currency: "INR",
                     name: "CosmoCartt",

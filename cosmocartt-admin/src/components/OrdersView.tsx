@@ -14,6 +14,19 @@ interface OrdersViewProps {
   setOrders: (orders: Order[]) => void;
 }
 
+function InfoRow({ label, value }: { label: string; value: any }) {
+  return (
+    <div className="bg-white rounded-3xl border border-slate-100 p-3">
+      <p className="text-[11px] uppercase tracking-wide text-slate-400 font-bold">
+        {label}
+      </p>
+      <p className="text-sm text-slate-800 font-semibold mt-1 break-words">
+        {value}
+      </p>
+    </div>
+  );
+}
+
 export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrder, setSelectedOrder] =
@@ -420,7 +433,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
         <div className="flex gap-2 shrink-0">
           {/* <button
             onClick={addRandomOrder}
-            className="border border-zinc-200 hover:bg-zinc-50 bg-white text-zinc-800 font-semibold text-sm px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-xs"
+            className="border border-zinc-200 hover:bg-zinc-50 bg-white text-zinc-800 font-semibold text-sm px-4 py-2.5 rounded-3xl flex items-center gap-2 transition-all shadow-xs"
           >
             <Plus className="w-4 h-4" /> Simulate Random Order
           </button> */}
@@ -845,7 +858,7 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
       {selectedOrder && (
 
 
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-end p-4 lg:pl-80">
 
 
 
@@ -854,231 +867,216 @@ export default function OrdersView({ orders, setOrders }: OrdersViewProps) {
       bg-white
       rounded-xl
       w-full
-      max-w-4xl
-      max-h-[90vh]
+      lg:max-w-[calc(100vw-22rem)]
+      max-h-[calc(100vh-2rem)]
       overflow-y-auto
-      p-6
+      p-6 lg:p-8
+      shadow-2xl
     "
           >
 
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center justify-between">
-
-                <div>
-
-                  <h2 className="text-2xl font-bold text-slate-900">
+            <div className="flex items-start justify-between gap-6 mb-8 pb-6 border-b border-slate-100">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h2 className="text-3xl font-black text-slate-900">
                     Order #{selectedOrder.orderNumber}
                   </h2>
 
-                  <p className="text-sm text-slate-500 mt-1">
-                    {new Date(selectedOrder.createdAt).toLocaleString()}
-                  </p>
-
-                </div>
-
-                <div className="flex gap-2">
-
-                  <span
-                    className="
-        px-3 py-1 rounded-full
-        bg-blue-100
-        text-blue-700
-        text-sm
-        font-semibold
-      "
-                  >
+                  <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-bold">
                     {selectedOrder.status}
                   </span>
 
-                  <span
-                    className="
-        px-3 py-1 rounded-full
-        bg-green-100
-        text-green-700
-        text-sm
-        font-semibold
-      "
-                  >
+                  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-bold">
                     {selectedOrder.paymentStatus}
                   </span>
-
                 </div>
 
+                <p className="text-sm text-slate-500 mt-2">
+                  {new Date(selectedOrder.createdAt).toLocaleString()}
+                </p>
               </div>
 
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="text-gray-500"
+                className="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 font-black transition"
               >
                 ✕
-        </button>
-
-
+              </button>
             </div>
 
-            <div className="space-y-2 mb-6">
-
-              <p>
-                <strong>Order ID:</strong>{" "}
-                {selectedOrder.orderNumber ||
-                  selectedOrder._id}
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-4">
-
-                <div className="border rounded-xl p-4">
-
-                  <h3 className="font-semibold mb-3">
-                    Customer Information
-    </h3>
-
-                  <p>{selectedOrder.customerName}</p>
-                  <p>{selectedOrder.email}</p>
-                  <p>{selectedOrder.phone}</p>
-
-                </div>
-
-                <div className="border rounded-xl p-4">
-
-                  <h3 className="font-semibold mb-3">
-                    Shipping Information
-    </h3>
-
-                  <p>{selectedOrder.address}</p>
-                  <p>{selectedOrder.city}</p>
-                  <p>{selectedOrder.state}</p>
-                  <p>{selectedOrder.pincode}</p>
-
-                </div>
-
+            <div className="space-y-6 mb-8">
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                <p className="text-sm text-slate-500">
+                  <span className="font-bold text-slate-800">Order ID:</span>{" "}
+                  {selectedOrder.orderNumber || selectedOrder._id}
+                </p>
               </div>
 
-              <p>
-                <strong>Shipment ID:</strong>{" "}
-                {selectedOrder.shipmentId || "-"}
-              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm">
+                  <h3 className="font-black text-slate-900 mb-4">
+                    Customer Information
+                  </h3>
 
-              <p>
-                <strong>Shiprocket Order ID:</strong>{" "}
-                {selectedOrder.shiprocketOrderId || "-"}
-              </p>
+                  <div className="space-y-2 text-sm text-slate-600">
+                    <p className="font-bold text-slate-900">
+                      {selectedOrder.customerName || "-"}
+                    </p>
+                    <p>{selectedOrder.email || "-"}</p>
+                    <p>{selectedOrder.phone || "-"}</p>
+                  </div>
+                </div>
 
-              <p>
-                <strong>AWB Code:</strong>{" "}
-                {selectedOrder.awbCode || "-"}
-              </p>
+                <div className="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm">
+                  <h3 className="font-black text-slate-900 mb-4">
+                    Shipping Information
+                  </h3>
 
-              <p>
-                <strong>Courier:</strong>{" "}
-                {selectedOrder.courierName || "-"}
-              </p>
+                  <div className="space-y-2 text-sm text-slate-600">
+                    <p>{selectedOrder.address || "-"}</p>
+                    <p>
+                      {[selectedOrder.city, selectedOrder.state, selectedOrder.pincode]
+                        .filter(Boolean)
+                        .join(", ") || "-"}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-              <p>
-                <strong>Tracking URL:</strong>{" "}
-                {selectedOrder.trackingUrl ? (
-                  <a
-                    href={selectedOrder.trackingUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    Open Tracking
-                  </a>
-                ) : (
-                  "-"
-                )}
-              </p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="border border-blue-100 rounded-2xl p-5 bg-blue-50/40 shadow-sm">
+                  <h3 className="font-black text-slate-900 mb-4">
+                    Shipping & Tracking
+                  </h3>
 
-              <p>
-                <strong>Payment Method:</strong>{" "}
-                {selectedOrder.paymentMethod || "-"}
-              </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <InfoRow label="Shipment ID" value={selectedOrder.shipmentId || "-"} />
+                    <InfoRow label="Shiprocket Order ID" value={selectedOrder.shiprocketOrderId || "-"} />
+                    <InfoRow label="AWB Code" value={selectedOrder.awbCode || "-"} />
+                    <InfoRow label="Courier" value={selectedOrder.courierName || "-"} />
+                  </div>
 
-              <p>
-                <strong>Payment Status:</strong>{" "}
-                {selectedOrder.paymentStatus || "-"}
-              </p>
+                  <div className="mt-4 text-sm">
+                    <span className="font-bold text-slate-700">Tracking URL:</span>{" "}
+                    {selectedOrder.trackingUrl ? (
+                      <a
+                        href={selectedOrder.trackingUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline font-semibold"
+                      >
+                        Open Tracking
+                      </a>
+                    ) : (
+                      <span className="text-slate-500">-</span>
+                    )}
+                  </div>
+                </div>
 
-              <p>
-                <strong>Razorpay Order ID:</strong>{" "}
-                {selectedOrder.razorpayOrderId || "-"}
-              </p>
+                <div className="border border-purple-100 rounded-2xl p-5 bg-purple-50/40 shadow-sm">
+                  <h3 className="font-black text-slate-900 mb-4">
+                    Payment Information
+                  </h3>
 
-              <p>
-                <strong>Razorpay Payment ID:</strong>{" "}
-                {selectedOrder.razorpayPaymentId || "-"}
-              </p>
-
-
-
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <InfoRow label="Payment Method" value={selectedOrder.paymentMethod || "-"} />
+                    <InfoRow label="Payment Status" value={selectedOrder.paymentStatus || "-"} />
+                    <InfoRow label="Razorpay Order ID" value={selectedOrder.razorpayOrderId || "-"} />
+                    <InfoRow label="Razorpay Payment ID" value={selectedOrder.razorpayPaymentId || "-"} />
+                  </div>
+                </div>
+              </div>
             </div>
 
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="font-black text-xl text-slate-900">
+                Ordered Products
+              </h3>
 
+              <span className="text-sm font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full">
+                {selectedOrder.products?.length || 0} Items
+              </span>
+            </div>
 
-            <h3 className="font-semibold text-lg mb-3">
-              Ordered Products
-</h3>
+            <div className="space-y-4">
+              {selectedOrder.products?.map((product, index) => {
+                const productImage =
+                  product.image
+                    ? product.image.startsWith("http")
+                      ? product.image
+                      : `${API_URL}${product.image}`
+                    : "";
 
-            <div className="space-y-3">
-
-              {selectedOrder.products?.map(
-                (product, index) => (
+                return (
                   <div
                     key={index}
-                    className="border rounded-xl p-4 flex gap-4 items-center"
+                    className="border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 sm:items-center bg-white hover:shadow-md transition"
                   >
+                    <div className="w-24 h-24 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0">
+                      {productImage ? (
+                        <img
+                          src={productImage}
+                          alt={product.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="text-xs text-slate-400 font-bold">
+                          No Image
+                        </span>
+                      )}
+                    </div>
 
-                    <img
-                      src={`${API_URL}${product.images?.[0]}`}
-                      alt={product.name}
-                      className="
-w-24
-h-24
-object-contain
-rounded-xl
-border
-bg-white
-"
-                    />
-
-                    <div className="flex-1">
-
-                      <p className="font-semibold text-zinc-900">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-black text-slate-900 line-clamp-2">
                         {product.name}
                       </p>
 
-                      <p className="text-sm text-zinc-500">
-                        Product ID:
-            {" "}
-                        {product.productId}
-                      </p>
+                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-500">
+                        <span>
+                          <strong>Product ID:</strong> {product.productId || "-"}
+                        </span>
+                        <span>
+                          <strong>SKU:</strong> {product.sku || "-"}
+                        </span>
+                        <span>
+                          <strong>HSN:</strong> {product.hsnCode || "-"}
+                        </span>
+                      </div>
 
-                      <p className="text-sm text-zinc-500">
-                        Qty: {product.quantity}
-                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                        {product.brand && (
+                          <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded-full font-semibold">
+                            {product.brand}
+                          </span>
+                        )}
 
+                        {product.sellerName && (
+                          <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-full font-semibold">
+                            Seller: {product.sellerName}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="text-right">
-
-                      <p className="font-semibold">
-                        ₹{product.price}
+                    <div className="sm:text-right shrink-0 min-w-[130px]">
+                      <p className="text-sm text-slate-500">
+                        Qty: <span className="font-bold text-slate-900">{product.quantity}</span>
                       </p>
 
-                      <p className="text-sm text-zinc-500">
-                        Total:
-            {" "}
-            ₹{product.price * product.quantity}
+                      <p className="font-black text-lg text-slate-900 mt-1">
+                        ₹{Number(product.price || 0).toLocaleString()}
                       </p>
 
-
-
+                      <p className="text-sm text-slate-500">
+                        Total:{" "}
+                        <span className="font-bold text-slate-900">
+                          ₹{Number((product.price || 0) * (product.quantity || 0)).toLocaleString()}
+                        </span>
+                      </p>
                     </div>
-
                   </div>
-                )
-              )}
-
+                );
+              })}
             </div>
 
             <div
