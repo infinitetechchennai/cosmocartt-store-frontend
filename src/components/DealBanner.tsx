@@ -1,11 +1,8 @@
 import { Link } from "react-router-dom";
 
 export default function DealBanner() {
-
     return (
-
-        <section className="max-w-7xl mx-auto px-6 py-16">
-
+        <section className="max-w-7xl mx-auto px-6 pt-8 pb-3">
             <div
                 className="
                     relative
@@ -15,13 +12,9 @@ export default function DealBanner() {
                     from-[#2B1055]
                     via-[#4B1E78]
                     to-[#6F2DBD]
-                    min-h-[420px]
-                    shadow-2xl
+                    min-h-[340px]
                 "
             >
-
-                {/* Glow Effect */}
-
                 <div
                     className="
                         absolute
@@ -58,19 +51,17 @@ export default function DealBanner() {
                         h-full
                     "
                 >
-
-                    {/* LEFT */}
-
-                    <div className="p-12 lg:p-16 text-white">
-
+                    <div className="p-8 sm:p-10 lg:p-12 text-white">
                         <span
                             className="
+                                inline-flex
                                 bg-red-500
                                 px-4
                                 py-2
                                 rounded-full
                                 text-sm
-                                font-bold
+                                font-black
+                                tracking-wide
                             "
                         >
                             LIMITED TIME OFFER
@@ -78,10 +69,10 @@ export default function DealBanner() {
 
                         <h2
                             className="
-                                text-5xl
+                                text-4xl
                                 lg:text-6xl
                                 font-black
-                                mt-6
+                                mt-5
                                 leading-tight
                             "
                         >
@@ -90,17 +81,11 @@ export default function DealBanner() {
                             70% OFF
                         </h2>
 
-                        <p className="mt-5 text-xl text-purple-100">
-
-                            Gaming PCs,
-                            Smartphones,
-                            Audio Devices
-                            and Accessories
-
+                        <p className="mt-4 text-lg lg:text-xl text-purple-100 max-w-xl">
+                            Gaming PCs, Smartphones, Audio Devices and Accessories
                         </p>
 
-                        <div className="flex gap-4 mt-8">
-
+                        <div className="flex flex-wrap gap-4 mt-7">
                             <Link
                                 to="/products"
                                 className="
@@ -109,8 +94,8 @@ export default function DealBanner() {
                                     px-7
                                     py-4
                                     rounded-2xl
-                                    font-bold
-                                    hover:scale-105
+                                    font-black
+                                    hover:bg-purple-50
                                     transition
                                 "
                             >
@@ -127,17 +112,16 @@ export default function DealBanner() {
                                     px-7
                                     py-4
                                     rounded-2xl
-                                    font-semibold
+                                    font-black
+                                    text-white
+                                    hover:bg-white/15
+                                    transition
                                 "
                             >
                                 Explore Offers
                             </Link>
-
                         </div>
-
                     </div>
-
-                    {/* RIGHT */}
 
                     <div
                         className="
@@ -146,23 +130,22 @@ export default function DealBanner() {
                             items-center
                             justify-center
                             h-full
+                            px-10
                         "
                     >
-
                         <div
                             className="
                                 bg-white/10
                                 backdrop-blur-xl
-                                rounded-[40px]
-                                p-10
+                                rounded-[36px]
+                                px-14
+                                py-12
                                 border
                                 border-white/20
                             "
                         >
-
                             <div className="text-center text-white">
-
-                                <p className="text-purple-200">
+                                <p className="text-purple-200 font-black text-sm tracking-[0.18em]">
                                     SALE ENDS SOON
                                 </p>
 
@@ -170,21 +153,14 @@ export default function DealBanner() {
                                     70%
                                 </h3>
 
-                                <p className="mt-2">
+                                <p className="mt-2 font-bold text-purple-100">
                                     OFF SELECTED PRODUCTS
                                 </p>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </section>
-
     );
 }

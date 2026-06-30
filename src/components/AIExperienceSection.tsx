@@ -13,8 +13,8 @@ export default function AIExperienceSection() {
   };
 
   return (
-    <section className="bg-white overflow-hidden py-12 sm:py-16 lg:py-28 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+    <section className="bg-white overflow-hidden pt-0 pb-0 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
         <div className="text-center lg:text-left">
           <div className="inline-flex px-4 py-2 rounded-full bg-purple-100 text-[#7a37dd] text-[10px] sm:text-xs font-black tracking-[0.14em] mb-5 sm:mb-7">
             AI PRODUCT EXPERIENCE
