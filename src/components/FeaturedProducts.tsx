@@ -46,7 +46,7 @@ export default function FeaturedProducts() {
   const paginationItems = getPaginationItems(currentPage, totalPages);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-slate-50 to-white">
+    <section className="pt-20 pb-4 bg-gradient-to-b from-white via-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
           <div>
@@ -126,7 +126,7 @@ export default function FeaturedProducts() {
         )}
 
         {!loading && totalPages > 1 && (
-  <div className="mt-12 flex flex-col items-center justify-center gap-3">
+  <div className="mt-6 flex flex-col items-center justify-center gap-2">
     <div className="flex items-center justify-center gap-1.5 sm:gap-2">
       <button
         type="button"
