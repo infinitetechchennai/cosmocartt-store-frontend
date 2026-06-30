@@ -126,122 +126,108 @@ export default function FeaturedProducts() {
         )}
 
         {!loading && totalPages > 1 && (
-          <div className="mt-12 flex flex-col items-center justify-center gap-4">
-            <div className="inline-flex items-center gap-2 rounded-[24px] border border-purple-100 bg-white/95 p-2 shadow-[0_18px_55px_rgba(76,29,149,0.12)] backdrop-blur-xl">
-              <button
-                type="button"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="
-                  inline-flex
-                  h-11
-                  items-center
-                  gap-2
-                  rounded-2xl
-                  border
-                  border-slate-200
-                  bg-white
-                  px-4
-                  text-sm
-                  font-black
-                  text-slate-700
-                  transition-all
-                  hover:border-[#4B1E78]
-                  hover:bg-[#4B1E78]
-                  hover:text-white
-                  disabled:cursor-not-allowed
-                  disabled:opacity-40
-                  disabled:hover:border-slate-200
-                  disabled:hover:bg-white
-                  disabled:hover:text-slate-700
-                "
+  <div className="mt-12 flex flex-col items-center justify-center gap-3">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+      <button
+        type="button"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="
+          inline-flex
+          h-10
+          items-center
+          gap-1.5
+          rounded-full
+          px-3
+          text-sm
+          font-black
+          text-slate-500
+          transition-all
+          hover:bg-purple-50
+          hover:text-[#4B1E78]
+          disabled:cursor-not-allowed
+          disabled:opacity-30
+          disabled:hover:bg-transparent
+          disabled:hover:text-slate-500
+        "
+      >
+        <ChevronLeft size={17} />
+        <span className="hidden sm:inline">Prev</span>
+      </button>
+
+      <div className="flex items-center gap-1">
+        {paginationItems.map((page, index) => {
+          if (page === "ellipsis-start" || page === "ellipsis-end") {
+            return (
+              <span
+                key={`${page}-${index}`}
+                className="flex h-10 w-10 items-center justify-center text-slate-400"
               >
-                <ChevronLeft size={17} />
-                <span className="hidden sm:inline">Prev</span>
-              </button>
-
-              <div className="hidden sm:block h-7 w-px bg-slate-200" />
-
-              <div className="flex items-center gap-1.5">
-                {paginationItems.map((page, index) => {
-                  if (page === "ellipsis-start" || page === "ellipsis-end") {
-                    return (
-                      <span
-                        key={`${page}-${index}`}
-                        className="flex h-11 w-11 items-center justify-center rounded-2xl text-slate-400"
-                      >
-                        <MoreHorizontal size={18} />
-                      </span>
-                    );
-                  }
-
-                  const isActive = page === currentPage;
-
-                  return (
-                    <button
-                      key={page}
-                      type="button"
-                      onClick={() => handlePageChange(page)}
-                      aria-current={isActive ? "page" : undefined}
-                      className={`h-11 min-w-[44px] rounded-2xl px-4 text-sm font-black transition-all ${
-                        isActive
-                          ? "bg-gradient-to-r from-[#4B1E78] to-[#7C3AED] text-white shadow-[0_12px_30px_rgba(76,29,149,0.30)]"
-                          : "bg-white text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="hidden sm:block h-7 w-px bg-slate-200" />
-
-              <button
-                type="button"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="
-                  inline-flex
-                  h-11
-                  items-center
-                  gap-2
-                  rounded-2xl
-                  border
-                  border-slate-200
-                  bg-white
-                  px-4
-                  text-sm
-                  font-black
-                  text-slate-700
-                  transition-all
-                  hover:border-[#4B1E78]
-                  hover:bg-[#4B1E78]
-                  hover:text-white
-                  disabled:cursor-not-allowed
-                  disabled:opacity-40
-                  disabled:hover:border-slate-200
-                  disabled:hover:bg-white
-                  disabled:hover:text-slate-700
-                "
-              >
-                <span className="hidden sm:inline">Next</span>
-                <ChevronRight size={17} />
-              </button>
-            </div>
-
-            <p className="text-sm font-bold text-slate-500">
-              Page{" "}
-              <span className="text-[#4B1E78]">
-                {currentPage}
-              </span>{" "}
-              of{" "}
-              <span className="text-slate-900">
-                {totalPages}
+                <MoreHorizontal size={18} />
               </span>
-            </p>
-          </div>
-        )}
+            );
+          }
+
+          const isActive = page === currentPage;
+
+          return (
+            <button
+              key={page}
+              type="button"
+              onClick={() => handlePageChange(page)}
+              aria-current={isActive ? "page" : undefined}
+              className={`h-10 min-w-10 rounded-full px-3 text-sm font-black transition-all ${
+                isActive
+                  ? "bg-[#4B1E78] text-white"
+                  : "bg-transparent text-slate-700 hover:bg-purple-50 hover:text-[#4B1E78]"
+              }`}
+            >
+              {page}
+            </button>
+          );
+        })}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="
+          inline-flex
+          h-10
+          items-center
+          gap-1.5
+          rounded-full
+          px-3
+          text-sm
+          font-black
+          text-slate-500
+          transition-all
+          hover:bg-purple-50
+          hover:text-[#4B1E78]
+          disabled:cursor-not-allowed
+          disabled:opacity-30
+          disabled:hover:bg-transparent
+          disabled:hover:text-slate-500
+        "
+      >
+        <span className="hidden sm:inline">Next</span>
+        <ChevronRight size={17} />
+      </button>
+    </div>
+
+    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+      Page{" "}
+      <span className="text-[#4B1E78]">
+        {currentPage}
+      </span>{" "}
+      of{" "}
+      <span className="text-slate-700">
+        {totalPages}
+      </span>
+    </p>
+    </div>
+)}
       </div>
     </section>
   );
