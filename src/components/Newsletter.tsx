@@ -43,8 +43,8 @@ export default function NewsletterSection() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="relative overflow-hidden rounded-[34px] sm:rounded-[48px] bg-[#12051f] shadow-[0_35px_120px_rgba(75,30,120,0.24)]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(167,139,250,0.35),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(217,70,239,0.22),transparent_38%)]" />
+        <div className="relative overflow-hidden rounded-[34px] sm:rounded-[48px] bg-[radial-gradient(circle_at_82%_18%,rgba(236,72,153,0.38),transparent_30%),linear-gradient(135deg,#2B1055_0%,#4B1E78_48%,#6F2DBD_100%)] shadow-[0_35px_120px_rgba(75,30,120,0.24)]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(244,114,182,0.24),transparent_28%),radial-gradient(circle_at_18%_82%,rgba(124,58,237,0.32),transparent_34%)]" />
           <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-white/[0.03]" />
 
           <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-white/30 to-transparent" />

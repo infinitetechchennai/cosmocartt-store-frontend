@@ -72,7 +72,7 @@ export default function ProductCard({
 
                     <img
                         src={getImageUrl(product.images?.[0])}
-                        alt={product.name || "CosmoCartt Product"}
+                        alt={`${product.name || "Cosmocartt product"} - ${product.category || product.brand || "Cosmocartt"} at Cosmocartt`}
                         loading="lazy"
                         onError={(e) => {
                             e.currentTarget.src =

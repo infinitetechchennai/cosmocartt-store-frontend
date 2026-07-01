@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import SEO from "../components/SEO";
 
 export default function Login() {
     const { login } = useAuth();
@@ -50,6 +51,7 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-[#EDE7F6]">
+            <SEO title="Login - Cosmocartt" description="Log in to your Cosmocartt account to track orders, manage your wishlist and enjoy a faster checkout experience." canonical="https://www.cosmocartt.com/login" noIndex />
             <Navbar />
 
             <div className="max-w-6xl mx-auto py-8 px-6">

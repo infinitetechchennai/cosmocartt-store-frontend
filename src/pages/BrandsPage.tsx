@@ -15,6 +15,7 @@ import {
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
 
 export default function BrandsPage() {
   const [brands, setBrands] = useState<any[]>([]);
@@ -48,6 +49,12 @@ export default function BrandsPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f5ff]">
+      <SEO
+        title="Brands - Cosmocartt | Shop Top Electronics & Accessories"
+        description="Browse trusted brands on Cosmocartt and discover electronics, gadgets, mobile accessories, TV remotes, AC remotes and lifestyle products online."
+        canonical="https://www.cosmocartt.com/brands"
+        type="collection"
+      />
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10">

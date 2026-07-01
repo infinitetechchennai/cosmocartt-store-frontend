@@ -1,4 +1,3 @@
-import { API_URL } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useWishlist } from "../context/WishlistContext";
@@ -18,6 +17,8 @@ import {
   Truck,
 } from "lucide-react";
 import { getImageUrl } from "../utils/imageUrl";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 export default function Wishlist() {
   const { wishlistItems, removeFromWishlist } = useWishlist();
@@ -36,6 +37,7 @@ export default function Wishlist() {
 
   return (
     <div className="min-h-screen bg-[#f7f5fb]">
+      <SEO title={seoPages.wishlist.title} description={seoPages.wishlist.description} canonical={seoPages.wishlist.canonical} noIndex />
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 py-10">

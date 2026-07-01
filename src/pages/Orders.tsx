@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { API_URL } from "../config/api";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
@@ -276,6 +278,7 @@ export default function Orders() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#F7F3FF] via-white to-purple-50">
+            <SEO title={seoPages.orders.title} description={seoPages.orders.description} canonical={seoPages.orders.canonical} noIndex />
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">

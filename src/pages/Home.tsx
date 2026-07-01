@@ -15,6 +15,8 @@ import TrendingProducts from "../components/TrendingProducts";
 import CategoryShowcase from "../components/CategoryShowcase";
 import AIExperienceSection from "../components/AIExperienceSection";
 import CampaignBanner from "../components/CampaignBanner";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 import "swiper/css/navigation";
 
@@ -37,6 +39,34 @@ import acBanner from "../assets/acmod.jpeg";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
+      <SEO
+        title={seoPages.home.title}
+        description={seoPages.home.description}
+        canonical={seoPages.home.canonical}
+        type="website"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Cosmocartt",
+            url: "https://www.cosmocartt.com/",
+            logo: "https://www.cosmocartt.com/logo.png",
+            description:
+              "Cosmocartt is an online shopping platform for electronics, gadgets, mobile accessories, TV remotes, AC remotes and lifestyle products.",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Cosmocartt",
+            url: "https://www.cosmocartt.com/",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: "https://www.cosmocartt.com/products?search={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          },
+        ]}
+      />
 
       <AnnouncementBar />
 

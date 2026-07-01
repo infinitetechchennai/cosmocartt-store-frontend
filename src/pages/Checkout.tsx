@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getDisplayPrice } from "../utils/pricing";
 import { API_URL } from "../config/api";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 import {
     ArrowRight,
@@ -26,7 +28,6 @@ import {
     ShieldCheck,
     ShoppingBag,
     ShoppingCart,
-    Sparkles,
     Truck,
     UserRound,
     Wallet
@@ -492,6 +493,7 @@ export default function Checkout() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#F7F3FF] via-white to-purple-50">
+            <SEO title={seoPages.checkout.title} description={seoPages.checkout.description} canonical={seoPages.checkout.canonical} noIndex />
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">

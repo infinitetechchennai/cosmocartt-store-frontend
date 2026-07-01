@@ -5,6 +5,8 @@ import { Link, useParams, Navigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 import {
     ArrowRight,
@@ -174,8 +176,16 @@ export default function CMSPage() {
         );
     }
 
+    const seoConfig = (Object.entries(seoPages).find(([key]) => key === pageKey)?.[1] ?? seoPages.about) as typeof seoPages.about;
+
     return (
         <PageShell>
+            <SEO
+                title={seoConfig.title}
+                description={seoConfig.description}
+                canonical={seoConfig.canonical}
+                type="website"
+            />
             <HeroSection
                 config={config}
                 HeroIcon={HeroIcon}

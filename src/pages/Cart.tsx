@@ -1,4 +1,3 @@
-import { API_URL } from "../config/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCart } from "../context/CartContext";
@@ -18,6 +17,8 @@ import { products } from "../data/products";
 import { useState } from "react";
 import { getDisplayPrice } from "../utils/pricing";
 import { getImageUrl } from "../utils/imageUrl";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 export default function Cart() {
   const { cartItems, removeFromCart, deleteItem, addToCart } = useCart();
@@ -64,6 +65,7 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-purple-50">
+      <SEO title={seoPages.cart.title} description={seoPages.cart.description} canonical={seoPages.cart.canonical} noIndex />
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 py-10">

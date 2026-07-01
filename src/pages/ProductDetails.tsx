@@ -9,6 +9,8 @@ import {
     getDisplayPrice
 } from "../utils/pricing";
 import { getImageUrl } from "../utils/imageUrl";
+import SEO from "../components/SEO";
+import { siteName, siteUrl } from "../config/seo";
 
 export default function ProductDetails() {
 
@@ -104,6 +106,20 @@ export default function ProductDetails() {
             };
 
         });
+
+    const productTitle = product
+        ? `${product.brand ? `${product.brand} ` : ""}${product.name} | Buy Online at Best Price | ${siteName}`
+        : `${siteName} Product`;
+
+    const productDescription = product
+        ? product.category
+            ? `Buy ${product.name} online at Cosmocartt. Shop ${product.category} products with secure checkout, delivery support, product details and exclusive offers.`
+            : `Buy ${product.name} online at Cosmocartt. Explore price, features, specifications, delivery details, secure checkout and exclusive offers.`
+        : "Buy products online at Cosmocartt with secure checkout and delivery support.";
+
+    const productCanonical = product
+        ? `${siteUrl}/product/${product.slug || product._id}`
+        : `${siteUrl}/products`;
 
     const productInfo = [
         ["Brand", product?.brand],
@@ -258,92 +274,87 @@ export default function ProductDetails() {
 
     }, [product?._id]);
 
-    useEffect(() => {
-
-        if (!product?._id) return;
-
-        const loadSeo = async () => {
-
-            try {
-
-                const res =
-                    await fetch(
-                        `${API_URL}/api/products/seo/${product._id}`
-                    );
-
-                const data =
-                    await res.json();
-
-                if (data.success) {
-
-                    document.title =
-                        data.seo.title;
-
-                    let metaDescription =
-                        document.querySelector(
-                            'meta[name="description"]'
-                        );
-
-                    if (!metaDescription) {
-
-                        metaDescription =
-                            document.createElement("meta");
-
-                        metaDescription.setAttribute(
-                            "name",
-                            "description"
-                        );
-
-                        document.head.appendChild(
-                            metaDescription
-                        );
-
-                    }
-
-                    metaDescription.setAttribute(
-                        "content",
-                        (data.seo.description || product.name).slice(0, 160)
-                    );
-
-                    let canonical =
-                        document.querySelector(
-                            'link[rel="canonical"]'
-                        );
-
-                    if (!canonical) {
-
-                        canonical =
-                            document.createElement("link");
-
-                        canonical.setAttribute(
-                            "rel",
-                            "canonical"
-                        );
-
-                        document.head.appendChild(
-                            canonical
-                        );
-
-                    }
-
-                    canonical.setAttribute(
-                        "href",
-                        data.seo.canonicalUrl
-                    );
-
+    const productSchema = product
+        ? {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            image: (product.images || []).map((img: string) => getImageUrl(img)),
+            description: product.description || product.name,
+            sku: product.sku || undefined,
+            brand: product.brand
+                ? {
+                    "@type": "Brand",
+                    name: product.brand,
                 }
+                : undefined,
+            category: product.category || undefined,
+            offers: {
+                "@type": "Offer",
+                url: productCanonical,
+                priceCurrency: "INR",
+                price: displayPrice,
+                availability:
+                    product.stock > 0
+                        ? "https://schema.org/InStock"
+                        : "https://schema.org/OutOfStock",
+                itemCondition: "https://schema.org/NewCondition",
+                seller: {
+                    "@type": "Organization",
+                    name: siteName,
+                },
+            },
+            ...(reviewCount > 0
+                ? {
+                    aggregateRating: {
+                        "@type": "AggregateRating",
+                        ratingValue: averageRating,
+                        reviewCount: reviewCount,
+                    },
+                    review: reviews.slice(0, 5).map((review) => ({
+                        "@type": "Review",
+                        author: {
+                            "@type": "Person",
+                            name: review.customerName || "Verified Buyer",
+                        },
+                        reviewRating: {
+                            "@type": "Rating",
+                            ratingValue: review.rating,
+                            bestRating: 5,
+                        },
+                        reviewBody: review.comment,
+                    })),
+                }
+                : {}),
+        }
+        : undefined;
 
-            } catch (err) {
-
-                console.error(err);
-
-            }
-
-        };
-
-        loadSeo();
-
-    }, [product?._id]);
+    const breadcrumbSchema = product
+        ? {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+                {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: "Home",
+                    item: siteUrl,
+                },
+                {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: "Products",
+                    item: `${siteUrl}/products`,
+                },
+                {
+                    "@type": "ListItem",
+                    position: 3,
+                    name: product.name,
+                    item: productCanonical,
+                },
+            ],
+        }
+        : undefined;
 
     useEffect(() => {
 
@@ -372,56 +383,9 @@ export default function ProductDetails() {
         }
 
         structuredData.textContent =
-            JSON.stringify({
-                "@context": "https://schema.org/",
-                "@type": "Product",
-                name: product.name,
-                sku: product.sku,
-                image: product.images?.map(
-                    (img: string) =>
-                        getImageUrl(img)
-                ),
-                description:
-                    product.description || product.name,
-                brand: {
-                    "@type": "Brand",
-                    name: product.brand
-                },
-                offers: {
-                    "@type": "Offer",
-                    url: window.location.href,
-                    priceCurrency: "INR",
-                    price: displayPrice,
-                    availability:
-                        product.stock > 0
-                            ? "https://schema.org/InStock"
-                            : "https://schema.org/OutOfStock"
-                },
-                ...(reviewCount > 0
-                    ? {
-                        aggregateRating: {
-                            "@type": "AggregateRating",
-                            ratingValue: averageRating,
-                            reviewCount: reviewCount
-                        },
-                        review: reviews.slice(0, 5).map((review) => ({
-                            "@type": "Review",
-                            author: {
-                                "@type": "Person",
-                                name: review.customerName
-                            },
-                            reviewRating: {
-                                "@type": "Rating",
-                                ratingValue: review.rating,
-                                bestRating: 5
-                            },
-                            reviewBody: review.comment
-                        }))
-                    }
-                    : {})
-            });
+            JSON.stringify(productSchema);
 
-    }, [product, averageRating, reviewCount, reviews, displayPrice]);
+    }, [product, productSchema]);
 
     const submitReview = async () => {
 
@@ -531,6 +495,14 @@ export default function ProductDetails() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50/30">
+            <SEO
+                title={productTitle}
+                description={productDescription}
+                canonical={productCanonical}
+                image={product.images?.[0] ? getImageUrl(product.images[0]) : undefined}
+                type="product"
+                jsonLd={[productSchema, breadcrumbSchema].filter(Boolean)}
+            />
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
@@ -605,7 +577,7 @@ export default function ProductDetails() {
                                     >
                                         <img
                                             src={getImageUrl(img)}
-                                            alt={`${product.name} view ${index + 1}`}
+                                            alt={`${product.name} - ${product.category || product.brand || "Cosmocartt"} at Cosmocartt`}
                                             className="w-full h-full object-cover"
                                         />
                                     </button>
@@ -659,7 +631,7 @@ export default function ProductDetails() {
                             >
                                 <img
                                     src={getImageUrl(selectedImage || product.images?.[0])}
-                                    alt={product.name}
+                                    alt={`${product.name} - ${product.category || product.brand || "Cosmocartt"} at Cosmocartt`}
                                     className="
 w-full
 h-full
@@ -716,7 +688,7 @@ p-4
                                 >
                                     <img
                                         src={getImageUrl(img)}
-                                        alt={`${product.name} view ${index + 1}`}
+                                        alt={`${product.name} - ${product.category || product.brand || "Cosmocartt"} at Cosmocartt`}
                                         className="w-full h-full object-cover"
                                     />
                                 </button>
@@ -1094,7 +1066,7 @@ pointer-events-none
 
                 <div className="bg-white border border-zinc-100 rounded-[2rem] p-5 md:p-7 shadow-sm mt-8">
                     <h2 className="text-xl font-extrabold text-zinc-950 mb-4">
-                        About this item
+                        Product Details
                     </h2>
 
                     <p className="text-zinc-600 leading-7 md:leading-8">
@@ -1124,7 +1096,7 @@ pointer-events-none
 
                     <div className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm">
                         <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-6">
-                            Product Information
+                            Specifications
                         </h2>
 
                         <div className="grid sm:grid-cols-2 gap-4 text-sm">
@@ -1146,7 +1118,7 @@ pointer-events-none
 
                     <div className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm">
                         <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-6">
-                            Why buy from CosmoCartt?
+                            Delivery Information
                         </h2>
 
                         <div className="space-y-4">
@@ -1177,7 +1149,7 @@ pointer-events-none
                     product.specifications.length > 0 && (
                         <section className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm mt-8">
                             <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950 mb-6">
-                                Specifications
+                                Key Features
                             </h2>
 
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
@@ -1429,7 +1401,7 @@ pointer-events-none
                                         <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
                                             <img
                                                 src={getImageUrl(item.images?.[0])}
-                                                alt={item.name}
+                                                alt={`${item.name} - ${item.category || item.brand || "Cosmocartt"} at Cosmocartt`}
                                                 className="w-full h-full object-contain p-2"
                                             />
                                         </div>

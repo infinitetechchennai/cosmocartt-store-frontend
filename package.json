@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "generate:sitemap": "node scripts/generate-sitemap.js",
     "build:admin": "cd cosmocartt-admin && npm install && npm run build",
     "copy:admin": "rm -rf dist/admin && mkdir -p dist/admin && cp -R cosmocartt-admin/dist/* dist/admin/",
     "vercel-build": "npm install && npm run build && npm run build:admin && npm run copy:admin",
@@ -21,6 +22,7 @@
     "pdfkit": "^0.19.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-helmet-async": "^3.0.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.6.0",
     "react-router-dom": "^6.30.4",

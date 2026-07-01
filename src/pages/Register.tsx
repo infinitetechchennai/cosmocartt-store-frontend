@@ -1,5 +1,6 @@
 import { apiPath } from "../config/api";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
@@ -8,7 +9,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Register() {
     const [accountType, setAccountType] = useState("personal");
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [showSuccess] = useState(false);
 
     const [loading, setLoading] = useState(false);
 
@@ -236,7 +237,7 @@ export default function Register() {
 
     return (
        <div className="min-h-screen bg-[#EEE8FF]">
-
+            <SEO title="Register - Cosmocartt" description="Create your Cosmocartt account to shop electronics, accessories and lifestyle products with secure checkout and order tracking." canonical="https://www.cosmocartt.com/register" noIndex />
 
             <Navbar />
 

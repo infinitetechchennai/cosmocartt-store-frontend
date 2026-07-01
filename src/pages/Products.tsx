@@ -6,6 +6,8 @@ import { useState, useEffect, useMemo } from "react";
 import { Search, Package, X, SlidersHorizontal } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { categories } from "../data/categories";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 export default function Products() {
     const [searchParams] = useSearchParams();
@@ -189,6 +191,12 @@ export default function Products() {
 
     return (
         <div className="min-h-screen bg-[#F7F5FB]">
+            <SEO
+                title={seoPages.products.title}
+                description={seoPages.products.description}
+                canonical={seoPages.products.canonical}
+                type="collection"
+            />
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-5 sm:pt-10 pb-10">
@@ -200,12 +208,12 @@ export default function Products() {
                         <p className="text-purple-200">Home / Products</p>
 
                         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black mt-2 leading-tight">
-                            Discover Products
-            </h1>
+                            Shop Products Online at Cosmocartt
+                        </h1>
 
                         <p className="mt-3 text-purple-100 text-sm sm:text-lg">
-                            Explore premium products at the best prices.
-            </p>
+                            Discover electronics, gadgets, mobile accessories, TV remotes, AC remotes and lifestyle products on Cosmocartt with secure checkout and exclusive online deals.
+                        </p>
 
                         <div className="mt-6 flex flex-wrap gap-4">
                             <div className="bg-white/10 backdrop-blur-xl border border-white/10 px-5 py-3 rounded-2xl shadow-lg">

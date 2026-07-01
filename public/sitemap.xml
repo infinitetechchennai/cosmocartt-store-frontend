@@ -1,49 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
     <loc>https://www.cosmocartt.com/</loc>
     <priority>1.00</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/products</loc>
-    <priority>0.90</priority>
+    <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/about</loc>
     <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/contact</loc>
     <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/faq</loc>
-    <priority>0.70</priority>
+    <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/privacy-policy</loc>
-    <priority>0.60</priority>
+    <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/terms</loc>
-    <priority>0.60</priority>
+    <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/shipping-policy</loc>
-    <priority>0.60</priority>
+    <priority>0.80</priority>
   </url>
-
   <url>
     <loc>https://www.cosmocartt.com/refund-policy</loc>
-    <priority>0.60</priority>
+    <priority>0.80</priority>
   </url>
-
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-10-pro-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-10r-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-11r-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-12-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-12r-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-13-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-13r-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-5t-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-6-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-6t-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-7-pro-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-7-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-7t-pro-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-7t-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-8-pro-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-8-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-9-pro-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-9-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-9rt-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-2-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-2t-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-3-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-4-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-ce-3-lite-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-ce-4-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-ce-4-lite-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-ce-5g-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/oneplus-nord-transparent-mobile-back-case</loc>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.cosmocartt.com/product/magnetic-flip-cover-for-oneplus-8-one-plus-81-8-leather-case</loc>
+    <priority>0.75</priority>
+  </url>
 </urlset>
