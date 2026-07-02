@@ -612,10 +612,11 @@ return (
                                             }`}
                                     >
                                         <img
-                                            src={getImageUrl(img)}
-                                            alt={`${product.name} - ${product.category || product.brand || "Cosmocartt"} at Cosmocartt`}
-                                            className="w-full h-full object-cover"
-                                        />
+    src={getImageUrl(img)}
+    alt={`${product.brand || "CosmoCartt"} ${product.name} - ${product.category || "Product"}`}
+    loading="lazy"
+    className="w-full h-full object-cover"
+/>
                                     </button>
                                 ))}
                             </div>
@@ -666,15 +667,17 @@ return (
                                 }}
                             >
                                 <img
-                                    src={getImageUrl(selectedImage || product.images?.[0])}
-                                    alt={`${product.name} - ${product.category || product.brand || "Cosmocartt"} at Cosmocartt`}
-                                    className="
+    src={getImageUrl(selectedImage || product.images?.[0])}
+    alt={`${product.brand || "CosmoCartt"} ${product.name} - ${product.category || "Product"}`}
+    loading="eager"
+    fetchPriority="high"
+    className="
 w-full
 h-full
 object-contain
 p-4
 "
-                                />
+/>
 
 
 
@@ -1482,10 +1485,11 @@ Q. {faq.question}
                                     >
                                         <div className="aspect-square bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
                                             <img
-                                                src={getImageUrl(item.images?.[0])}
-                                                alt={`${item.name} - ${item.category || item.brand || "Cosmocartt"} at Cosmocartt`}
-                                                className="w-full h-full object-contain p-2"
-                                            />
+    src={getImageUrl(item.images?.[0])}
+    alt={`${item.brand || "CosmoCartt"} ${item.name} - ${item.category || "Product"}`}
+    loading="lazy"
+    className="w-full h-full object-contain p-2"
+/>
                                         </div>
 
                                         <p className="text-xs text-[#4B1E78] font-bold mt-4 uppercase">
