@@ -224,9 +224,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            ...newProduct,
-            images: safeImages(newProduct),
-          }),
+  ...newProduct,
+  images: safeImages(newProduct),
+  faqs: newProduct.faqs || [],
+}),
         });
       }
 
