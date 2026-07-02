@@ -16,9 +16,8 @@ import {
 import { products } from "../data/products";
 import { useState } from "react";
 import { getDisplayPrice } from "../utils/pricing";
-import { getImageUrl } from "../utils/imageUrl";
-import SEO from "../components/SEO";
-import { seoPages } from "../config/seo";
+import { FALLBACK_IMAGE, getImageUrl } from "../utils/imageUrl";
+
 
 export default function Cart() {
   const { cartItems, removeFromCart, deleteItem, addToCart } = useCart();
@@ -167,7 +166,7 @@ export default function Cart() {
                           loading="lazy"
                           onError={(e) => {
                             e.currentTarget.src =
-                              "https://via.placeholder.com/600x600?text=CosmoCartt";
+                              FALLBACK_IMAGE;
                           }}
                           className="h-28 object-contain hover:scale-110 transition-transform duration-300"
                         />
@@ -363,7 +362,7 @@ export default function Cart() {
                     loading="lazy"
                     onError={(e) => {
                       e.currentTarget.src =
-                        "https://via.placeholder.com/600x600?text=CosmoCartt";
+                        FALLBACK_IMAGE;
                     }}
                     className="h-36 object-contain group-hover:scale-110 transition-all duration-300"
                   />

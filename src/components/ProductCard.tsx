@@ -1,5 +1,5 @@
 import { API_URL } from "../config/api";
-import { getImageUrl } from "../utils/imageUrl";
+import { FALLBACK_IMAGE, getImageUrl } from "../utils/imageUrl";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { motion } from "framer-motion";
@@ -36,13 +36,13 @@ export default function ProductCard({
         ) || 0;
 
     const oldPrice =
-        product.oldPrice || price + 5000;
+        Number(product.oldPrice || product.mrp || 0);
 
     const rating =
         product.rating || 4.8;
 
     const discount =
-        oldPrice > 0
+        oldPrice > price
             ? Math.round(
                 ((oldPrice - price) / oldPrice) * 100
             )
@@ -76,18 +76,22 @@ export default function ProductCard({
                         loading="lazy"
                         onError={(e) => {
                             e.currentTarget.src =
-                                "https://via.placeholder.com/600x600?text=CosmoCartt";
+                                FALLBACK_IMAGE;
                         }}
-                        className="h-72 w-full object-cover bg-slate-100 transition-transform duration-700 group-hover:scale-110"
+                        className="h-72 w-full object-contain bg-gradient-to-br from-slate-50 to-purple-50 p-5 transition-transform duration-700 group-hover:scale-110"
                     />
 
-                    <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        {discount}% OFF
-          </div>
+                    {discount > 0 && (
+                        <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                            {discount}% OFF
+                        </div>
+                    )}
 
-                    <div className="absolute top-4 left-24 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        ⭐ Bestseller
-          </div>
+                    {(product.isFeatured || product.isTrending) && (
+                        <div className={`absolute top-4 ${discount > 0 ? "left-24" : "left-4"} bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg`}>
+                            ⭐ {product.isTrending ? "Trending" : "Featured"}
+                        </div>
+                    )}
 
                     <button
                         onClick={(e) => {
@@ -159,9 +163,11 @@ export default function ProductCard({
 
                     </div>
 
-                    <div className="mt-4 inline-flex items-center gap-2 bg-purple-50 text-[#4B1E78] px-3 py-1 rounded-full text-xs font-bold">
-                        ✓ Premium Choice
-          </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        <span className="inline-flex items-center gap-2 bg-purple-50 text-[#4B1E78] px-3 py-1 rounded-full text-xs font-bold">
+                            ✓ Premium Choice
+                        </span>
+                    </div>
                     {product.stock <= 0 && (
                         <span className="inline-block bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">
                             Out of Stock

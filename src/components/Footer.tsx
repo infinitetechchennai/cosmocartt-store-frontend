@@ -1,14 +1,13 @@
-import instagramIcon from "../assets/instagram.png";
-import youtubeIcon from "../assets/youtube.png";
-import googleIcon from "../assets/google.png";
-import githubIcon from "../assets/github.png";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import {
     MapPinned,
     PhoneCall,
     Mail,
-    Headset
+    Headset,
+    Globe,
+    Play,
+    Globe2
 } from "lucide-react";
 
 const brands = [
@@ -97,37 +96,45 @@ export default function Footer() {
             </p>
 
                         <div className="flex gap-3 mt-6">
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={instagramIcon}
-                                    alt="Instagram"
-                                    className="w-7 h-7 object-contain"
-                                />
-                            </button>
+                            <a
+                                href="https://www.instagram.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Instagram"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                            >
+                                <Globe size={22} />
+                            </a>
 
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={youtubeIcon}
-                                    alt="YouTube"
-                                    className="w-9 h-9 object-contain"
-                                />
-                            </button>
+                            <a
+                                href="https://www.youtube.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="YouTube"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                            >
+                                <Play size={22} />
+                            </a>
 
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={googleIcon}
-                                    alt="Google"
-                                    className="w-9 h-9 object-contain"
-                                />
-                            </button>
+                            <a
+                                href="https://www.google.com/search?q=CosmoCartt"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Google"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                            >
+                                <Globe size={22} />
+                            </a>
 
-                            <button className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center">
-                                <img
-                                    src={githubIcon}
-                                    alt="GitHub"
-                                    className="w-9 h-9 object-contain"
-                                />
-                            </button>
+                            <a
+                                href="https://github.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="GitHub"
+                                className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                            >
+                                <Globe2 size={22} />
+                            </a>
                         </div>
                     </div>
 

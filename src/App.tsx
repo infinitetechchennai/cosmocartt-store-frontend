@@ -1,29 +1,30 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Products from "./pages/Products";
-import ProductDetails from "./pages/ProductDetails";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Orders from "./pages/Orders";
-import OrderSuccess from "./pages/OrderSuccess";
 import ScrollToTop from "./components/ScrollToTop";
-import Wishlist from "./pages/Wishlist";
-import OrderTracking from "./pages/OrderTracking";
-import ForgotPassword from "./pages/ForgotPassword";
-import VerifyOtp from "./pages/VerifyOtp";
-import BrandsPage from "./pages/BrandsPage";
-import CatalogBrowse from "./pages/CatalogBrowse";
-import CMSPage from "./pages/CMSPage";
-import NotFound from "./pages/NotFound";
 import { useAuth } from "./context/AuthContext";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const Home = lazy(() => import("./pages/Home"));
+const Products = lazy(() => import("./pages/Products"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Orders = lazy(() => import("./pages/Orders"));
+const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
+const OrderTracking = lazy(() => import("./pages/OrderTracking"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const VerifyOtp = lazy(() => import("./pages/VerifyOtp"));
+const BrandsPage = lazy(() => import("./pages/BrandsPage"));
+const CatalogBrowse = lazy(() => import("./pages/CatalogBrowse"));
+const CMSPage = lazy(() => import("./pages/CMSPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PublicOnlyRoute({ children }: { children: JSX.Element }) {
   const { user } = useAuth();
@@ -33,6 +34,19 @@ function PublicOnlyRoute({ children }: { children: JSX.Element }) {
   }
 
   return children;
+}
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen bg-[#F7F3FF] flex items-center justify-center">
+      <div className="bg-white rounded-3xl shadow-xl border border-purple-100 px-8 py-7 text-center">
+        <div className="w-12 h-12 border-4 border-purple-100 border-t-[#4B1E78] rounded-full animate-spin mx-auto" />
+        <p className="mt-4 font-black text-slate-900">
+          Loading CosmoCartt...
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default function App() {
@@ -46,77 +60,84 @@ export default function App() {
 
       <ScrollToTop />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-        <Route path="/products" element={<Products />} />
+          <Route path="/products" element={<Products />} />
 
+          <Route path="/catalog" element={<CatalogBrowse />} />
+          <Route path="/catalog/:category" element={<CatalogBrowse />} />
+          <Route path="/catalog/:category/:subcategory" element={<CatalogBrowse />} />
+          <Route path="/catalog/:category/:subcategory/:brand" element={<CatalogBrowse />} />
+          <Route path="/catalog/:category/:subcategory/:brand/:model" element={<CatalogBrowse />} />
 
-        <Route path="/catalog" element={<CatalogBrowse />} />
-        <Route path="/catalog/:category" element={<CatalogBrowse />} />
-        <Route path="/catalog/:category/:subcategory" element={<CatalogBrowse />} />
-        <Route path="/catalog/:category/:subcategory/:brand" element={<CatalogBrowse />} />
-        <Route path="/catalog/:category/:subcategory/:brand/:model" element={<CatalogBrowse />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
 
-        <Route
-          path="/product/:id"
-          element={<ProductDetails />}
-        />
+          <Route path="/cart" element={<Cart />} />
 
-        <Route path="/cart" element={<Cart />} />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute>
+                <Login />
+              </PublicOnlyRoute>
+            }
+          />
 
+          <Route
+            path="/register"
+            element={
+              <PublicOnlyRoute>
+                <Register />
+              </PublicOnlyRoute>
+            }
+          />
 
-        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+          <Route
+            path="/verify-otp"
+            element={
+              <PublicOnlyRoute>
+                <VerifyOtp />
+              </PublicOnlyRoute>
+            }
+          />
 
-        <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicOnlyRoute>
+                <ForgotPassword />
+              </PublicOnlyRoute>
+            }
+          />
 
-        <Route path="/verify-otp" element={<PublicOnlyRoute><VerifyOtp /></PublicOnlyRoute>} />
+          <Route path="/orders" element={<Orders />} />
 
-        <Route
-          path="/forgot-password"
-          element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>}
-        />
+          <Route path="/order-success" element={<OrderSuccess />} />
 
-        <Route path="/orders" element={<Orders />} />
+          <Route path="/track-order/:id" element={<OrderTracking />} />
 
+          <Route path="/wishlist" element={<Wishlist />} />
 
+          <Route path="/brands" element={<BrandsPage />} />
 
-        <Route
-          path="/order-success"
-          element={<OrderSuccess />}
-        />
+          <Route path="/404" element={<NotFound />} />
 
-        <Route
-          path="/track-order/:id"
-          element={<OrderTracking />}
-        />
+          <Route path="/:slug" element={<CMSPage />} />
 
-        <Route
-          path="/wishlist"
-          element={<Wishlist />}
-        />
-
-        <Route
-          path="/brands"
-          element={<BrandsPage />}
-        />
-
-        <Route path="/404" element={<NotFound />} />
-
-        <Route path="/:slug" element={<CMSPage />} />
-
-        <Route path="*" element={<NotFound />} />
-
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </>
   );
 }

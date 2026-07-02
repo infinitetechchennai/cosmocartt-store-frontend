@@ -1,3 +1,5 @@
+import { installFetchCache } from "./utils/installFetchCache";
+import { prefetchAppData } from "./utils/prefetchAppData";
 import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
@@ -5,6 +7,9 @@ import { installFetchCache } from "./utils/installFetchCache";
 import { prefetchAppData } from "./utils/prefetchAppData";
 import App from "./App";
 import "./index.css";
+
+installFetchCache();
+prefetchAppData();
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import { CatalogProvider } from "./context/CatalogContext";
