@@ -69,9 +69,9 @@ export default function App() {
         />
 
         <Route
-          path="/product/:id"
-          element={<ProductDetails />}
-        />
+  path="/product/:slug"
+  element={<ProductDetails />}
+/>
 
         <Route path="/cart" element={<Cart />} />
 

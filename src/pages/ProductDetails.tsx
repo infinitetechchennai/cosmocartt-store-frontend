@@ -19,7 +19,7 @@ export default function ProductDetails() {
             localStorage.getItem("user") || "null"
         );
 
-    const { id } = useParams();
+    const { slug } = useParams();
 
     const {
         addToCart
@@ -156,14 +156,14 @@ export default function ProductDetails() {
             try {
 
                 const isMongoId =
-                    /^[0-9a-fA-F]{24}$/.test(
-                        id || ""
-                    );
+    /^[0-9a-fA-F]{24}$/.test(
+        slug || ""
+    );
 
-                const productUrl =
-                    isMongoId
-                        ? `${API_URL}/api/products/${id}`
-                        : `${API_URL}/api/products/slug/${id}`;
+const productUrl =
+    isMongoId
+        ? `${API_URL}/api/products/${slug}`
+        : `${API_URL}/api/products/slug/${slug}`;
 
                 const res =
                     await fetch(productUrl);
@@ -194,7 +194,7 @@ export default function ProductDetails() {
 
         loadProduct();
 
-    }, [id]);
+    }, [slug]);
 
     useEffect(() => {
 
