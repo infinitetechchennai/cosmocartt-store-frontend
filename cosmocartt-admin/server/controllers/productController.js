@@ -53,6 +53,28 @@ const generateUniqueSlug = async (
 
 };
 
+const parseFaqs = (faqs) => {
+    if (!faqs) return [];
+
+    if (Array.isArray(faqs)) {
+        return faqs.filter(
+            (faq) => faq.question && faq.answer
+        );
+    }
+
+    if (typeof faqs === "string") {
+        try {
+            return JSON.parse(faqs).filter(
+                (faq) => faq.question && faq.answer
+            );
+        } catch {
+            return [];
+        }
+    }
+
+    return [];
+};
+
 export const createProduct = async (
     req,
     res
@@ -97,15 +119,17 @@ export const createProduct = async (
             );
 
         const product =
-            await Product.create({
+    await Product.create({
 
-                ...req.body,
+        ...req.body,
 
-                slug,
+        slug,
 
-                images: imagePaths,
+        images: imagePaths,
 
-            });
+        faqs: parseFaqs(req.body.faqs),
+
+    });
 
         res.status(201).json({
             success: true,
@@ -266,6 +290,7 @@ export const updateProduct = async (req, res) => {
         }
 
         delete updateData.existingImages;
+        updateData.faqs = parseFaqs(req.body.faqs);
 
         if (!Array.isArray(updateData.images)) {
             updateData.images = [];

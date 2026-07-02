@@ -110,14 +110,32 @@ const productSchema = new mongoose.Schema(
         },
 
         specifications: {
-            type: [
-                {
-                    key: String,
-                    value: String
-                }
-            ],
-            default: []
-        },
+    type: [
+        {
+            key: String,
+            value: String
+        }
+    ],
+    default: []
+},
+
+faqs: {
+    type: [
+        {
+            question: {
+                type: String,
+                trim: true,
+                default: "",
+            },
+            answer: {
+                type: String,
+                trim: true,
+                default: "",
+            },
+        }
+    ],
+    default: []
+},
     },
     {
         timestamps: true,

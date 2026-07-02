@@ -10,6 +10,7 @@ interface ProductsViewProps {
 }
 
 type ProductDraft = {
+  faqs: { question: string; answer: string }[];
   name: string;
   brand: string;
   model: string;
@@ -28,6 +29,8 @@ type ProductDraft = {
   approvalStatus: string;
 };
 
+type ProductFormState = ProductDraft & Partial<Pick<Product, "_id" | "image">>;
+
 const emptyProduct: ProductDraft = {
   name: "",
   brand: "",
@@ -43,7 +46,8 @@ const emptyProduct: ProductDraft = {
   retailPrice: 0,
   stock: 0,
   images: [],
-  status: "Active",
+faqs: [],
+status: "Active",
   approvalStatus: "Approved",
 };
 
@@ -51,13 +55,13 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [newProduct, setNewProduct] = useState<ProductFormState | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const [productFiles, setProductFiles] = useState<File[]>([]);
   const [editProductFiles, setEditProductFiles] = useState<File[]>([]);
 
-  const [newProduct, setNewProduct] = useState<ProductDraft>(emptyProduct);
+  const [productDraft, setProductDraft] = useState<ProductDraft>(emptyProduct);
 
   const getImageUrl = (image?: string) => {
     if (!image) return "";
@@ -67,9 +71,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     return `${API_URL}${image}`;
   };
 
-  const safeImages = (item?: Product | ProductDraft | null) => {
-    if (!item || !Array.isArray(item.images)) return [];
-    return item.images.filter(Boolean).slice(0, 6);
+  const safeImages = (item?: Product | ProductDraft | ProductFormState | null) => {
+    const images = (item as ProductFormState | undefined)?.images;
+    if (!item || !Array.isArray(images)) return [];
+    return images.filter(Boolean).slice(0, 6);
   };
 
   const totalProducts = products.length;
@@ -93,53 +98,56 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   };
 
   const openEditProduct = (product: Product) => {
-    setEditProduct({
-      ...product,
-      images: safeImages(product),
-      model: product.model || "",
-      hsnCode: product.hsnCode || "",
-      gstPercentage: product.gstPercentage || 18,
-      approvalStatus: product.approvalStatus || "Approved",
-      status: product.status || "Active",
+    const productState = product as Product & ProductFormState;
+    setNewProduct({
+      ...productState,
+      images: safeImages(productState),
+      model: productState.model || "",
+      hsnCode: productState.hsnCode || "",
+      gstPercentage: productState.gstPercentage || 18,
+      approvalStatus: productState.approvalStatus || "Approved",
+      status: productState.status || "Active",
+      faqs: productState.faqs || [],
     });
     setEditProductFiles([]);
   };
 
   const resetAddModal = () => {
     setShowModal(false);
-    setNewProduct(emptyProduct);
+    setProductDraft(emptyProduct);
     setProductFiles([]);
   };
 
   const handleAddProduct = async () => {
-    if (!newProduct.name.trim()) return alert("Product name is required");
-    if (!newProduct.brand.trim()) return alert("Brand is required");
-    if (!newProduct.model.trim()) return alert("Model is required");
-    if (!newProduct.category) return alert("Select a category");
-    if (!newProduct.subcategory) return alert("Select a subcategory");
-    if (!newProduct.sku.trim()) return alert("SKU is required");
-    if (newProduct.retailPrice <= 0) return alert("Retail price must be greater than 0");
-    if (newProduct.stock < 0) return alert("Stock cannot be negative");
+    if (!productDraft.name.trim()) return alert("Product name is required");
+    if (!productDraft.brand.trim()) return alert("Brand is required");
+    if (!productDraft.model.trim()) return alert("Model is required");
+    if (!productDraft.category) return alert("Select a category");
+    if (!productDraft.subcategory) return alert("Select a subcategory");
+    if (!productDraft.sku.trim()) return alert("SKU is required");
+    if (productDraft.retailPrice <= 0) return alert("Retail price must be greater than 0");
+    if (productDraft.stock < 0) return alert("Stock cannot be negative");
     if (!productFiles.length) return alert("Please upload at least one product image");
 
     try {
       const formData = new FormData();
 
-      formData.append("name", newProduct.name);
-      formData.append("brand", newProduct.brand);
-      formData.append("model", newProduct.model);
-      formData.append("category", newProduct.category);
-      formData.append("subcategory", newProduct.subcategory);
-      formData.append("description", newProduct.description);
-      formData.append("sku", newProduct.sku);
-      formData.append("hsnCode", newProduct.hsnCode);
-      formData.append("gstPercentage", String(newProduct.gstPercentage));
-      formData.append("costPrice", String(newProduct.costPrice));
-      formData.append("wholesalePrice", String(newProduct.wholesalePrice));
-      formData.append("retailPrice", String(newProduct.retailPrice));
-      formData.append("stock", String(newProduct.stock));
-      formData.append("status", newProduct.status);
-      formData.append("approvalStatus", newProduct.approvalStatus);
+      formData.append("name", productDraft.name);
+      formData.append("brand", productDraft.brand);
+      formData.append("model", productDraft.model);
+      formData.append("category", productDraft.category);
+      formData.append("subcategory", productDraft.subcategory);
+      formData.append("description", productDraft.description);
+      formData.append("sku", productDraft.sku);
+      formData.append("hsnCode", productDraft.hsnCode);
+      formData.append("gstPercentage", String(productDraft.gstPercentage));
+      formData.append("costPrice", String(productDraft.costPrice));
+      formData.append("wholesalePrice", String(productDraft.wholesalePrice));
+      formData.append("retailPrice", String(productDraft.retailPrice));
+      formData.append("stock", String(productDraft.stock));
+      formData.append("status", productDraft.status);
+      formData.append("approvalStatus", productDraft.approvalStatus);
+      formData.append("faqs", JSON.stringify(productDraft.faqs));
 
       productFiles.slice(0, 6).forEach((file) => {
         formData.append("images", file);
@@ -165,15 +173,15 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
   };
 
   const handleUpdateProduct = async () => {
-    if (!editProduct?._id) return;
+    if (!newProduct?._id) return;
 
-    if (!editProduct.name.trim()) return alert("Product name is required");
-    if (!editProduct.brand.trim()) return alert("Brand is required");
-    if (!editProduct.model?.trim()) return alert("Model is required");
-    if (!editProduct.category) return alert("Select category");
-    if (!editProduct.subcategory) return alert("Select subcategory");
-    if (editProduct.retailPrice <= 0) return alert("Retail price must be valid");
-    if (!safeImages(editProduct).length && !editProductFiles.length) {
+    if (!newProduct.name.trim()) return alert("Product name is required");
+    if (!newProduct.brand.trim()) return alert("Brand is required");
+    if (!newProduct.model?.trim()) return alert("Model is required");
+    if (!newProduct.category) return alert("Select category");
+    if (!newProduct.subcategory) return alert("Select subcategory");
+    if (newProduct.retailPrice <= 0) return alert("Retail price must be valid");
+    if (!safeImages(newProduct).length && !editProductFiles.length) {
       return alert("At least one image is required");
     }
 
@@ -183,40 +191,41 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       if (editProductFiles.length > 0) {
         const formData = new FormData();
 
-        formData.append("name", editProduct.name);
-        formData.append("brand", editProduct.brand);
-        formData.append("model", editProduct.model || "");
-        formData.append("category", editProduct.category);
-        formData.append("subcategory", editProduct.subcategory);
-        formData.append("description", editProduct.description || "");
-        formData.append("sku", editProduct.sku);
-        formData.append("hsnCode", editProduct.hsnCode || "");
-        formData.append("gstPercentage", String(editProduct.gstPercentage || 18));
-        formData.append("costPrice", String(editProduct.costPrice));
-        formData.append("wholesalePrice", String(editProduct.wholesalePrice));
-        formData.append("retailPrice", String(editProduct.retailPrice));
-        formData.append("stock", String(editProduct.stock));
-        formData.append("status", editProduct.status || "Active");
-        formData.append("approvalStatus", editProduct.approvalStatus || "Approved");
-        formData.append("existingImages", JSON.stringify(safeImages(editProduct).filter((img) => !img.startsWith("blob:"))));
+        formData.append("name", newProduct.name);
+        formData.append("brand", newProduct.brand);
+        formData.append("model", newProduct.model || "");
+        formData.append("category", newProduct.category);
+        formData.append("subcategory", newProduct.subcategory);
+        formData.append("description", newProduct.description || "");
+        formData.append("sku", newProduct.sku);
+        formData.append("hsnCode", newProduct.hsnCode || "");
+        formData.append("gstPercentage", String(newProduct.gstPercentage || 18));
+        formData.append("costPrice", String(newProduct.costPrice));
+        formData.append("wholesalePrice", String(newProduct.wholesalePrice));
+        formData.append("retailPrice", String(newProduct.retailPrice));
+        formData.append("stock", String(newProduct.stock));
+        formData.append("status", newProduct.status || "Active");
+        formData.append("approvalStatus", newProduct.approvalStatus || "Approved");
+        formData.append("faqs", JSON.stringify(newProduct.faqs || []));
+        formData.append("existingImages", JSON.stringify(safeImages(newProduct).filter((img) => !img.startsWith("blob:"))));
 
         editProductFiles.slice(0, 6).forEach((file) => {
           formData.append("images", file);
         });
 
-        res = await fetch(`${API_URL}/api/products/${editProduct._id}`, {
+        res = await fetch(`${API_URL}/api/products/${newProduct._id}`, {
           method: "PUT",
           body: formData,
         });
       } else {
-        res = await fetch(`${API_URL}/api/products/${editProduct._id}`, {
+        res = await fetch(`${API_URL}/api/products/${newProduct._id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            ...editProduct,
-            images: safeImages(editProduct),
+            ...newProduct,
+            images: safeImages(newProduct),
           }),
         });
       }
@@ -236,8 +245,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
 
       if (res.ok && data.success) {
-        setProducts(products.map((p) => (p._id === editProduct._id ? data.product : p)));
-        setEditProduct(null);
+        setProducts(products.map((p) => (p._id === newProduct._id ? data.product : p)));
+        setNewProduct(null);
         setEditProductFiles([]);
       } else {
         alert(data.message || `Failed to update product. Status: ${res.status}`);
@@ -274,7 +283,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     }
   };
 
-  const toggleProduct = (id: string) => {
+  const toggleProduct = (id?: string) => {
+    if (!id) return;
     if (selectedProducts.includes(id)) {
       setSelectedProducts(selectedProducts.filter((item) => item !== id));
     } else {
@@ -286,7 +296,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     if (selectedProducts.length === products.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map((p) => p._id).filter(Boolean));
+      setSelectedProducts(products.map((p) => p._id).filter((id): id is string => Boolean(id)));
     }
   };
 
@@ -334,8 +344,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       product.category,
       product.subcategory,
       product.sku,
-      product.hsnCode || "",
-      product.gstPercentage || 18,
+      (product as Product & ProductFormState).hsnCode || "",
+      (product as Product & ProductFormState).gstPercentage || 18,
       product.costPrice,
       product.wholesalePrice,
       product.retailPrice,
@@ -368,7 +378,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
         )
       );
 
-      setProducts(products.filter((p) => !selectedProducts.includes(p._id)));
+      setProducts(products.filter((p) => !p._id || !selectedProducts.includes(p._id)));
       setSelectedProducts([]);
     } catch (error) {
       console.error(error);
@@ -510,7 +520,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <td className="px-4 py-4">
                     <input
                       type="checkbox"
-                      checked={selectedProducts.includes(item._id)}
+                      checked={item._id ? selectedProducts.includes(item._id) : false}
                       onClick={(e) => e.stopPropagation()}
                       onChange={() => toggleProduct(item._id)}
                     />
@@ -593,7 +603,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
         </div>
       </div>
 
-      {editProduct && (
+      {newProduct && (
         <div className="fixed inset-0 bg-black/50 z-[9999] overflow-y-auto">
           <div className="min-h-screen flex items-start justify-center px-4 py-8">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden">
@@ -609,8 +619,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">Product Name</label>
                   <input
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.name}
-                    onChange={(e) => setEditProduct({ ...editProduct, name: e.target.value })}
+                    value={newProduct.name}
+                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                   />
                 </div>
 
@@ -618,8 +628,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">Brand</label>
                   <input
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.brand}
-                    onChange={(e) => setEditProduct({ ...editProduct, brand: e.target.value })}
+                    value={newProduct.brand}
+                    onChange={(e) => setNewProduct({ ...newProduct, brand: e.target.value })}
                   />
                 </div>
 
@@ -627,8 +637,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">Model</label>
                   <input
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.model || ""}
-                    onChange={(e) => setEditProduct({ ...editProduct, model: e.target.value })}
+                    value={newProduct.model || ""}
+                    onChange={(e) => setNewProduct({ ...newProduct, model: e.target.value })}
                   />
                 </div>
 
@@ -636,8 +646,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">SKU</label>
                   <input
                     type="text"
-                    value={editProduct.sku}
-                    onChange={(e) => setEditProduct({ ...editProduct, sku: e.target.value })}
+                    value={newProduct.sku}
+                    onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   />
                 </div>
@@ -649,16 +659,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     className="border p-3 rounded-lg w-full mt-1"
                     rows={4}
                     maxLength={300}
-                    value={editProduct.description || ""}
+                    value={newProduct.description || ""}
                     onChange={(e) =>
-                      setEditProduct({
-                        ...editProduct,
+                      setNewProduct({
+                        ...newProduct,
                         description: e.target.value.replace(/\s+/g, " "),
                       })
                     }
                   />
                   <p className="text-xs text-zinc-400 mt-1">
-                    {(editProduct.description || "").length}/300 characters
+                    {(newProduct.description || "").length}/300 characters
                   </p>
                 </div>
 
@@ -666,10 +676,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">Category</label>
                   <select
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.category}
+                    value={newProduct.category}
                     onChange={(e) =>
-                      setEditProduct({
-                        ...editProduct,
+                      setNewProduct({
+                        ...newProduct,
                         category: e.target.value,
                         subcategory: "",
                       })
@@ -688,12 +698,12 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">Subcategory</label>
                   <select
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.subcategory}
-                    onChange={(e) => setEditProduct({ ...editProduct, subcategory: e.target.value })}
+                    value={newProduct.subcategory}
+                    onChange={(e) => setNewProduct({ ...newProduct, subcategory: e.target.value })}
                   >
                     <option value="">Select Subcategory</option>
                     {categories
-                      .find((cat) => cat.name === editProduct.category)
+                      .find((cat) => cat.name === newProduct.category)
                       ?.subcategories.map((sub) => (
                         <option key={sub} value={sub}>
                           {sub}
@@ -706,8 +716,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">HSN Code</label>
                   <input
                     type="text"
-                    value={editProduct.hsnCode || ""}
-                    onChange={(e) => setEditProduct({ ...editProduct, hsnCode: e.target.value })}
+                    value={newProduct.hsnCode || ""}
+                    onChange={(e) => setNewProduct({ ...newProduct, hsnCode: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   />
                 </div>
@@ -715,10 +725,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 <div>
                   <label className="text-xs text-zinc-500">GST %</label>
                   <select
-                    value={editProduct.gstPercentage || 18}
+                    value={newProduct.gstPercentage || 18}
                     onChange={(e) =>
-                      setEditProduct({
-                        ...editProduct,
+                      setNewProduct({
+                        ...newProduct,
                         gstPercentage: Number(e.target.value),
                       })
                     }
@@ -738,16 +748,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     type="number"
                     min="0"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.stock}
-                    onChange={(e) => setEditProduct({ ...editProduct, stock: Number(e.target.value) })}
+                    value={newProduct.stock}
+                    onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
                   />
                 </div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Approval Status</label>
                   <select
-                    value={editProduct.approvalStatus || "Approved"}
-                    onChange={(e) => setEditProduct({ ...editProduct, approvalStatus: e.target.value })}
+                    value={newProduct.approvalStatus || "Approved"}
+                    onChange={(e) => setNewProduct({ ...newProduct, approvalStatus: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value="Approved">Approved</option>
@@ -762,8 +772,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     type="number"
                     min="0"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.costPrice}
-                    onChange={(e) => setEditProduct({ ...editProduct, costPrice: Number(e.target.value) })}
+                    value={newProduct.costPrice}
+                    onChange={(e) => setNewProduct({ ...newProduct, costPrice: Number(e.target.value) })}
                   />
                 </div>
 
@@ -773,8 +783,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     type="number"
                     min="0"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.wholesalePrice}
-                    onChange={(e) => setEditProduct({ ...editProduct, wholesalePrice: Number(e.target.value) })}
+                    value={newProduct.wholesalePrice}
+                    onChange={(e) => setNewProduct({ ...newProduct, wholesalePrice: Number(e.target.value) })}
                   />
                 </div>
 
@@ -784,16 +794,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     type="number"
                     min="0"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={editProduct.retailPrice}
-                    onChange={(e) => setEditProduct({ ...editProduct, retailPrice: Number(e.target.value) })}
+                    value={newProduct.retailPrice}
+                    onChange={(e) => setNewProduct({ ...newProduct, retailPrice: Number(e.target.value) })}
                   />
                 </div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Status</label>
                   <select
-                    value={editProduct.status || "Active"}
-                    onChange={(e) => setEditProduct({ ...editProduct, status: e.target.value })}
+                    value={newProduct.status || "Active"}
+                    onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value="Active">Active</option>
@@ -801,15 +811,93 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   </select>
                 </div>
 
+<div className="md:col-span-2 border rounded-xl p-4 bg-zinc-50">
+  <div className="flex items-center justify-between mb-3">
+    <div>
+      <h3 className="font-semibold text-zinc-900">Product FAQs</h3>
+      <p className="text-xs text-zinc-500">
+        Add questions and answers shown on the customer product page.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() =>
+        setNewProduct({
+          ...newProduct,
+          faqs: [...(newProduct.faqs || []), { question: "", answer: "" }],
+        })
+      }
+      className="px-3 py-2 bg-black text-white rounded-lg text-sm"
+    >
+      + Add FAQ
+    </button>
+  </div>
+
+  {(newProduct.faqs || []).length === 0 && (
+    <p className="text-sm text-zinc-400 border border-dashed rounded-lg p-4 bg-white">
+      No FAQs added yet.
+    </p>
+  )}
+
+  <div className="space-y-4">
+    {(newProduct.faqs || []).map((faq, index) => (
+      <div key={index} className="bg-white border rounded-xl p-4 space-y-3">
+        <div>
+          <label className="text-xs text-zinc-500">Question</label>
+          <input
+            className="border p-3 rounded-lg w-full mt-1"
+            placeholder="Example: Is this compatible with OnePlus 8?"
+            value={faq.question}
+            onChange={(e) => {
+              const updatedFaqs = [...(newProduct.faqs || [])];
+              updatedFaqs[index].question = e.target.value;
+              setNewProduct({ ...newProduct, faqs: updatedFaqs });
+            }}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs text-zinc-500">Answer</label>
+          <textarea
+            className="border p-3 rounded-lg w-full mt-1"
+            rows={3}
+            placeholder="Example: Yes, this product is compatible with OnePlus 8."
+            value={faq.answer}
+            onChange={(e) => {
+              const updatedFaqs = [...(newProduct.faqs || [])];
+              updatedFaqs[index].answer = e.target.value;
+              setNewProduct({ ...newProduct, faqs: updatedFaqs });
+            }}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            const updatedFaqs = (newProduct.faqs || []).filter(
+              (_, faqIndex) => faqIndex !== index
+            );
+            setNewProduct({ ...newProduct, faqs: updatedFaqs });
+          }}
+          className="text-sm text-red-600 font-medium"
+        >
+          Remove FAQ
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
                 <div className="md:col-span-2">
                   <div className="flex items-center justify-between gap-3">
                     <label className="text-xs text-zinc-500">Product Images - Maximum 6</label>
-                    <span className="text-xs text-zinc-400">{safeImages(editProduct).length}/6 images</span>
+                    <span className="text-xs text-zinc-400">{safeImages(newProduct).length}/6 images</span>
                   </div>
 
-                  {safeImages(editProduct).length > 0 ? (
+                  {safeImages(newProduct).length > 0 ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-2">
-                      {safeImages(editProduct).map((img, index) => (
+                      {safeImages(newProduct).map((img, index) => (
                         <div key={`${img}-${index}`} className="relative group border rounded-lg overflow-hidden bg-zinc-50">
                           <img
                             src={getImageUrl(img)}
@@ -819,9 +907,9 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                           <button
                             type="button"
                             onClick={() =>
-                              setEditProduct({
-                                ...editProduct,
-                                images: safeImages(editProduct).filter((_, imgIndex) => imgIndex !== index),
+                              setNewProduct({
+                                ...newProduct,
+                                images: safeImages(newProduct).filter((_, imgIndex) => imgIndex !== index),
                               })
                             }
                             className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow"
@@ -845,9 +933,9 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     className="border p-3 rounded-lg w-full mt-3"
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
-                      if (!files.length || !editProduct) return;
+                      if (!files.length || !newProduct) return;
 
-                      const existingImages = safeImages(editProduct);
+                      const existingImages = safeImages(newProduct);
                       const remainingSlots = Math.max(0, 6 - existingImages.length);
                       const acceptedFiles = files.slice(0, remainingSlots);
 
@@ -859,8 +947,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                       const previewUrls = acceptedFiles.map((file) => URL.createObjectURL(file));
 
                       setEditProductFiles([...editProductFiles, ...acceptedFiles]);
-                      setEditProduct({
-                        ...editProduct,
+                      setNewProduct({
+                        ...newProduct,
                         images: [...existingImages, ...previewUrls].slice(0, 6),
                       });
                     }}
@@ -875,7 +963,7 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
               <div className="flex justify-end gap-3 px-6 py-4 border-t bg-white sticky bottom-0">
                 <button
                   onClick={() => {
-                    setEditProduct(null);
+                    setNewProduct(null);
                     setEditProductFiles([]);
                   }}
                   className="px-4 py-2 border rounded-lg"
@@ -909,8 +997,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <input
                     placeholder="Product Name"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={newProduct.name}
-                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                    value={productDraft.name}
+                    onChange={(e) => setProductDraft({ ...productDraft, name: e.target.value })}
                   />
                 </div>
 
@@ -919,8 +1007,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <input
                     placeholder="Brand"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={newProduct.brand}
-                    onChange={(e) => setNewProduct({ ...newProduct, brand: e.target.value })}
+                    value={productDraft.brand}
+                    onChange={(e) => setProductDraft({ ...productDraft, brand: e.target.value })}
                   />
                 </div>
 
@@ -929,8 +1017,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <input
                     type="text"
                     placeholder="Model, Ex: OnePlus 10 Pro 5G"
-                    value={newProduct.model}
-                    onChange={(e) => setNewProduct({ ...newProduct, model: e.target.value })}
+                    value={productDraft.model}
+                    onChange={(e) => setProductDraft({ ...productDraft, model: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   />
                 </div>
@@ -938,10 +1026,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 <div>
                   <label className="text-xs text-zinc-500">SKU</label>
                   <div className="flex gap-2 mt-1">
-                    <input value={newProduct.sku} readOnly className="border p-3 rounded-lg w-full bg-gray-100" />
+                    <input value={productDraft.sku} readOnly className="border p-3 rounded-lg w-full bg-gray-100" />
                     <button
                       type="button"
-                      onClick={() => setNewProduct({ ...newProduct, sku: generateSKU() })}
+                      onClick={() => setProductDraft({ ...productDraft, sku: generateSKU() })}
                       className="px-4 bg-black text-white rounded-lg"
                     >
                       Generate
@@ -956,24 +1044,24 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     className="border p-3 rounded-lg w-full mt-1"
                     rows={4}
                     maxLength={300}
-                    value={newProduct.description}
+                    value={productDraft.description}
                     onChange={(e) =>
-                      setNewProduct({
-                        ...newProduct,
+                      setProductDraft({
+                        ...productDraft,
                         description: e.target.value.replace(/\s+/g, " "),
                       })
                     }
                   />
                   <p className="text-xs text-zinc-400 mt-1">
-                    {(newProduct.description || "").length}/300 characters
+                    {(productDraft.description || "").length}/300 characters
                   </p>
                 </div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Category</label>
                   <select
-                    value={newProduct.category}
-                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value, subcategory: "" })}
+                    value={productDraft.category}
+                    onChange={(e) => setProductDraft({ ...productDraft, category: e.target.value, subcategory: "" })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value="">Select Category</option>
@@ -988,13 +1076,13 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 <div>
                   <label className="text-xs text-zinc-500">Subcategory</label>
                   <select
-                    value={newProduct.subcategory}
-                    onChange={(e) => setNewProduct({ ...newProduct, subcategory: e.target.value })}
+                    value={productDraft.subcategory}
+                    onChange={(e) => setProductDraft({ ...productDraft, subcategory: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value="">Select Subcategory</option>
                     {categories
-                      .find((cat) => cat.name === newProduct.category)
+                      .find((cat) => cat.name === productDraft.category)
                       ?.subcategories.map((sub) => (
                         <option key={sub} value={sub}>
                           {sub}
@@ -1007,8 +1095,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   <label className="text-xs text-zinc-500">HSN Code</label>
                   <input
                     type="text"
-                    value={newProduct.hsnCode}
-                    onChange={(e) => setNewProduct({ ...newProduct, hsnCode: e.target.value })}
+                    value={productDraft.hsnCode}
+                    onChange={(e) => setProductDraft({ ...productDraft, hsnCode: e.target.value })}
                     placeholder="Ex: 4202"
                     className="border p-3 rounded-lg w-full mt-1"
                   />
@@ -1017,8 +1105,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 <div>
                   <label className="text-xs text-zinc-500">GST %</label>
                   <select
-                    value={newProduct.gstPercentage}
-                    onChange={(e) => setNewProduct({ ...newProduct, gstPercentage: Number(e.target.value) })}
+                    value={productDraft.gstPercentage}
+                    onChange={(e) => setProductDraft({ ...productDraft, gstPercentage: Number(e.target.value) })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value={0}>GST 0%</option>
@@ -1036,16 +1124,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     min="0"
                     placeholder="Enter stock"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
+                    value={productDraft.stock}
+                    onChange={(e) => setProductDraft({ ...productDraft, stock: Number(e.target.value) })}
                   />
                 </div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Approval Status</label>
                   <select
-                    value={newProduct.approvalStatus}
-                    onChange={(e) => setNewProduct({ ...newProduct, approvalStatus: e.target.value })}
+                    value={productDraft.approvalStatus}
+                    onChange={(e) => setProductDraft({ ...productDraft, approvalStatus: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value="Approved">Approved</option>
@@ -1061,8 +1149,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     min="0"
                     placeholder="Cost price"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={newProduct.costPrice}
-                    onChange={(e) => setNewProduct({ ...newProduct, costPrice: Number(e.target.value) })}
+                    value={productDraft.costPrice}
+                    onChange={(e) => setProductDraft({ ...productDraft, costPrice: Number(e.target.value) })}
                   />
                 </div>
 
@@ -1073,8 +1161,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     min="0"
                     placeholder="Wholesale price"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={newProduct.wholesalePrice}
-                    onChange={(e) => setNewProduct({ ...newProduct, wholesalePrice: Number(e.target.value) })}
+                    value={productDraft.wholesalePrice}
+                    onChange={(e) => setProductDraft({ ...productDraft, wholesalePrice: Number(e.target.value) })}
                   />
                 </div>
 
@@ -1085,16 +1173,16 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     min="0"
                     placeholder="Retail price"
                     className="border p-3 rounded-lg w-full mt-1"
-                    value={newProduct.retailPrice}
-                    onChange={(e) => setNewProduct({ ...newProduct, retailPrice: Number(e.target.value) })}
+                    value={productDraft.retailPrice}
+                    onChange={(e) => setProductDraft({ ...productDraft, retailPrice: Number(e.target.value) })}
                   />
                 </div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Status</label>
                   <select
-                    value={newProduct.status}
-                    onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })}
+                    value={productDraft.status}
+                    onChange={(e) => setProductDraft({ ...productDraft, status: e.target.value })}
                     className="border p-3 rounded-lg w-full mt-1"
                   >
                     <option value="Active">Active</option>
@@ -1102,10 +1190,88 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                   </select>
                 </div>
 
+                <div className="md:col-span-2 border rounded-xl p-4 bg-zinc-50">
+  <div className="flex items-center justify-between mb-3">
+    <div>
+      <h3 className="font-semibold text-zinc-900">Product FAQs</h3>
+      <p className="text-xs text-zinc-500">
+        Add questions and answers shown on the customer product page.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() =>
+        setProductDraft({
+          ...productDraft,
+          faqs: [...productDraft.faqs, { question: "", answer: "" }],
+        })
+      }
+      className="px-3 py-2 bg-black text-white rounded-lg text-sm"
+    >
+      + Add FAQ
+    </button>
+  </div>
+
+  {productDraft.faqs.length === 0 && (
+    <p className="text-sm text-zinc-400 border border-dashed rounded-lg p-4 bg-white">
+      No FAQs added yet.
+    </p>
+  )}
+
+  <div className="space-y-4">
+    {productDraft.faqs.map((faq, index) => (
+      <div key={index} className="bg-white border rounded-xl p-4 space-y-3">
+        <div>
+          <label className="text-xs text-zinc-500">Question</label>
+          <input
+            className="border p-3 rounded-lg w-full mt-1"
+            placeholder="Example: Is this compatible with OnePlus 8?"
+            value={faq.question}
+            onChange={(e) => {
+              const updatedFaqs = [...productDraft.faqs];
+              updatedFaqs[index].question = e.target.value;
+              setProductDraft({ ...productDraft, faqs: updatedFaqs });
+            }}
+          />
+        </div>
+
+        <div>
+          <label className="text-xs text-zinc-500">Answer</label>
+          <textarea
+            className="border p-3 rounded-lg w-full mt-1"
+            rows={3}
+            placeholder="Example: Yes, this product is compatible with OnePlus 8."
+            value={faq.answer}
+            onChange={(e) => {
+              const updatedFaqs = [...productDraft.faqs];
+              updatedFaqs[index].answer = e.target.value;
+              setProductDraft({ ...productDraft, faqs: updatedFaqs });
+            }}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            setProductDraft({
+              ...productDraft,
+              faqs: productDraft.faqs.filter((_, faqIndex) => faqIndex !== index),
+            })
+          }
+          className="text-sm text-red-600 font-medium"
+        >
+          Remove FAQ
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
                 <div className="md:col-span-2">
                   <div className="flex items-center justify-between gap-3">
                     <label className="text-xs font-medium text-zinc-500">Upload Product Images - Maximum 6</label>
-                    <span className="text-xs text-zinc-400">{newProduct.images.length}/6 images</span>
+                    <span className="text-xs text-zinc-400">{productDraft.images.length}/6 images</span>
                   </div>
 
                   <input
@@ -1118,24 +1284,24 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                       if (!files.length) return;
 
                       setProductFiles(files);
-                      setNewProduct({
-                        ...newProduct,
+                      setProductDraft({
+                        ...productDraft,
                         images: files.map((file) => URL.createObjectURL(file)),
                       });
                     }}
                   />
 
-                  {newProduct.images.length > 0 && (
+                  {productDraft.images.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-3">
-                      {newProduct.images.map((img, index) => (
+                      {productDraft.images.map((img, index) => (
                         <div key={`${img}-${index}`} className="relative border rounded-lg overflow-hidden bg-zinc-50">
                           <img src={img} alt={`Preview ${index + 1}`} className="h-24 w-full object-cover" />
                           <button
                             type="button"
                             onClick={() => {
-                              setNewProduct({
-                                ...newProduct,
-                                images: newProduct.images.filter((_, imgIndex) => imgIndex !== index),
+                              setProductDraft({
+                                ...productDraft,
+                                images: productDraft.images.filter((_, imgIndex) => imgIndex !== index),
                               });
                               setProductFiles(productFiles.filter((_, fileIndex) => fileIndex !== index));
                             }}
@@ -1188,8 +1354,8 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                 <p><b>Subcategory:</b> {selectedProduct.subcategory}</p>
                 <p><b>SKU:</b> {selectedProduct.sku}</p>
                 <p><b>Model:</b> {selectedProduct.model || "-"}</p>
-                <p><b>HSN:</b> {selectedProduct.hsnCode || "-"}</p>
-                <p><b>GST:</b> {selectedProduct.gstPercentage || 18}%</p>
+                <p><b>HSN:</b> {(selectedProduct as Product & ProductFormState).hsnCode || "-"}</p>
+                <p><b>GST:</b> {(selectedProduct as Product & ProductFormState).gstPercentage || 18}%</p>
                 <p><b>Stock:</b> {selectedProduct.stock}</p>
                 <p><b>Status:</b> {selectedProduct.status}</p>
               </div>
