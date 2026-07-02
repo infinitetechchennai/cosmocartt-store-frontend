@@ -507,28 +507,24 @@ const faqSchema =
         }
 
     };
-    console.log(product);
-console.log(product?.faqs);
+    //console.log(product);
+//console.log(product?.faqs);
 
 if (!product) {
-
-    if (!product) {
-
-        return (
-            <div className="min-h-screen bg-slate-50">
-                <Navbar />
-                <div className="min-h-[60vh] flex items-center justify-center">
-                    <div className="bg-white border border-zinc-100 rounded-3xl px-8 py-6 shadow-sm text-zinc-500 animate-pulse">
-                        Loading product details...
-                    </div>
-                </div>
-                <Footer />
-            </div>
-        );
-
-    }
-
     return (
+        <div className="min-h-screen bg-slate-50">
+            <Navbar />
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="bg-white border border-zinc-100 rounded-3xl px-8 py-6 shadow-sm text-zinc-500 animate-pulse">
+                    Loading product details...
+                </div>
+            </div>
+            <Footer />
+        </div>
+    );
+}
+
+return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50/30">
             <SEO
     title={productTitle}
