@@ -38,11 +38,27 @@ export default function SEO({
   const resolvedCanonical = canonical || siteUrl;
   const resolvedImage = image || defaultImage;
 
-  const jsonLdArray = Array.isArray(jsonLd)
+  const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Cosmocartt",
+  url: siteUrl,
+  logo: `${siteUrl}/logo.png`,
+  sameAs: [
+    "https://www.instagram.com/cosmocartt",
+    "https://www.facebook.com/cosmocartt",
+    "https://www.linkedin.com/company/cosmocartt"
+  ]
+};
+
+  const jsonLdArray = [
+  organizationSchema,
+  ...(Array.isArray(jsonLd)
     ? jsonLd
     : jsonLd
     ? [jsonLd]
-    : [];
+    : []),
+];
 
   return (
     <Helmet prioritizeSeoTags>
