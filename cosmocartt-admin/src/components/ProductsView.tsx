@@ -84,6 +84,39 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
     if (!item || !Array.isArray(images)) return [];
     return images.filter(Boolean).slice(0, 6);
   };
+  const makePreviewSlug = (name: string) => {
+  return String(name || "product-name")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
+const getGooglePreviewUrl = (name: string, canonicalUrl?: string) => {
+  if (canonicalUrl && canonicalUrl.trim()) {
+    return canonicalUrl.trim();
+  }
+
+  return `https://www.cosmocartt.com/product/${makePreviewSlug(name)}`;
+};
+
+const validateFaqs = (faqs: { question: string; answer: string }[]) => {
+  for (const faq of faqs) {
+    const question = faq.question.trim();
+    const answer = faq.answer.trim();
+
+    if (!question && !answer) {
+      continue;
+    }
+
+    if (!question || !answer) {
+      alert("FAQ question and answer are both required.");
+      return false;
+    }
+  }
+
+  return true;
+};
 
   const totalProducts = products.length;
   const inStockProducts = products.filter((p) => p.stock > 10).length;
@@ -140,6 +173,7 @@ canonicalUrl: productState.canonicalUrl || "",
     if (productDraft.retailPrice <= 0) return alert("Retail price must be greater than 0");
     if (productDraft.stock < 0) return alert("Stock cannot be negative");
     if (!productFiles.length) return alert("Please upload at least one product image");
+    if (!validateFaqs(productDraft.faqs)) return;
 
     try {
       const formData = new FormData();
@@ -200,6 +234,7 @@ formData.append("canonicalUrl", productDraft.canonicalUrl);
     if (!safeImages(newProduct).length && !editProductFiles.length) {
       return alert("At least one image is required");
     }
+    if (!validateFaqs(newProduct.faqs || [])) return;
 
     try {
       let res: Response;
@@ -342,49 +377,74 @@ formData.append("canonicalUrl", newProduct.canonicalUrl || "");
   };
 
   const exportProductsCSV = () => {
-    const headers = [
-      "Name",
-      "Brand",
-      "Model",
-      "Category",
-      "Subcategory",
-      "SKU",
-      "HSN Code",
-      "GST %",
-      "Cost Price",
-      "Wholesale Price",
-      "Retail Price",
-      "Stock",
-      "Status",
+  const headers = [
+    "Name",
+    "Slug",
+    "Brand",
+    "Model",
+    "Category",
+    "Subcategory",
+    "Description",
+    "SEO Title",
+    "SEO Description",
+    "Focus Keyword",
+    "Canonical URL",
+    "SKU",
+    "HSN Code",
+    "GST %",
+    "Cost Price",
+    "Wholesale Price",
+    "Retail Price",
+    "Stock",
+    "Status",
+    "FAQs",
+  ];
+
+  const rows = products.map((product) => {
+    const productData = product as Product & ProductFormState & { slug?: string };
+
+    return [
+      productData.name,
+      productData.slug || "",
+      productData.brand,
+      productData.model || "",
+      productData.category,
+      productData.subcategory,
+      productData.description || "",
+      productData.seoTitle || "",
+      productData.seoDescription || "",
+      productData.focusKeyword || "",
+      productData.canonicalUrl || "",
+      productData.sku,
+      productData.hsnCode || "",
+      productData.gstPercentage || 18,
+      productData.costPrice,
+      productData.wholesalePrice,
+      productData.retailPrice,
+      productData.stock,
+      productData.status,
+      productData.faqs?.length ? JSON.stringify(productData.faqs) : "",
     ];
+  });
 
-    const rows = products.map((product) => [
-      product.name,
-      product.brand,
-      product.model || "",
-      product.category,
-      product.subcategory,
-      product.sku,
-      (product as Product & ProductFormState).hsnCode || "",
-      (product as Product & ProductFormState).gstPercentage || 18,
-      product.costPrice,
-      product.wholesalePrice,
-      product.retailPrice,
-      product.stock,
-      product.status,
-    ]);
+  const csvContent = [
+    headers.join(","),
+    ...rows.map((row) =>
+      row
+        .map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`)
+        .join(",")
+    ),
+  ].join("\n");
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((value) => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")),
-    ].join("\n");
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;",
+  });
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "products.csv";
-    link.click();
-  };
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "products-seo-export.csv";
+  link.click();
+};
 
   const handleBulkDelete = async () => {
     const confirmDelete = window.confirm(`Delete ${selectedProducts.length} selected products?`);
@@ -751,10 +811,29 @@ formData.append("canonicalUrl", newProduct.canonicalUrl || "");
         }
         placeholder="/product/oneplus-8-leather-case"
       />
-    </div>
+       </div>
+  </div>
+
+  <div className="mt-5 border rounded-xl bg-white p-4">
+    <p className="text-xs font-semibold text-zinc-500 mb-2">
+      Google Search Preview
+    </p>
+
+    <p className="text-xs text-green-700 truncate">
+      {getGooglePreviewUrl(newProduct.name, newProduct.canonicalUrl)}
+    </p>
+
+    <h4 className="text-lg text-blue-700 font-medium mt-1 truncate">
+      {newProduct.seoTitle || newProduct.name || "Product SEO Title"}
+    </h4>
+
+    <p className="text-sm text-zinc-600 mt-1 line-clamp-2">
+      {newProduct.seoDescription ||
+        newProduct.description ||
+        "Your product meta description will appear here."}
+    </p>
   </div>
 </div>
-
                 <div>
                   <label className="text-xs text-zinc-500">Category</label>
                   <select
@@ -1174,7 +1253,10 @@ formData.append("canonicalUrl", newProduct.canonicalUrl || "");
         rows={3}
         value={productDraft.seoDescription || ""}
         onChange={(e) =>
-          setProductDraft({ ...productDraft, seoDescription: e.target.value })
+          setProductDraft({
+            ...productDraft,
+            seoDescription: e.target.value,
+          })
         }
         placeholder="Shop premium OnePlus 8 leather case with shockproof protection and fast delivery."
       />
@@ -1186,11 +1268,34 @@ formData.append("canonicalUrl", newProduct.canonicalUrl || "");
         className="border p-3 rounded-lg w-full mt-1"
         value={productDraft.canonicalUrl || ""}
         onChange={(e) =>
-          setProductDraft({ ...productDraft, canonicalUrl: e.target.value })
+          setProductDraft({
+            ...productDraft,
+            canonicalUrl: e.target.value,
+          })
         }
         placeholder="/product/oneplus-8-leather-case"
       />
     </div>
+  </div>
+
+  <div className="mt-5 border rounded-xl bg-white p-4">
+    <p className="text-xs font-semibold text-zinc-500 mb-2">
+      Google Search Preview
+    </p>
+
+    <p className="text-xs text-green-700 truncate">
+      {getGooglePreviewUrl(productDraft.name, productDraft.canonicalUrl)}
+    </p>
+
+    <h4 className="text-lg text-blue-700 font-medium mt-1 truncate">
+      {productDraft.seoTitle || productDraft.name || "Product SEO Title"}
+    </h4>
+
+    <p className="text-sm text-zinc-600 mt-1 line-clamp-2">
+      {productDraft.seoDescription ||
+        productDraft.description ||
+        "Your product meta description will appear here."}
+    </p>
   </div>
 </div>
 

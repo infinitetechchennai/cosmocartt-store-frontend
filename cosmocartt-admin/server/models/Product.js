@@ -1,4 +1,19 @@
 import mongoose from "mongoose";
+const faqSchema = new mongoose.Schema(
+  {
+    question: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    answer: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+  },
+  { _id: true }
+);
 
 const productSchema = new mongoose.Schema(
   {
@@ -8,10 +23,13 @@ const productSchema = new mongoose.Schema(
     },
 
     slug: {
-      type: String,
-      unique: true,
-      sparse: true,
-    },
+  type: String,
+  unique: true,
+  sparse: true,
+  lowercase: true,
+  trim: true,
+  index: true,
+},
 
     brand: {
       type: String,
@@ -142,22 +160,9 @@ const productSchema = new mongoose.Schema(
     },
 
     faqs: {
-      type: [
-        {
-          question: {
-            type: String,
-            trim: true,
-            default: "",
-          },
-          answer: {
-            type: String,
-            trim: true,
-            default: "",
-          },
-        },
-      ],
-      default: [],
-    },
+  type: [faqSchema],
+  default: [],
+},
   },
   {
     timestamps: true,
