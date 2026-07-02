@@ -161,7 +161,7 @@ export default function Cart() {
                         className="h-40 md:h-36 md:w-36 rounded-[26px] bg-gradient-to-br from-slate-50 to-purple-50 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0"
                       >
                         <img
-                          src={getImageUrl(item.images?.[0])}
+                          src={getImageUrl(item.images?.[0] || item.image)}
                           alt={item.name}
                           loading="lazy"
                           onError={(e) => {
@@ -354,9 +354,9 @@ export default function Cart() {
                 >
                   <img
                     src={
-                      product.images?.[0]?.startsWith("http")
-                        ? product.images[0]
-                        : getImageUrl(product.images?.[0])
+                      (product.images?.[0] || product.image)?.startsWith("http")
+                        ? (product.images?.[0] || product.image)
+                        : getImageUrl(product.images?.[0] || product.image)
                     }
                     alt={product.name}
                     loading="lazy"
