@@ -1209,12 +1209,15 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
 
     <button
       type="button"
-      onClick={() =>
-        setProductDraft({
-          ...productDraft,
-          faqs: [...productDraft.faqs, { question: "", answer: "" }],
-        })
-      }
+      onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  setProductDraft((prev) => ({
+    ...prev,
+    faqs: [...(prev.faqs || []), { question: "", answer: "" }],
+  }));
+}}
       className="px-3 py-2 bg-black text-white rounded-lg text-sm"
     >
       + Add FAQ
