@@ -72,7 +72,7 @@ export default function App() {
           <Route path="/catalog/:category/:subcategory/:brand" element={<CatalogBrowse />} />
           <Route path="/catalog/:category/:subcategory/:brand/:model" element={<CatalogBrowse />} />
 
-          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/product/:slug" element={<ProductDetails />} />
 
           <Route path="/cart" element={<Cart />} />
 
