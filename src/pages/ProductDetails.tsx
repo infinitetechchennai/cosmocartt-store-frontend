@@ -108,18 +108,32 @@ export default function ProductDetails() {
         });
 
     const productTitle = product
-        ? `${product.brand ? `${product.brand} ` : ""}${product.name} | Buy Online at Best Price | ${siteName}`
-        : `${siteName} Product`;
+    ? (
+        product.seoTitle ||
+        `${product.brand ? `${product.brand} ` : ""}${product.name} | Buy Online at Best Price | ${siteName}`
+      )
+    : `${siteName} Product`;
 
     const productDescription = product
-        ? product.category
-            ? `Buy ${product.name} online at Cosmocartt. Shop ${product.category} products with secure checkout, delivery support, product details and exclusive offers.`
-            : `Buy ${product.name} online at Cosmocartt. Explore price, features, specifications, delivery details, secure checkout and exclusive offers.`
-        : "Buy products online at Cosmocartt with secure checkout and delivery support.";
-
+    ? (
+        product.seoDescription ||
+        (
+            product.category
+                ? `Buy ${product.name} online at Cosmocartt. Shop ${product.category} products with secure checkout, delivery support, product details and exclusive offers.`
+                : `Buy ${product.name} online at Cosmocartt. Explore price, features, specifications, delivery details, secure checkout and exclusive offers.`
+        )
+      )
+    : "Buy products online at Cosmocartt with secure checkout and delivery support.";
     const productCanonical = product
-        ? `${siteUrl}/product/${product.slug || product._id}`
-        : `${siteUrl}/products`;
+    ? (
+        product.canonicalUrl ||
+        `${siteUrl}/product/${product.slug || product._id}`
+      )
+    : `${siteUrl}/products`;
+
+    const focusKeyword =
+    product?.focusKeyword ||
+    product?.name;
 
     const productInfo = [
         ["Brand", product?.brand],
@@ -278,9 +292,12 @@ const productUrl =
         ? {
             "@context": "https://schema.org",
             "@type": "Product",
-            name: product.name,
+            name: product.seoTitle || product.name,
             image: (product.images || []).map((img: string) => getImageUrl(img)),
-            description: product.description || product.name,
+            description:
+    product.seoDescription ||
+    product.description ||
+    product.name,
             sku: product.sku || undefined,
             brand: product.brand
                 ? {
@@ -349,13 +366,27 @@ const productUrl =
                 {
                     "@type": "ListItem",
                     position: 3,
-                    name: product.name,
+                    name: product.seoTitle || product.name,
                     item: productCanonical,
                 },
             ],
         }
         : undefined;
-
+const faqSchema =
+    product?.faqs && product.faqs.length > 0
+        ? {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: product.faqs.map((faq: any) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: faq.answer,
+                },
+            })),
+        }
+        : undefined;
     useEffect(() => {
 
         if (!product) return;
@@ -496,13 +527,18 @@ const productUrl =
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50/30">
             <SEO
-                title={productTitle}
-                description={productDescription}
-                canonical={productCanonical}
-                image={product.images?.[0] ? getImageUrl(product.images[0]) : undefined}
-                type="product"
-                jsonLd={[productSchema, breadcrumbSchema].filter(Boolean)}
-            />
+    title={productTitle}
+    description={productDescription}
+    canonical={productCanonical}
+    image={product.images?.[0] ? getImageUrl(product.images[0]) : undefined}
+    type="product"
+    keywords={product.focusKeyword || product.name}
+    jsonLd={[
+        productSchema,
+        breadcrumbSchema,
+        faqSchema
+    ].filter(Boolean)}
+/>
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
