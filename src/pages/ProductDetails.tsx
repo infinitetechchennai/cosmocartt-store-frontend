@@ -1369,6 +1369,38 @@ pointer-events-none
                     </div>
                 </section>
 
+{product.faqs && product.faqs.length > 0 && (
+  <section className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm mt-8">
+    <h2 className="text-2xl font-bold text-zinc-900 mb-2">
+      Frequently Asked Questions
+    </h2>
+
+    <p className="text-zinc-500 mb-6">
+      Questions commonly asked about this product.
+    </p>
+
+    <div className="space-y-4">
+      {product.faqs.map((faq: any, index: number) => (
+        <details
+          key={index}
+          className="group border rounded-2xl overflow-hidden"
+        >
+          <summary className="cursor-pointer list-none px-5 py-4 flex justify-between items-center font-semibold text-zinc-900 hover:bg-zinc-50">
+            <span>{faq.question}</span>
+
+            <span className="text-2xl text-[#4B1E78] group-open:rotate-45 transition-transform">
+              +
+            </span>
+          </summary>
+
+          <div className="px-5 pb-5 pt-1 text-zinc-600 leading-7">
+            {faq.answer}
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+)}
 
                 {
                     relatedProducts.length > 0 && (
