@@ -17,6 +17,8 @@ import { products } from "../data/products";
 import { useState } from "react";
 import { getDisplayPrice } from "../utils/pricing";
 import { FALLBACK_IMAGE, getImageUrl } from "../utils/imageUrl";
+import SEO from "../components/SEO";
+import { seoPages } from "../config/seo";
 
 
 export default function Cart() {
