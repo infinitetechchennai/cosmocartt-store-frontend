@@ -176,7 +176,7 @@ export default function Wishlist() {
                         </button>
 
                         <Link
-                          to={`/product/${product.slug || product._id}`}
+                          to={`/product/${product.slug || product._id || product.id}`}
                           className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-300 text-slate-700 font-bold hover:border-[#4B1E78] hover:text-[#4B1E78] transition-all"
                         >
                           View Product

@@ -158,7 +158,7 @@ export default function Cart() {
                   <div key={item._id} className="py-6">
                     <div className="flex flex-col md:flex-row gap-5">
                       <Link
-                        to={`/product/${item.slug || item._id}`}
+                        to={`/product/${item.slug || item._id || item.id}`}
                         className="h-40 md:h-36 md:w-36 rounded-[26px] bg-gradient-to-br from-slate-50 to-purple-50 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0"
                       >
                         <img
