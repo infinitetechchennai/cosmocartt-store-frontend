@@ -445,7 +445,15 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
           </button>
 
           <button
-            onClick={() => setShowModal(true)}
+  onClick={() => {
+    setProductDraft({
+      ...emptyProduct,
+      faqs: [],
+      images: [],
+    });
+    setProductFiles([]);
+    setShowModal(true);
+  }}
             className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800"
           >
             + Add Product

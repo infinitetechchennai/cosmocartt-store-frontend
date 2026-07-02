@@ -264,10 +264,18 @@ export const deleteProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
-
         const updateData = {
             ...req.body
         };
+
+        const existingProduct = await Product.findById(req.params.id);
+
+        if (!existingProduct) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found",
+            });
+        }
 
         if (typeof updateData.existingImages === "string") {
             try {
@@ -287,112 +295,56 @@ export const updateProduct = async (req, res) => {
                     .map(img => img.trim())
                     .filter(Boolean);
             }
+        } else if (!Array.isArray(updateData.images)) {
+            updateData.images = existingProduct.images || [];
         }
 
         delete updateData.existingImages;
+
         updateData.faqs = parseFaqs(req.body.faqs);
 
-        if (!Array.isArray(updateData.images)) {
-            updateData.images = [];
-        }
-
         if (req.files?.length) {
-
             for (const file of req.files) {
-
                 try {
-
-                    const uploaded =
-                        await uploadBuffer(
-                            file.buffer,
-                            "CosmoCartt/products"
-                        );
-
-                    updateData.images.push(
-                        uploaded.secure_url
+                    const uploaded = await uploadBuffer(
+                        file.buffer,
+                        "CosmoCartt/products"
                     );
 
+                    updateData.images.push(uploaded.secure_url);
                 } catch (err) {
-
-                    console.error(
-                        "Cloudinary Update Upload Failed:",
-                        err.message
-                    );
-
                     return res.status(500).json({
                         success: false,
-                        message:
-                            err.message ||
-                            "Cloudinary image upload failed"
+                        message: err.message || "Cloudinary image upload failed"
                     });
-
                 }
-
             }
-
         }
 
-        updateData.images =
-            updateData.images
-                .filter(Boolean)
-                .slice(0, 6);
+        updateData.images = updateData.images
+            .filter(Boolean)
+            .slice(0, 6);
 
         if (req.body.name) {
-
-            updateData.slug =
-                await generateUniqueSlug(
-                    req.body.name,
-                    req.params.id
-                );
-
-        }
-
-        const existingProduct = await Product.findById(req.params.id);
-
-        if (!existingProduct) {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found",
-            });
-        }
-
-        const oldImages = Array.isArray(existingProduct.images)
-            ? existingProduct.images
-            : [];
-
-        const newImages = Array.isArray(updateData.images)
-            ? updateData.images
-            : [];
-
-        const removedImages = oldImages.filter(
-            image => !newImages.includes(image)
-        );
-
-        for (const image of removedImages) {
-            await deleteImage(image);
+            updateData.slug = await generateUniqueSlug(
+                req.body.name,
+                req.params.id
+            );
         }
 
         const product = await Product.findByIdAndUpdate(
             req.params.id,
             updateData,
-            {
-                new: true,
-            }
+            { new: true }
         );
 
-        if (!product) {
-            return res.status(404).json({
-                success: false,
-                message: "Product not found",
-            });
-        }
-
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             product,
         });
+
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
