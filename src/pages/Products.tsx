@@ -188,15 +188,29 @@ export default function Products() {
             return updated;
         });
     };
+    const seoTitle =
+    selectedBrands.length > 0
+        ? `${selectedBrands.join(", ")} Products Online`
+        : selectedCategory
+        ? `${selectedCategory} Online`
+        : seoPages.products.title;
+
+const seoDescription =
+    selectedBrands.length > 0
+        ? `Buy ${selectedBrands.join(", ")} products online at Cosmocartt with best prices, secure checkout and fast delivery.`
+        : selectedCategory
+        ? `Shop ${selectedCategory} online at Cosmocartt with great offers and fast shipping.`
+        : seoPages.products.description;
 
     return (
         <div className="min-h-screen bg-[#F7F5FB]">
-            <SEO
-                title={seoPages.products.title}
-                description={seoPages.products.description}
-                canonical={seoPages.products.canonical}
-                type="collection"
-            />
+    <SEO
+        title={seoTitle}
+        description={seoDescription}
+        canonical={window.location.href}
+        type="CollectionPage"
+    />
+
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-5 sm:pt-10 pb-10">
