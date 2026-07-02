@@ -507,6 +507,10 @@ const faqSchema =
         }
 
     };
+    console.log(product);
+console.log(product?.faqs);
+
+if (!product) {
 
     if (!product) {
 
@@ -1206,6 +1210,52 @@ pointer-events-none
                         </section>
                     )
                 }
+
+                {/* ---------- FAQ SECTION START ---------- */}
+
+{
+product?.faqs &&
+product.faqs.length > 0 && (
+
+<section className="bg-white border border-zinc-100 rounded-[2rem] p-6 md:p-8 shadow-sm mt-8">
+
+<h2 className="text-2xl font-extrabold text-zinc-900">
+Frequently Asked Questions
+</h2>
+
+<p className="text-zinc-500 mt-2 mb-6">
+Everything you need to know about this product.
+</p>
+
+<div className="space-y-4">
+
+{product.faqs.map((faq:any,index:number)=>(
+
+<div
+key={index}
+className="border rounded-2xl p-5 bg-slate-50"
+>
+
+<h3 className="font-bold text-zinc-900">
+Q. {faq.question}
+</h3>
+
+<p className="mt-3 text-zinc-600 leading-7">
+{faq.answer}
+</p>
+
+</div>
+
+))}
+
+</div>
+
+</section>
+
+)
+}
+
+{/* ---------- FAQ SECTION END ---------- */}
 
 
                 <section
