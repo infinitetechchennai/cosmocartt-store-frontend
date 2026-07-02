@@ -38,6 +38,32 @@ const productSchema = new mongoose.Schema(
       default: "",
     },
 
+    // ==========================
+    // SEO Fields
+    // ==========================
+
+    seoTitle: {
+      type: String,
+      default: "",
+    },
+
+    seoDescription: {
+      type: String,
+      default: "",
+    },
+
+    focusKeyword: {
+      type: String,
+      default: "",
+    },
+
+    canonicalUrl: {
+      type: String,
+      default: "",
+    },
+
+    // ==========================
+
     sku: {
       type: String,
       required: true,

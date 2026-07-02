@@ -8,6 +8,7 @@ export interface Product {
   category: string;
   subcategory: string;
   description?: string;
+
   sku: string;
 
   hsnCode?: string;
@@ -25,6 +26,13 @@ export interface Product {
   status: string;
   approvalStatus?: string;
 
+  // ---------- SEO ----------
+  seoTitle?: string;
+  seoDescription?: string;
+  focusKeyword?: string;
+  canonicalUrl?: string;
+
+  // ---------- FAQs ----------
   faqs?: {
     question: string;
     answer: string;

@@ -16,6 +16,10 @@ type ProductDraft = {
   model: string;
   category: string;
   description: string;
+  seoTitle: string;
+seoDescription: string;
+focusKeyword: string;
+canonicalUrl: string;
   subcategory: string;
   sku: string;
   hsnCode: string;
@@ -37,6 +41,10 @@ const emptyProduct: ProductDraft = {
   model: "",
   category: "",
   description: "",
+  seoTitle: "",
+seoDescription: "",
+focusKeyword: "",
+canonicalUrl: "",
   subcategory: "",
   sku: "",
   hsnCode: "",
@@ -107,6 +115,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       gstPercentage: productState.gstPercentage || 18,
       approvalStatus: productState.approvalStatus || "Approved",
       status: productState.status || "Active",
+      seoTitle: productState.seoTitle || "",
+seoDescription: productState.seoDescription || "",
+focusKeyword: productState.focusKeyword || "",
+canonicalUrl: productState.canonicalUrl || "",
       faqs: productState.faqs || [],
     });
     setEditProductFiles([]);
@@ -138,6 +150,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
       formData.append("category", productDraft.category);
       formData.append("subcategory", productDraft.subcategory);
       formData.append("description", productDraft.description);
+      formData.append("seoTitle", productDraft.seoTitle);
+formData.append("seoDescription", productDraft.seoDescription);
+formData.append("focusKeyword", productDraft.focusKeyword);
+formData.append("canonicalUrl", productDraft.canonicalUrl);
       formData.append("sku", productDraft.sku);
       formData.append("hsnCode", productDraft.hsnCode);
       formData.append("gstPercentage", String(productDraft.gstPercentage));
@@ -197,6 +213,10 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
         formData.append("category", newProduct.category);
         formData.append("subcategory", newProduct.subcategory);
         formData.append("description", newProduct.description || "");
+        formData.append("seoTitle", newProduct.seoTitle || "");
+formData.append("seoDescription", newProduct.seoDescription || "");
+formData.append("focusKeyword", newProduct.focusKeyword || "");
+formData.append("canonicalUrl", newProduct.canonicalUrl || "");
         formData.append("sku", newProduct.sku);
         formData.append("hsnCode", newProduct.hsnCode || "");
         formData.append("gstPercentage", String(newProduct.gstPercentage || 18));
@@ -680,6 +700,60 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     {(newProduct.description || "").length}/300 characters
                   </p>
                 </div>
+                <div className="md:col-span-2 border rounded-xl p-4 bg-purple-50/40">
+  <h3 className="font-semibold text-zinc-900 mb-3">SEO Settings</h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label className="text-xs text-zinc-500">SEO Title</label>
+      <input
+        className="border p-3 rounded-lg w-full mt-1"
+        value={newProduct.seoTitle || ""}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, seoTitle: e.target.value })
+        }
+        placeholder="Buy OnePlus 8 Leather Case Online | CosmoCartt"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-zinc-500">Focus Keyword</label>
+      <input
+        className="border p-3 rounded-lg w-full mt-1"
+        value={newProduct.focusKeyword || ""}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, focusKeyword: e.target.value })
+        }
+        placeholder="OnePlus 8 Leather Case"
+      />
+    </div>
+
+    <div className="md:col-span-2">
+      <label className="text-xs text-zinc-500">SEO Description</label>
+      <textarea
+        className="border p-3 rounded-lg w-full mt-1"
+        rows={3}
+        value={newProduct.seoDescription || ""}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, seoDescription: e.target.value })
+        }
+        placeholder="Shop premium OnePlus 8 leather case with shockproof protection and fast delivery."
+      />
+    </div>
+
+    <div className="md:col-span-2">
+      <label className="text-xs text-zinc-500">Canonical URL</label>
+      <input
+        className="border p-3 rounded-lg w-full mt-1"
+        value={newProduct.canonicalUrl || ""}
+        onChange={(e) =>
+          setNewProduct({ ...newProduct, canonicalUrl: e.target.value })
+        }
+        placeholder="/product/oneplus-8-leather-case"
+      />
+    </div>
+  </div>
+</div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Category</label>
@@ -1065,6 +1139,60 @@ export default function ProductsView({ products, setProducts }: ProductsViewProp
                     {(productDraft.description || "").length}/300 characters
                   </p>
                 </div>
+                <div className="md:col-span-2 border rounded-xl p-4 bg-purple-50/40">
+  <h3 className="font-semibold text-zinc-900 mb-3">SEO Settings</h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label className="text-xs text-zinc-500">SEO Title</label>
+      <input
+        className="border p-3 rounded-lg w-full mt-1"
+        value={productDraft.seoTitle || ""}
+        onChange={(e) =>
+          setProductDraft({ ...productDraft, seoTitle: e.target.value })
+        }
+        placeholder="Buy OnePlus 8 Leather Case Online | CosmoCartt"
+      />
+    </div>
+
+    <div>
+      <label className="text-xs text-zinc-500">Focus Keyword</label>
+      <input
+        className="border p-3 rounded-lg w-full mt-1"
+        value={productDraft.focusKeyword || ""}
+        onChange={(e) =>
+          setProductDraft({ ...productDraft, focusKeyword: e.target.value })
+        }
+        placeholder="OnePlus 8 Leather Case"
+      />
+    </div>
+
+    <div className="md:col-span-2">
+      <label className="text-xs text-zinc-500">SEO Description</label>
+      <textarea
+        className="border p-3 rounded-lg w-full mt-1"
+        rows={3}
+        value={productDraft.seoDescription || ""}
+        onChange={(e) =>
+          setProductDraft({ ...productDraft, seoDescription: e.target.value })
+        }
+        placeholder="Shop premium OnePlus 8 leather case with shockproof protection and fast delivery."
+      />
+    </div>
+
+    <div className="md:col-span-2">
+      <label className="text-xs text-zinc-500">Canonical URL</label>
+      <input
+        className="border p-3 rounded-lg w-full mt-1"
+        value={productDraft.canonicalUrl || ""}
+        onChange={(e) =>
+          setProductDraft({ ...productDraft, canonicalUrl: e.target.value })
+        }
+        placeholder="/product/oneplus-8-leather-case"
+      />
+    </div>
+  </div>
+</div>
 
                 <div>
                   <label className="text-xs text-zinc-500">Category</label>
