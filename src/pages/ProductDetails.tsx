@@ -1462,7 +1462,10 @@ Q. {faq.question}
                                 <div>
                                     <h2 className="text-xl md:text-2xl font-extrabold text-zinc-950">
                                         Related Products
+
+                                        
                                 </h2>
+                                
                                     <p className="text-sm text-zinc-500 mt-1">
                                         Similar products customers may also like.
                                 </p>
@@ -1506,6 +1509,34 @@ Q. {faq.question}
                                     </Link>
                                 ))}
                             </div>
+                            <div className="mt-6 bg-white border border-zinc-100 rounded-3xl p-5">
+    <h3 className="font-extrabold text-zinc-900 mb-3">
+        Explore More
+    </h3>
+
+    <div className="flex flex-wrap gap-3 text-sm">
+        <Link
+            to={`/products?brand=${encodeURIComponent(product.brand || "")}`}
+            className="px-4 py-2 rounded-full bg-[#4B1E78]/10 text-[#4B1E78] font-bold hover:bg-[#4B1E78] hover:text-white transition"
+        >
+            More {product.brand} Products
+        </Link>
+
+        <Link
+            to={`/products?category=${encodeURIComponent(product.category || "")}`}
+            className="px-4 py-2 rounded-full bg-slate-100 text-zinc-700 font-bold hover:bg-zinc-200 transition"
+        >
+            More {product.category}
+        </Link>
+
+        <Link
+            to="/products"
+            className="px-4 py-2 rounded-full bg-slate-100 text-zinc-700 font-bold hover:bg-zinc-200 transition"
+        >
+            All Products
+        </Link>
+    </div>
+</div>
                         </section>
                     )
                 }
